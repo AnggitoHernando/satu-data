@@ -10,7 +10,18 @@ class JenisData extends Model
 {
     use HasFactory;
 
-    protected $table = 'jenis_data'; //
+    protected $table = 'jenis_data';
+    protected $fillable = [
+        'judul_data',
+        'jenis_data',
+        'seksi_id',
+        'slug',
+        'deskripsi',
+        'tahun',
+        'sumber_data',
+        'status_data',
+        'file_path',
+    ];
     public function seksi()
     {
         return $this->belongsTo(Seksi::class, 'seksi_id');

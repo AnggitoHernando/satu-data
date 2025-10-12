@@ -20,7 +20,7 @@ return new class extends Migration
             $table->integer("tahun");
             $table->string("sumber_data");
             $table->enum('status_data', ['draft', 'publish'])->default('draft');
-            $table->string("file_path");
+            $table->string("file_path")->nullable();
             $table->timestamps();
         });
     }
