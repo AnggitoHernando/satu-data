@@ -26,6 +26,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/jenis-data', [JenisDataController::class, 'index'])->name('jenis_data.show');
     Route::post('/jenis-data/simpan', [JenisDataController::class, 'store'])->name('jenis_data.save');
+    Route::delete('/jenis-data/{jenisData}', [JenisDataController::class, 'destroy'])->name('jenis_data.destroy');
+    Route::patch('/jenis-data/{jenisData}', [JenisDataController::class, 'update'])->name('jenis_data.update');
 });
 
 require __DIR__ . '/auth.php';

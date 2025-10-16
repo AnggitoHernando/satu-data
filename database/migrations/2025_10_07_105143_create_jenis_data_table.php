@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string("deskripsi");
             $table->integer("tahun");
             $table->string("sumber_data");
-            $table->enum('status_data', ['draft', 'publish'])->default('draft');
+            $table->enum('status_data', ['private', 'publik'])->default('private');
             $table->string("file_path")->nullable();
             $table->timestamps();
         });

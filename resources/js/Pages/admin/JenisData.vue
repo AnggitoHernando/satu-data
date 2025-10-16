@@ -5,25 +5,20 @@ import { ref, watch, onMounted, h } from "vue";
 import axios from "axios";
 import ActionButtons from "@/Components/ActionButtons.vue";
 import PrimaryButtonAdmin from "@/Components/PrimaryButtonAdmin.vue";
-import {
-    Dialog,
-    DialogPanel,
-    DialogTitle,
-    DialogOverlay,
-    TransitionRoot,
-    TransitionChild,
-} from "@headlessui/vue";
-import { CircleX, FileText } from "lucide-vue-next";
+import ModalHeadnessUI from "@/Components/ModalHeadnessUI.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import TextInput from "@/Components/TextInput.vue";
 import SelectButton from "@/Components/SelectButton.vue";
 import TextArea from "@/Components/TextArea.vue";
+import { router } from "@inertiajs/vue3";
+// import route from "ziggy-js";
 
 const controller = usePage();
 const { list_seksi } = controller.props;
 
 //Form
 const form = useForm({
+    id: null,
     judul_data: "",
     seksi_id: "",
     slug: "",
@@ -31,16 +26,26 @@ const form = useForm({
     tahun: "",
     sumber_data: "",
     status_data: "",
-    file_path: "",
+    file_path: null,
 });
 
 const currentYear = new Date().getFullYear();
 const years = Array.from({ length: 11 }, (_, i) => currentYear - 5 + i);
 
-//Modal
-const showModal = ref(false);
-
+//Modal Add
 const isOpen = ref(false);
+
+//Modal Deskripsi
+const isOpenDeskripsi = ref(false);
+const currentDescription = ref("");
+const currentJudulDescription = ref("");
+
+//Deskripsi
+const openDeskripsi = (description, judul) => {
+    currentDescription.value = description;
+    currentJudulDescription.value = "Deskripsi " + judul;
+    isOpenDeskripsi.value = true;
+};
 
 // Table state
 const total = ref(0);
@@ -93,29 +98,89 @@ const fetchData = async () => {
 };
 
 // Delete data
-const deleteItem = async (id) => {
+const deleteItem = async (id, nama) => {
     const confirm = await Swal.fire({
-        title: "Hapus data?",
+        title: `Apakah Kamu Ingin Menghapus Data "${nama}"?`,
         icon: "warning",
         showCancelButton: true,
     });
     if (confirm.isConfirmed) {
-        await axios.delete(`/api/jenis_data/${id}`);
-        fetchData(); // refresh
-        Swal.fire("Terhapus!", "Data berhasil dihapus", "success");
+        const confirm = await Swal.fire({
+            title: `Apakah kamu Yakin Menghapus Data "${nama}" ini?`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Ya, hapus",
+            cancelButtonText: "Batal",
+        });
+
+        if (confirm.isConfirmed) {
+            router.delete(route("jenis_data.destroy", id), {
+                onSuccess: async () => {
+                    await fetchData();
+                    Swal.fire("Berhasil!", "Data telah dihapus.", "success");
+                },
+                onError: () => {
+                    Swal.fire(
+                        "Gagal!",
+                        "Terjadi kesalahan saat menghapus data.",
+                        "error"
+                    );
+                },
+            });
+        }
     }
 };
 
-// Edit item (contoh)
-const editItem = (item) => {
-    form.seksi_id = String(item.seksi_id);
-    form.judul_data = item.judul_data;
-    form.slug = item.slug;
-    form.deskripsi = item.deskripsi;
-    form.tahun = String(item.tahun);
-    form.sumber_data = item.sumber_data;
-    form.status_data = item.status_data;
-    showModal.value = true;
+const modalMode = ref("create");
+const openModal = (item = null) => {
+    console.log(item);
+
+    if (item) {
+        console.log("a");
+
+        modalMode.value = "edit";
+        Object.assign(form, item);
+    } else {
+        console.log("b");
+
+        modalMode.value = "create";
+
+        form.reset();
+        form.file_path = null;
+
+        if (fileInput.value) fileInput.value.value = null;
+    }
+    isOpen.value = true;
+};
+
+//Fungsi Publik atau Private
+const toggleStatus = async (item, newStatus) => {
+    const confirm = await Swal.fire({
+        title: `Ubah status data "${item.judul_data}"?`,
+        text: `Status akan diubah menjadi ${newStatus.toUpperCase()}.`,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Ya, ubah",
+        cancelButtonText: "Batal",
+    });
+
+    if (confirm.isConfirmed) {
+        // console.log(axios.patch(route("jenis_data.update")));
+        try {
+            await axios.patch(route("jenis_data.update", item.id), {
+                status_data: newStatus,
+            });
+            await fetchData();
+            Swal.fire(
+                "Berhasil!",
+                `Status diubah menjadi ${newStatus}.`,
+                "success"
+            );
+        } catch (err) {
+            Swal.fire("Gagal!", "Tidak dapat mengubah status.", "error");
+            console.error(err);
+        }
+    }
 };
 
 //Fungsi Save
@@ -154,10 +219,6 @@ const submit = async () => {
 
 watch([page, perPage, search, sortBy, sortDir], fetchData);
 
-//reset modal ketika di click awal
-watch(showModal, (val) => {
-    if (val) form.reset();
-});
 onMounted(fetchData);
 </script>
 
@@ -175,200 +236,138 @@ onMounted(fetchData);
         <div class="py-16 relative z-40">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div class="mb-3 flex justify-end">
-                    <PrimaryButtonAdmin @click="isOpen = true"
+                    <PrimaryButtonAdmin @click="() => openModal(null)"
                         >+ Tambah Data</PrimaryButtonAdmin
                     >
-                    <TransitionRoot :show="isOpen" as="template">
-                        <Dialog
-                            class="fixed inset-0 z-50 overflow-y-auto"
-                            @close="() => {}"
-                            static
-                        >
-                            <div
-                                class="flex min-h-screen items-center justify-center p-4"
-                            >
-                                <TransitionChild
-                                    enter="ease-out duration-300"
-                                    enter-from="opacity-0"
-                                    enter-to="opacity-100"
-                                    leave="ease-in duration-200"
-                                    leave-from="opacity-100"
-                                    leave-to="opacity-0"
+                    <ModalHeadnessUI
+                        :open-modal="isOpen"
+                        @close="isOpen = false"
+                        judul_modal="Tambah Jenis Data"
+                    >
+                        <form @submit.prevent="submit">
+                            <div>
+                                <InputLabel
+                                    for="seksi_id"
+                                    value="Pilih Seksi"
+                                />
+                                <SelectButton
+                                    id="seksi_id"
+                                    name="seksi_id"
+                                    v-model="form.seksi_id"
                                 >
-                                    <DialogOverlay
-                                        class="fixed inset-0 bg-black bg-opacity-20 backdrop-blur-md z-40"
-                                    />
-                                </TransitionChild>
-
-                                <TransitionChild
-                                    enter="ease-out duration-300"
-                                    enter-from="opacity-0 scale-95"
-                                    enter-to="opacity-100 scale-100"
-                                    leave="ease-in duration-200"
-                                    leave-from="opacity-100 scale-100"
-                                    leave-to="opacity-0 scale-95"
-                                >
-                                </TransitionChild>
-                                <DialogPanel
-                                    class="bg-white rounded-lg shadow-lg w-full max-w-3xl p-6 z-50 relative"
-                                >
-                                    <div
-                                        class="flex justify-between items-center mb-4"
+                                    <option disabled value="">
+                                        -- Pilih Seksi --
+                                    </option>
+                                    <option
+                                        v-for="seksi in list_seksi"
+                                        :key="seksi.id"
+                                        :value="String(seksi.id)"
                                     >
-                                        <h2 class="text-xl font-semibold">
-                                            Tambah Jenis Data
-                                        </h2>
-                                        <button
-                                            @click="isOpen = false"
-                                            class="absolute top-2 right-2 p-2 rounded hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                        >
-                                            ✕
-                                        </button>
-                                    </div>
-
-                                    <form @submit.prevent="submit">
-                                        <div>
-                                            <InputLabel
-                                                for="seksi_id"
-                                                value="Pilih Seksi"
-                                            />
-                                            <SelectButton
-                                                id="seksi_id"
-                                                name="seksi_id"
-                                                v-model="form.seksi_id"
-                                            >
-                                                <option disabled value="">
-                                                    -- Pilih Seksi --
-                                                </option>
-                                                <option
-                                                    v-for="seksi in list_seksi"
-                                                    :key="seksi.id"
-                                                    :value="String(seksi.id)"
-                                                >
-                                                    {{ seksi.nama_seksi }}
-                                                </option>
-                                            </SelectButton>
-                                        </div>
-                                        <div class="mt-4">
-                                            <InputLabel
-                                                for="judul_data"
-                                                value="Nama Data"
-                                            />
-
-                                            <TextInput
-                                                id="judul_data"
-                                                type="text"
-                                                placeholder="Masukkan Nama Data"
-                                                class="mt-1 block w-full"
-                                                v-model="form.judul_data"
-                                                required
-                                                autocomplete="judul_data"
-                                            />
-                                        </div>
-                                        <div class="mt-4">
-                                            <InputLabel
-                                                for="slug"
-                                                value="Slug"
-                                            />
-
-                                            <TextInput
-                                                id="slug"
-                                                type="text"
-                                                placeholder="Masukkan Slug"
-                                                class="mt-1 block w-full"
-                                                v-model="form.slug"
-                                                required
-                                                autocomplete="slug"
-                                            />
-                                        </div>
-                                        <div class="mt-4">
-                                            <InputLabel
-                                                for="deskripsi"
-                                                value="Deskripsi"
-                                            />
-
-                                            <TextArea
-                                                id="deskripsi"
-                                                name="deskrpisi"
-                                                placeholder="Masukkan Deskripsi"
-                                                v-model="form.deskripsi"
-                                            />
-                                        </div>
-                                        <div class="mt-4">
-                                            <InputLabel
-                                                for="tahun"
-                                                value="Tahun"
-                                            />
-
-                                            <SelectButton
-                                                id="tahun"
-                                                name="tahun"
-                                                v-model="form.tahun"
-                                            >
-                                                <option disabled value="">
-                                                    -- Pilih Tahun --
-                                                </option>
-                                                <option
-                                                    v-for="year in years"
-                                                    :key="year"
-                                                    :value="String(year)"
-                                                    :selected="
-                                                        year === currentYear
-                                                    "
-                                                >
-                                                    {{ year }}
-                                                </option>
-                                            </SelectButton>
-                                        </div>
-                                        <div class="mt-4">
-                                            <InputLabel
-                                                for="sumber_data"
-                                                value="Sumber Data"
-                                            />
-
-                                            <TextInput
-                                                id="sumber_data"
-                                                type="text"
-                                                placeholder="Masukkan Sumber Data"
-                                                class="mt-1 block w-full"
-                                                v-model="form.sumber_data"
-                                                required
-                                                autocomplete="sumber_data"
-                                            />
-                                        </div>
-                                        <div class="mt-4">
-                                            <InputLabel
-                                                for="file_path"
-                                                value="File"
-                                            />
-
-                                            <input
-                                                id="file_path"
-                                                type="file"
-                                                class="mt-1 block w-full border rounded px-2 py-1"
-                                                ref="fileInput"
-                                                @change="handleFileChange"
-                                            />
-                                        </div>
-                                        <div
-                                            class="flex justify-end gap-2 mt-2"
-                                        >
-                                            <button
-                                                type="button"
-                                                @click="isOpen = false"
-                                                class="bg-gray-300 hover:bg-gray-400 text-black px-4 py-2 rounded"
-                                            >
-                                                Batal
-                                            </button>
-                                            <PrimaryButtonAdmin type="submit"
-                                                >Simpan</PrimaryButtonAdmin
-                                            >
-                                        </div>
-                                    </form>
-                                </DialogPanel>
+                                        {{ seksi.nama_seksi }}
+                                    </option>
+                                </SelectButton>
                             </div>
-                        </Dialog>
-                    </TransitionRoot>
+                            <div class="mt-4">
+                                <InputLabel
+                                    for="judul_data"
+                                    value="Nama Data"
+                                />
+
+                                <TextInput
+                                    id="judul_data"
+                                    type="text"
+                                    placeholder="Masukkan Nama Data"
+                                    class="mt-1 block w-full"
+                                    v-model="form.judul_data"
+                                    required
+                                    autocomplete="judul_data"
+                                />
+                            </div>
+                            <div class="mt-4">
+                                <InputLabel for="slug" value="Slug" />
+
+                                <TextInput
+                                    id="slug"
+                                    type="text"
+                                    placeholder="Masukkan Slug"
+                                    class="mt-1 block w-full"
+                                    v-model="form.slug"
+                                    required
+                                    autocomplete="slug"
+                                />
+                            </div>
+                            <div class="mt-4">
+                                <InputLabel for="deskripsi" value="Deskripsi" />
+
+                                <TextArea
+                                    id="deskripsi"
+                                    name="deskrpisi"
+                                    placeholder="Masukkan Deskripsi"
+                                    v-model="form.deskripsi"
+                                />
+                            </div>
+                            <div class="mt-4">
+                                <InputLabel for="tahun" value="Tahun" />
+
+                                <SelectButton
+                                    id="tahun"
+                                    name="tahun"
+                                    v-model="form.tahun"
+                                >
+                                    <option disabled value="">
+                                        -- Pilih Tahun --
+                                    </option>
+                                    <option
+                                        v-for="year in years"
+                                        :key="year"
+                                        :value="String(year)"
+                                        :selected="year === currentYear"
+                                    >
+                                        {{ year }}
+                                    </option>
+                                </SelectButton>
+                            </div>
+                            <div class="mt-4">
+                                <InputLabel
+                                    for="sumber_data"
+                                    value="Sumber Data"
+                                />
+
+                                <TextInput
+                                    id="sumber_data"
+                                    type="text"
+                                    placeholder="Masukkan Sumber Data"
+                                    class="mt-1 block w-full"
+                                    v-model="form.sumber_data"
+                                    required
+                                    autocomplete="sumber_data"
+                                />
+                            </div>
+                            <div class="mt-4">
+                                <InputLabel for="file_path" value="File" />
+
+                                <input
+                                    id="file_path"
+                                    type="file"
+                                    class="mt-1 block w-full border rounded px-2 py-1"
+                                    ref="fileInput"
+                                    @change="handleFileChange"
+                                />
+                            </div>
+                            <div class="flex justify-end gap-2 mt-2">
+                                <button
+                                    type="button"
+                                    @click="isOpen = false"
+                                    class="bg-gray-300 hover:bg-gray-400 text-black px-4 py-2 rounded"
+                                >
+                                    Batal
+                                </button>
+                                <PrimaryButtonAdmin type="submit"
+                                    >Simpan</PrimaryButtonAdmin
+                                >
+                            </div>
+                        </form>
+                    </ModalHeadnessUI>
                 </div>
                 <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                     <div>
@@ -413,12 +412,33 @@ onMounted(fetchData);
                                     :key="row.id"
                                     class="hover:bg-gray-100"
                                 >
-                                    <td>{{ row.judul_data }}</td>
-                                    <td>{{ row.nama_seksi }}</td>
-                                    <td>{{ row.deskripsi }}</td>
-                                    <td>{{ row.tahun }}</td>
-                                    <td>{{ row.status_data }}</td>
-                                    <td>
+                                    <td class="p-2">{{ row.judul_data }}</td>
+                                    <td class="p-2">{{ row.nama_seksi }}</td>
+                                    <td class="p-2 text-center">
+                                        <span
+                                            v-if="!row.deskripsi"
+                                            class="text-gray-400"
+                                        ></span>
+                                        <a
+                                            v-else
+                                            @click="
+                                                openDeskripsi(
+                                                    row.deskripsi,
+                                                    row.judul_data
+                                                )
+                                            "
+                                            class="text-blue-600 hover:underline cursor-pointer"
+                                        >
+                                            Lihat Deskripsi
+                                        </a>
+                                    </td>
+                                    <td class="p-2 text-center">
+                                        {{ row.tahun }}
+                                    </td>
+                                    <td class="p-2 text-center capitalize">
+                                        {{ row.status_data }}
+                                    </td>
+                                    <td class="p-2">
                                         <span
                                             v-if="!row.file_path"
                                             class="text-gray-400"
@@ -433,16 +453,25 @@ onMounted(fetchData);
                                             Lihat File
                                         </a>
                                     </td>
-                                    <td>
+                                    <td class="p-2">
                                         <ActionButtons
                                             :item="row"
-                                            @onEdit="editItem"
-                                            @onDelete="deleteItem"
+                                            @edit="openModal"
+                                            @delete="deleteItem"
+                                            @toggleStatus="toggleStatus"
                                         />
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
+                        <ModalHeadnessUI
+                            :open-modal="isOpenDeskripsi"
+                            @close="isOpenDeskripsi = false"
+                            :judul_modal="currentJudulDescription"
+                            ><p>
+                                {{ currentDescription }}
+                            </p></ModalHeadnessUI
+                        >
 
                         <!-- Pagination -->
                         <div
