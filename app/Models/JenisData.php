@@ -21,6 +21,7 @@ class JenisData extends Model
         'sumber_data',
         'status_data',
         'file_path',
+        'nama_original_file'
     ];
     public function seksi()
     {

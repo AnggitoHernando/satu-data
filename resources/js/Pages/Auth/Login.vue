@@ -67,7 +67,7 @@ const submit = () => {
                     <Link href="/login">
                         <ApplicationLogo class="w-36" />
                         <span class="block mb-2 text-xl font-medium text-white"
-                            >Kantor Kemenag Gresik</span
+                            >SIDAK Gresik</span
                         >
                     </Link>
                 </div>

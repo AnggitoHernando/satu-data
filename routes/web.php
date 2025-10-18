@@ -8,16 +8,16 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
+    return Inertia::render('Home/Home', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
     ]);
-});
+})->name('Home');
 
 Route::get('/dashboard', function () {
-    return Inertia::render('admin/Dashboard');
+    return Inertia::render('Admin/Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -27,7 +27,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/jenis-data', [JenisDataController::class, 'index'])->name('jenis_data.show');
     Route::post('/jenis-data/simpan', [JenisDataController::class, 'store'])->name('jenis_data.save');
     Route::delete('/jenis-data/{jenisData}', [JenisDataController::class, 'destroy'])->name('jenis_data.destroy');
-    Route::patch('/jenis-data/{jenisData}', [JenisDataController::class, 'update'])->name('jenis_data.update');
+    Route::patch('/jenis-data/update/{jenisData}', [JenisDataController::class, 'update'])->name('jenis_data.update');
+    Route::patch('/jenis-data/updateStatus/{jenisData}', [JenisDataController::class, 'updateStatus'])->name('jenis_data.update_status');
 });
 
 require __DIR__ . '/auth.php';

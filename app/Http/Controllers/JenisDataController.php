@@ -7,6 +7,7 @@ use App\Models\Seksi;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class JenisDataController extends Controller
 {
@@ -14,7 +15,7 @@ class JenisDataController extends Controller
     {
         $seksi = Seksi::all();
         return Inertia::render(
-            'admin/JenisData',
+            'Admin/JenisData',
             [
                 'list_seksi' => $seksi
 
@@ -92,8 +93,21 @@ class JenisDataController extends Controller
         }
 
         if ($request->hasFile('file_path')) {
-            $validated['file_path'] = $request->file('file_path')->store('uploads/jenis_data', 'public');
+            $file = $request->file('file_path');
+
+            $originalName = $file->getClientOriginalName();
+
+            $filename = Str::random(12) . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('uploads/jenis_data', $filename, 'public');
+
+            $validated['file_path'] = $path;
+            $validated['nama_original_file'] = $originalName;
         }
+
+        $slug = Str::slug($validated['judul_data']);
+        $count = JenisData::where('slug', 'LIKE', "{$slug}%")->count();
+
+        $validated['slug'] = $count ? "{$slug}-{$count}" : $slug;
 
         $data = JenisData::create($validated);
 
@@ -116,6 +130,48 @@ class JenisDataController extends Controller
     }
 
     public function update(Request $request, JenisData $jenisData)
+    {
+        $validated = $request->validate([
+            'judul_data' => 'required|string|max:255',
+            'seksi_id' => 'required|string',
+            'slug' => 'required|string|max:100',
+            'deskripsi' => 'nullable|string',
+            'tahun' => 'required|string',
+            'sumber_data' => 'required|string',
+            'file_path' => 'nullable|file|max:2048',
+        ]);
+
+        if ($request->hasFile('file_path')) {
+            if ($jenisData->file_path && Storage::disk('public')->exists($jenisData->file_path)) {
+                Storage::disk('public')->delete($jenisData->file_path);
+            }
+
+            $file = $request->file('file_path');
+
+            $originalName = $file->getClientOriginalName();
+
+            $filename = Str::random(12) . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('uploads/jenis_data', $filename, 'public');
+
+            $validated['file_path'] = $path;
+            $validated['nama_original_file'] = $originalName;
+        } else {
+            unset($validated['file_path']);
+        }
+
+        $slug = Str::slug($validated['judul_data']);
+        $count = JenisData::where('slug', 'LIKE', "{$slug}%")->count();
+
+        $validated['slug'] = $count ? "{$slug}-{$count}" : $slug;
+
+        $data = $jenisData->update($validated);
+        return response()->json([
+            'success' => true,
+            'data' => $data,
+            'message' => 'Data berhasil Diupdate!'
+        ]);
+    }
+    public function updateStatus(Request $request, JenisData $jenisData)
     {
         $jenisData->update([
             'status_data' => $request->status_data,

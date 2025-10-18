@@ -27,6 +27,7 @@ const form = useForm({
     sumber_data: "",
     status_data: "",
     file_path: null,
+    nama_original_file: "",
 });
 
 const currentYear = new Date().getFullYear();
@@ -133,18 +134,11 @@ const deleteItem = async (id, nama) => {
 
 const modalMode = ref("create");
 const openModal = (item = null) => {
-    console.log(item);
-
     if (item) {
-        console.log("a");
-
         modalMode.value = "edit";
         Object.assign(form, item);
     } else {
-        console.log("b");
-
         modalMode.value = "create";
-
         form.reset();
         form.file_path = null;
 
@@ -167,7 +161,7 @@ const toggleStatus = async (item, newStatus) => {
     if (confirm.isConfirmed) {
         // console.log(axios.patch(route("jenis_data.update")));
         try {
-            await axios.patch(route("jenis_data.update", item.id), {
+            await axios.patch(route("jenis_data.update_status", item.id), {
                 status_data: newStatus,
             });
             await fetchData();
@@ -186,9 +180,28 @@ const toggleStatus = async (item, newStatus) => {
 //Fungsi Save
 const submit = async () => {
     try {
-        const res = await axios.post(route("jenis_data.save"), form, {
-            headers: { "Content-Type": "multipart/form-data" },
-        });
+        let res;
+        if (modalMode.value == "create") {
+            res = await axios.post(route("jenis_data.save"), form, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+        } else {
+            const formData = new FormData();
+            for (const key in form) {
+                if (form[key] !== null && form[key] !== undefined) {
+                    formData.append(key, form[key]);
+                }
+            }
+            formData.append("_method", "PATCH");
+
+            res = await axios.post(
+                route("jenis_data.update", form.id),
+                formData,
+                {
+                    headers: { "Content-Type": "multipart/form-data" },
+                }
+            );
+        }
         if (res.data.success) {
             form.reset();
             form.file_path = null;
@@ -213,8 +226,18 @@ const submit = async () => {
             });
         } else {
             Swal.fire("Error", "Terjadi kesalahan server", "error");
+            console.log(err);
         }
     }
+};
+
+const generateSlug = () => {
+    form.slug = form.judul_data
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9\s-]/g, "")
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-");
 };
 
 watch([page, perPage, search, sortBy, sortDir], fetchData);
@@ -276,6 +299,7 @@ onMounted(fetchData);
                                 <TextInput
                                     id="judul_data"
                                     type="text"
+                                    @input="generateSlug"
                                     placeholder="Masukkan Nama Data"
                                     class="mt-1 block w-full"
                                     v-model="form.judul_data"
@@ -289,10 +313,11 @@ onMounted(fetchData);
                                 <TextInput
                                     id="slug"
                                     type="text"
-                                    placeholder="Masukkan Slug"
-                                    class="mt-1 block w-full"
+                                    placeholder=""
+                                    class="mt-1 block w-full bg-gray-300"
                                     v-model="form.slug"
                                     required
+                                    readonly
                                     autocomplete="slug"
                                 />
                             </div>
@@ -343,6 +368,10 @@ onMounted(fetchData);
                                     autocomplete="sumber_data"
                                 />
                             </div>
+                            <!-- <div v-if="modalMode === 'edit'" class="mt-4">
+                                <InputLabel for="nama_file" value="File Lama" />
+                                <span v-if="form.file_path">AAA</span>
+                            </div> -->
                             <div class="mt-4">
                                 <InputLabel for="file_path" value="File" />
 
