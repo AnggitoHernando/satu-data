@@ -22,6 +22,7 @@
         "@tanstack/vue-table": "^8.21.3",
         "lucide-vue-next": "^0.545.0",
         "sweetalert2": "^11.26.0",
+        "swiper": "^12.0.3",
         "toastify-js": "^1.12.0"
     }
 }

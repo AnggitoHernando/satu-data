@@ -2,6 +2,38 @@
 import HomeLayout from "@/Layouts/HomeLayout.vue";
 import { Head, Link } from "@inertiajs/vue3";
 import { Search } from "lucide-vue-next";
+import { Swiper, SwiperSlide } from "swiper/vue";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import subagtu from "@assets/icon/subbag1.svg";
+import haji from "@assets/icon/haji1.svg";
+import bimas from "@assets/icon/bimas.svg";
+import pais from "@assets/icon/pais.svg";
+import pdpontren from "@assets/icon/pdpontren.svg";
+import pendma from "@assets/icon/pendma1.svg";
+import zawa from "@assets/icon/zawa.svg";
+
+const list_seksi = [
+    { nama: "SUBBAG TU", desc: "Sub Bagian Tata Usaha", img: subagtu },
+    { nama: "PENDMA", desc: "Pendidikan Madrasah", img: pendma },
+    { nama: "PHU", desc: "Penyelenggara Haji dan Umroh", img: haji },
+    { nama: "BIMAS", desc: "Bimbingan Masyarakat Islam", img: bimas },
+    { nama: "PAIS", desc: "Pendidikan Agama Islam", img: pais },
+    {
+        nama: "PD-PONTREN",
+        desc: "Pendidikan Diniyah dan Pondok Pesantren",
+        img: pdpontren,
+    },
+    { nama: "PENZAWA", desc: "Penyelenggara Zakat dan Wakaf", img: zawa },
+];
+
+const stats = [
+    { label: "Data", value: 238 },
+    { label: "Seksi", value: 7 },
+    { label: "Publikasi Dokumen", value: 5 },
+];
 </script>
 <template>
     <Head title="Home" />
@@ -10,8 +42,8 @@ import { Search } from "lucide-vue-next";
             <!-- Hero / Banner -->
             <section class="max-w-7xl mx-auto px-6 py-16 text-center">
                 <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-800">
-                    <span class="text-green-800">SIDAK GRESIK</span><br />
-                    Sistem Informasi Data Kemenag Gresik
+                    <span class="text-green-800">MANDAT GRESIK</span><br />
+                    Manajemen Data Terpadu Kemenag Gresik
                 </h1>
                 <p class="mt-4 text-gray-600 text-lg max-w-2xl mx-auto">
                     "Satu Portal Data Terpadu Kementerian Agama Kabupaten
@@ -19,7 +51,6 @@ import { Search } from "lucide-vue-next";
                 </p>
                 <div class="mt-8">
                     <div class="relative max-w-md mx-auto">
-                        <!-- Icon dari Lucide -->
                         <Search
                             class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5"
                         />
@@ -31,6 +62,68 @@ import { Search } from "lucide-vue-next";
                             placeholder="Cari data..."
                             class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-green-700 focus:border-green-700 focus:outline-none"
                         />
+                    </div>
+                </div>
+            </section>
+            <section class="max-w-7xl mx-auto text-center">
+                <Swiper
+                    :modules="[Navigation, Pagination]"
+                    :slidesPerView="4"
+                    :spaceBetween="30"
+                    pagination
+                    navigation
+                    class="w-full h-64 rounded-xl overflow-hidden"
+                >
+                    <swiper-slide
+                        class="bg-gray-200 rounded-xl"
+                        v-for="(seksi, index) in list_seksi"
+                        :key="index"
+                    >
+                        <div
+                            class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300 cursor-pointer flex flex-col items-center justify-between h-[15.5rem]"
+                        >
+                            <div
+                                class="h-1/2 flex mt-2 items-center justify-center w-full bg-gray-50"
+                            >
+                                <img
+                                    :src="seksi.img"
+                                    :alt="seksi.nama"
+                                    class="object-contain w-1/2 h-full"
+                                />
+                            </div>
+                            <div
+                                class="p-4 text-center h-1/2 flex flex-col justify-center"
+                            >
+                                <h3 class="text-lg font-semibold text-gray-800">
+                                    {{ seksi.nama }}
+                                </h3>
+                                <p class="text-gray-600 text-sm mt-1">
+                                    {{ seksi.desc }}
+                                </p>
+                            </div>
+                        </div>
+                    </swiper-slide>
+                </Swiper>
+            </section>
+            <section class="bg-gradient-to-b from-gray-50 to-white py-12">
+                <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div
+                        class="grid grid-cols-2 md:grid-cols-3 text-center gap-8"
+                    >
+                        <div
+                            v-for="(item, index) in stats"
+                            :key="index"
+                            class="flex flex-col items-center"
+                        >
+                            <h3 class="text-5xl font-bold text-gray-700">
+                                {{ item.value }}
+                            </h3>
+                            <p
+                                class="mt-2 text-sm font-semibold tracking-widest text-gray-500 uppercase"
+                            >
+                                {{ item.label }}
+                            </p>
+                        </div>
                     </div>
                 </div>
             </section>

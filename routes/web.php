@@ -14,7 +14,7 @@ Route::get('/', function () {
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
     ]);
-})->name('Home');
+})->name('Beranda');
 
 Route::get('/dashboard', function () {
     return Inertia::render('Admin/Dashboard');
