@@ -188,9 +188,10 @@ const submit = async () => {
         } else {
             const formData = new FormData();
             for (const key in form) {
-                if (form[key] !== null && form[key] !== undefined) {
-                    formData.append(key, form[key]);
-                }
+                const value = form[key];
+                if (value === null || value === undefined) continue;
+                if (key === "file_path" && typeof value === "string") continue;
+                formData.append(key, value);
             }
             formData.append("_method", "PATCH");
 
@@ -211,6 +212,7 @@ const submit = async () => {
             await fetchData();
         }
     } catch (err) {
+        console.log(err);
         if (err.response && err.response.status === 422) {
             Object.values(err.response.data.errors).forEach((msg) => {
                 Toastify({
@@ -380,6 +382,7 @@ onMounted(fetchData);
                                     type="file"
                                     class="mt-1 block w-full border rounded px-2 py-1"
                                     ref="fileInput"
+                                    :required="modalMode == 'create'"
                                     @change="handleFileChange"
                                 />
                             </div>

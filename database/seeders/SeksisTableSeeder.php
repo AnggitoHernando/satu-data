@@ -44,6 +44,11 @@ class SeksisTableSeeder extends Seeder
                 'nama_seksi' => 'Pendidikan Diniyah dan Pondok Pesantren',
                 'created_at' => now(),
                 'updated_at' => now(),
+            ],
+            [
+                'nama_seksi' => 'Penyelenggara Haji dan Umroh',
+                'created_at' => now(),
+                'updated_at' => now(),
             ]
         ]);
     }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\JenisDataController;
+use App\Http\Controllers\PortalDataController;
 use App\Http\Controllers\ProfileController;
 use App\Models\JenisData;
 use Illuminate\Foundation\Application;
@@ -15,6 +16,9 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
     ]);
 })->name('Beranda');
+
+Route::get('/portal-data', [PortalDataController::class, 'index'])->name('PortalData');
+Route::get('/portal-data/search', [PortalDataController::class, 'search'])->name('PortalData.search');
 
 Route::get('/dashboard', function () {
     return Inertia::render('Admin/Dashboard');

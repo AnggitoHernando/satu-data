@@ -20,7 +20,7 @@ function toggleMenu() {
                     <div class="flex h-16 justify-between">
                         <div class="flex">
                             <div class="flex shrink-0 items-center">
-                                <span class="ml-2">MANDAT Gresik</span>
+                                <span class="ml-2">MANDAT GRESIK</span>
                             </div>
                             <!-- Mobile -->
                         </div>
@@ -35,8 +35,10 @@ function toggleMenu() {
                                 Beranda
                             </NavLink>
                             <NavLink
-                                :href="route('Beranda')"
-                                :active="route().current('PortalData')"
+                                :href="route('PortalData')"
+                                :active="
+                                    route().current()?.startsWith('PortalData')
+                                "
                             >
                                 Portal Data
                             </NavLink>
@@ -75,8 +77,8 @@ function toggleMenu() {
                             >Beranda</NavLink
                         >
                         <NavLink
-                            :href="route('Beranda')"
-                            :active="route().current('Beranda')"
+                            :href="route('PortalData')"
+                            :active="route().current('PortalData')"
                             >Portal Data</NavLink
                         >
                         <Link :href="route('login')">

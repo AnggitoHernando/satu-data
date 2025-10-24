@@ -79,7 +79,7 @@ class JenisDataController extends Controller
             'deskripsi' => 'nullable|string',
             'tahun' => 'required|string',
             'sumber_data' => 'required|string',
-            'file_path' => 'nullable|file|max:2048',
+            'file_path' => 'required|file|max:2048',
         ]);
 
         $exists = JenisData::where('judul_data', $validated['judul_data'])
@@ -96,12 +96,14 @@ class JenisDataController extends Controller
             $file = $request->file('file_path');
 
             $originalName = $file->getClientOriginalName();
+            $extension = $file->getClientOriginalExtension();
 
             $filename = Str::random(12) . '.' . $file->getClientOriginalExtension();
             $path = $file->storeAs('uploads/jenis_data', $filename, 'public');
 
             $validated['file_path'] = $path;
             $validated['nama_original_file'] = $originalName;
+            $validated['extension_file'] = $extension;
         }
 
         $slug = Str::slug($validated['judul_data']);
@@ -149,12 +151,14 @@ class JenisDataController extends Controller
             $file = $request->file('file_path');
 
             $originalName = $file->getClientOriginalName();
+            $extension = $file->getClientOriginalExtension();
 
             $filename = Str::random(12) . '.' . $file->getClientOriginalExtension();
             $path = $file->storeAs('uploads/jenis_data', $filename, 'public');
 
             $validated['file_path'] = $path;
             $validated['nama_original_file'] = $originalName;
+            $validated['extension_file'] = $extension;
         } else {
             unset($validated['file_path']);
         }

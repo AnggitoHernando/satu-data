@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('jenis_data', function (Blueprint $table) {
-            $table->string("nama_original_file")->nullable()->after('file_path');;
+            $table->string("nama_original_file")->nullable()->after('file_path');
+            $table->string("extension_file")->nullable()->after('nama_original_file');
         });
     }
 
@@ -23,6 +24,7 @@ return new class extends Migration
     {
         Schema::table('jenis_data', function (Blueprint $table) {
             $table->dropColumn('nama_original_file');
+            $table->dropColumn('extension_file');
         });
     }
 };
