@@ -3,11 +3,15 @@ import HomeLayout from "@/Layouts/HomeLayout.vue";
 import { Head, Link, router, usePage } from "@inertiajs/vue3";
 import { Search, Database } from "lucide-vue-next";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 
 const data_controller = usePage();
 const list_seksi = computed(() => data_controller.props?.list_seksi ?? []);
 const list_data = computed(() => data_controller.props?.list_data?.data ?? []);
+const nextPageUrl = ref(data_controller.props.list_data.next_page_url);
+const loading = ref(false);
+const observer = ref(null);
+const sentinel = ref(null);
 
 const search = ref("");
 const selectedFilter = ref("semua");
@@ -55,6 +59,41 @@ function selectFilter(filter) {
     selectedFilter.value = filter;
     handleSearch();
 }
+
+async function loadMore() {
+    if (!nextPageUrl.value || loading.value) return;
+    loading.value = true;
+
+    try {
+        const res = await axios.get(nextPageUrl.value);
+        list_data.value.push(...res.data.data);
+        nextPageUrl.value = res.data.next_page_url;
+    } catch (err) {
+        console.error("Gagal memuat data:", err);
+    } finally {
+        loading.value = false;
+    }
+}
+
+function createObserver() {
+    observer.value = new IntersectionObserver((entries) => {
+        const entry = entries[0];
+        if (entry.isIntersecting && !loading.value) {
+            loadMore();
+        }
+    });
+    if (sentinel.value) observer.value.observe(sentinel.value);
+}
+
+onMounted(() => {
+    createObserver();
+});
+
+onUnmounted(() => {
+    if (observer.value && sentinel.value) {
+        observer.value.unobserve(sentinel.value);
+    }
+});
 </script>
 <template>
     <Head title="Portal Data" />
@@ -126,7 +165,7 @@ function selectFilter(filter) {
                 </div>
             </section>
             <!-- Dibawah Filter  -->
-            <section class="max-w-7xl">
+            <section class="max-w-7xl pb-8">
                 <p class="text-gray-500 text-sm sm:text-base mb-6 text-center">
                     Ditemukan
                     <span class="text-green-700 font-semibold">10 data</span>
@@ -139,7 +178,7 @@ function selectFilter(filter) {
                 </p>
                 <div
                     v-if="list_data.length > 0"
-                    class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-8"
+                    class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
                 >
                     <div
                         v-for="data in list_data"
@@ -196,6 +235,22 @@ function selectFilter(filter) {
                         Coba kata kunci lain atau ubah filter pencarian.
                     </p>
                 </div>
+                <div
+                    v-if="loading"
+                    class="flex justify-center items-center py-6"
+                >
+                    <div
+                        class="w-6 h-6 border-4 border-green-800 border-t-transparent rounded-full animate-spin"
+                    ></div>
+                    <span class="ml-2 text-gray-500">Memuat data...</span>
+                </div>
+                <div
+                    v-else-if="!nextPageUrl && list_data.length > 0"
+                    class="text-center py-4 text-gray-400 italic"
+                >
+                    Semua data telah ditampilkan.
+                </div>
+                <div ref="sentinel" class="h-1"></div>
             </section>
         </div>
     </HomeLayout>
