@@ -36,8 +36,8 @@ class PortalDataController extends Controller
     {
         $slugMap = [
             'tata-usaha' => 'Sub Bagian Tata Usaha',
-            'pendidikan-madrasah' => 'Seksi Pendidikan Madrasah',
-            'bimas-islam' => 'Seksi Bimbingan Masyarakat Islam',
+            'pendidikan-madrasah' => 'Pendidikan Madrasah',
+            'bimas-islam' => 'Bimbingan Masyarakat Islam',
             'phu' => 'Penyelenggara Haji dan Umroh',
             'penzawa' => 'Penyelenggara Zakat dan Wakaf',
             'pais' => 'Pendidikan Agama Islam',
@@ -69,8 +69,8 @@ class PortalDataController extends Controller
     {
         $slugMap = [
             'tata-usaha' => 'Sub Bagian Tata Usaha',
-            'pendidikan-madrasah' => 'Seksi Pendidikan Madrasah',
-            'bimas-islam' => 'Seksi Bimbingan Masyarakat Islam',
+            'pendidikan-madrasah' => 'Pendidikan Madrasah',
+            'bimas-islam' => 'Bimbingan Masyarakat Islam',
             'phu' => 'Penyelenggara Haji dan Umroh',
             'penzawa' => 'Penyelenggara Zakat dan Wakaf',
             'pais' => 'Pendidikan Agama Islam',
@@ -99,7 +99,11 @@ class PortalDataController extends Controller
             'Home/PortalData',
             [
                 'list_seksi' => $seksi,
-                'list_data' => $data
+                'list_data' => $data,
+                'filters' => [
+                    'q' => $request->q,
+                    'seksi' => $slugSeksi ?? 'semua',
+                ]
             ]
         );
     }

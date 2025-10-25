@@ -13,9 +13,9 @@ const loading = ref(false);
 const observer = ref(null);
 const sentinel = ref(null);
 
-const search = ref("");
-const selectedFilter = ref("semua");
-const isFilterOpen = ref(false);
+const search = ref(data_controller.props.filters.q || "");
+const selectedFilter = ref(data_controller.props.filters.seksi || "semua");
+const hasSearched = ref(false);
 
 const list_slug_seksi = ref([
     { nama_seksi: "Sub Bagian Tata Usaha", slug: "tata-usaha" },
@@ -52,6 +52,9 @@ function handleSearch() {
         data: params,
         preserveState: true,
         replace: true,
+        onSuccess: () => {
+            hasSearched.value = true;
+        },
     });
 }
 
@@ -166,14 +169,21 @@ onUnmounted(() => {
             </section>
             <!-- Dibawah Filter  -->
             <section class="max-w-7xl pb-8">
-                <p class="text-gray-500 text-sm sm:text-base mb-6 text-center">
+                <p
+                    v-if="search !== '' && hasSearched"
+                    class="text-gray-500 text-sm sm:text-base mb-6 text-center"
+                >
                     Ditemukan
-                    <span class="text-green-700 font-semibold">10 data</span>
+                    <span class="text-green-700 font-semibold">{{
+                        list_data.length
+                    }}</span>
                     data untuk
-                    <span class="font-semibold">"AA"</span>
+                    <span class="font-semibold">"{{ search }}"</span>
                     <span v-if="selectedFilter !== 'semua'">
                         dalam kategori
-                        <span class="text-green-700 font-medium"> semua </span>
+                        <span class="text-green-700 font-medium"
+                            >{{ selectedFilter }}
+                        </span>
                     </span>
                 </p>
                 <div
