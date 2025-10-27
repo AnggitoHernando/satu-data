@@ -22,10 +22,21 @@ class JenisData extends Model
         'status_data',
         'file_path',
         'nama_original_file',
-        'extension_file'
+        'extension_file',
+        'status_upload',
+        'error_message_upload'
     ];
     public function seksi()
     {
         return $this->belongsTo(Seksi::class, 'seksi_id');
+    }
+    public function fields()
+    {
+        return $this->hasMany(JenisDataFields::class, 'jenis_data_id');
+    }
+
+    public function rows()
+    {
+        return $this->hasMany(JenisDataRecords::class, 'jenis_data_id');
     }
 }

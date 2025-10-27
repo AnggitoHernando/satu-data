@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\ImportJenisDataJob;
 use App\Models\JenisData;
+use App\Models\JenisDataFields;
+use App\Models\JenisDataRecords;
 use App\Models\Seksi;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
 
 class JenisDataController extends Controller
 {
@@ -112,6 +116,48 @@ class JenisDataController extends Controller
         $validated['slug'] = $count ? "{$slug}-{$count}" : $slug;
 
         $data = JenisData::create($validated);
+        // if (in_array($validated['extension_file'], ['xls', 'xlsx', 'csv'])) {
+        //     try {
+        //         $excelArray = Excel::toArray([], storage_path('app/public/' . $validated['file_path']))[0] ?? [];
+
+        //         if (!empty($excelArray)) {
+        //             // Baris pertama dianggap header (nama kolom)
+        //             $headers = $excelArray[0];
+
+        //             // Simpan ke tabel jenis_data_fields
+        //             foreach ($headers as $index => $fieldName) {
+        //                 JenisDataFields::create([
+        //                     'jenis_data_id' => $data->id,
+        //                     'nama_field' => $fieldName,
+        //                     'jenis_data' => 'varchar',
+        //                     'keterangan' => '',
+        //                     'urutan' => $index + 1,
+        //                 ]);
+        //             }
+
+        //             // Sisanya adalah data baris
+        //             $rows = array_slice($excelArray, 1);
+
+        //             foreach ($rows as $row) {
+        //                 JenisDataRecords::create([
+        //                     'jenis_data_id' => $data->id,
+        //                     'data' => json_encode($row),
+        //                 ]);
+        //             }
+        //         }
+        //     } catch (\Exception $e) {
+        //         // Kalau gagal parsing Excel, hapus data utama agar konsisten
+        //         $data->delete();
+        //         return response()->json([
+        //             'status' => 'error',
+        //             'message' => 'Ada kesalahan input data',
+        //             'errors' => [
+        //                 'file_path' => 'Gagal membaca file Excel: ' . $e->getMessage()
+        //             ]
+        //         ], 422);
+        //     }
+        // }
+        ImportJenisDataJob::dispatch($data->id);
 
         return response()->json([
             'success' => true,

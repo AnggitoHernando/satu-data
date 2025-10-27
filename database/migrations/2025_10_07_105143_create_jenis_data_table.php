@@ -20,7 +20,11 @@ return new class extends Migration
             $table->integer("tahun");
             $table->string("sumber_data");
             $table->enum('status_data', ['private', 'publik'])->default('private');
+            $table->enum('status_upload', ['pending', 'processing', 'success', 'failed'])->default('pending');
+            $table->string("error_message_upload")->nullable();
             $table->string("file_path")->nullable();
+            $table->string("nama_original_file")->nullable();
+            $table->string("extension_file");
             $table->timestamps();
         });
     }

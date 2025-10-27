@@ -33,6 +33,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/jenis-data/{jenisData}', [JenisDataController::class, 'destroy'])->name('jenis_data.destroy');
     Route::patch('/jenis-data/update/{jenisData}', [JenisDataController::class, 'update'])->name('jenis_data.update');
     Route::patch('/jenis-data/updateStatus/{jenisData}', [JenisDataController::class, 'updateStatus'])->name('jenis_data.update_status');
+    Route::get('/jenis-data/{id}/status', [JenisDataController::class, 'status'])->name('jenis-data.status_upload');
 });
 
 require __DIR__ . '/auth.php';

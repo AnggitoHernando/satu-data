@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('jenis_data_records', function (Blueprint $table) {
             $table->id();
             $table->foreignId("jenis_data_id")->constrained("jenis_data")->onUpdate("cascade")->onDelete("cascade");
-            $table->json("data");
+            $table->json("data_json");
             $table->timestamps();
         });
     }

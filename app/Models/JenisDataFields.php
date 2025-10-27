@@ -9,7 +9,14 @@ class JenisDataFields extends Model
 {
     use HasFactory;
 
-    protected $table = 'jenis_data_fields'; //
+    protected $table = 'jenis_data_fields';
+    protected $fillable = [
+        'jenis_data_id',
+        'nama_field',
+        'jenis_data',
+        'keterangan',
+        'urutan'
+    ];
     public function jenis_data()
     {
         return $this->belongsTo(JenisData::class, 'jenis_data_id');
