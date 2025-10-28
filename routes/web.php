@@ -34,6 +34,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/jenis-data/update/{jenisData}', [JenisDataController::class, 'update'])->name('jenis_data.update');
     Route::patch('/jenis-data/updateStatus/{jenisData}', [JenisDataController::class, 'updateStatus'])->name('jenis_data.update_status');
     Route::get('/jenis-data/{id}/status', [JenisDataController::class, 'status'])->name('jenis-data.status_upload');
+    Route::post('/jenis-data/{id}/retryUpload', [JenisDataController::class, 'retryUpload'])->name('jenis-data.retryUpload');
 });
 
 require __DIR__ . '/auth.php';

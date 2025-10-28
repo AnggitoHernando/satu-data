@@ -30,7 +30,7 @@ const showingNavigationDropdown = ref(false);
                                     />
                                 </Link>
                                 <span class="text-white ml-2"
-                                    >Pusat Data Kemenag Gresik</span
+                                    >Manajemen Data Terpadu Kemenag Gresik</span
                                 >
                             </div>
 

@@ -40,6 +40,9 @@ class JenisDataController extends Controller
                 'jenis_data.tahun',
                 'jenis_data.sumber_data',
                 'jenis_data.status_data',
+                'jenis_data.status_upload',
+                'jenis_data.error_message_upload',
+                'jenis_data.nama_original_file',
                 'jenis_data.file_path',
                 'jenis_data.created_at',
                 'jenis_data.updated_at',
@@ -116,48 +119,11 @@ class JenisDataController extends Controller
         $validated['slug'] = $count ? "{$slug}-{$count}" : $slug;
 
         $data = JenisData::create($validated);
-        // if (in_array($validated['extension_file'], ['xls', 'xlsx', 'csv'])) {
-        //     try {
-        //         $excelArray = Excel::toArray([], storage_path('app/public/' . $validated['file_path']))[0] ?? [];
-
-        //         if (!empty($excelArray)) {
-        //             // Baris pertama dianggap header (nama kolom)
-        //             $headers = $excelArray[0];
-
-        //             // Simpan ke tabel jenis_data_fields
-        //             foreach ($headers as $index => $fieldName) {
-        //                 JenisDataFields::create([
-        //                     'jenis_data_id' => $data->id,
-        //                     'nama_field' => $fieldName,
-        //                     'jenis_data' => 'varchar',
-        //                     'keterangan' => '',
-        //                     'urutan' => $index + 1,
-        //                 ]);
-        //             }
-
-        //             // Sisanya adalah data baris
-        //             $rows = array_slice($excelArray, 1);
-
-        //             foreach ($rows as $row) {
-        //                 JenisDataRecords::create([
-        //                     'jenis_data_id' => $data->id,
-        //                     'data' => json_encode($row),
-        //                 ]);
-        //             }
-        //         }
-        //     } catch (\Exception $e) {
-        //         // Kalau gagal parsing Excel, hapus data utama agar konsisten
-        //         $data->delete();
-        //         return response()->json([
-        //             'status' => 'error',
-        //             'message' => 'Ada kesalahan input data',
-        //             'errors' => [
-        //                 'file_path' => 'Gagal membaca file Excel: ' . $e->getMessage()
-        //             ]
-        //         ], 422);
-        //     }
-        // }
-        ImportJenisDataJob::dispatch($data->id);
+        if (in_array($validated['extension_file'], ['xls', 'xlsx', 'csv'])) {
+            ImportJenisDataJob::dispatch($data->id);
+        } else {
+            $data->update(['status_upload' => 'success']);
+        }
 
         return response()->json([
             'success' => true,
@@ -205,6 +171,9 @@ class JenisDataController extends Controller
             $validated['file_path'] = $path;
             $validated['nama_original_file'] = $originalName;
             $validated['extension_file'] = $extension;
+            if (in_array($extension, ['xls', 'xlsx', 'csv'])) {
+                $validated["status_upload"] = "pending";
+            }
         } else {
             unset($validated['file_path']);
         }
@@ -217,7 +186,7 @@ class JenisDataController extends Controller
         $data = $jenisData->update($validated);
         return response()->json([
             'success' => true,
-            'data' => $data,
+            'data' => $jenisData,
             'message' => 'Data berhasil Diupdate!'
         ]);
     }
@@ -228,5 +197,32 @@ class JenisDataController extends Controller
         ]);
 
         return response()->json(['success' => true]);
+    }
+
+    public function retryUpload($id)
+    {
+        $data = JenisData::findOrFail($id);
+
+        if (!in_array($data->status_upload, ['failed', 'pending'])) {
+            return response()->json(['message' => 'Data tidak bisa diulang'], 400);
+        }
+
+        // Reset status dan rows
+        $data->update([
+            'status_upload' => 'processing',
+            'error_message_upload' => null,
+        ]);
+
+        // Hapus records lama jika mau import ulang
+        $data->rows()->delete();
+        $data->fields()->delete();
+
+        // Dispatch job lagi
+        ImportJenisDataJob::dispatch($data->id);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data berhasil Diupload!'
+        ]);
     }
 }

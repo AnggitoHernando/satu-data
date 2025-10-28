@@ -1,9 +1,15 @@
 <script setup>
-import { PencilLine, Trash, Globe, GlobeLock } from "lucide-vue-next";
+import {
+    PencilLine,
+    Trash,
+    Globe,
+    GlobeLock,
+    RotateCcw,
+} from "lucide-vue-next";
 const props = defineProps({
     item: Object,
 });
-const emit = defineEmits(["edit", "delete", "toggleStatus"]);
+const emit = defineEmits(["edit", "delete", "toggleStatus", "retryUpload"]);
 </script>
 
 <template>
@@ -43,6 +49,19 @@ const emit = defineEmits(["edit", "delete", "toggleStatus"]);
         >
             <component
                 :is="GlobeLock"
+                class="w-5 h-5 text-white transition duration-75 dark:text-white group-hover:text-white dark:group-hover:text-yellow-400"
+            />
+        </button>
+        <button
+            v-if="
+                item.status_upload !== 'success' &&
+                item.status_upload !== 'processing'
+            "
+            class="bg-green-500 text-white px-2 py-1 rounded"
+            @click="emit('retryUpload', item)"
+        >
+            <component
+                :is="RotateCcw"
                 class="w-5 h-5 text-white transition duration-75 dark:text-white group-hover:text-white dark:group-hover:text-yellow-400"
             />
         </button>

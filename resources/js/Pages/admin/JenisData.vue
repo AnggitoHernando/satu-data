@@ -67,13 +67,12 @@ const handleFileChange = (event) => {
 };
 
 const columns = [
-    { header: "Nama Data", key: "judul_data" },
-    { header: "Seksi", key: "nama_seksi" },
-    { header: "Deskripsi", key: "deskripsi" },
-    { header: "Tahun", key: "tahun" },
-    { header: "Status Data", key: "status_data" },
-    { header: "File", key: "file_path" },
-    { header: "Aksi", key: "actions" },
+    { header: "Nama Data", key: "judul_data", width: "25%" },
+    { header: "Deskripsi", key: "deskripsi", width: "10%" },
+    { header: "Status Data", key: "status_data", width: "10%" },
+    { header: "Status Upload", key: "status_upload", width: "20%" },
+    { header: "File", key: "file_path", width: "15%" },
+    { header: "Aksi", key: "actions", width: "20%" },
 ];
 // Fetch API
 const fetchData = async () => {
@@ -177,6 +176,18 @@ const toggleStatus = async (item, newStatus) => {
     }
 };
 
+// fungsi retry
+const retryUpload = async (item) => {
+    try {
+        await axios.post(route("jenis-data.retryUpload", item.id));
+        await fetchData();
+        Swal.fire("Berhasil!", `Upload Berhasil`, "success");
+    } catch (err) {
+        Swal.fire("Gagal!", "Tidak dapat Mengupload", "error");
+        console.error(err);
+    }
+};
+
 //Fungsi Save
 const submit = async () => {
     try {
@@ -210,6 +221,12 @@ const submit = async () => {
             isOpen.value = false;
             Swal.fire("Berhasil!", res.data.message, "success");
             await fetchData();
+            if (res.data.data.status_upload === "pending") {
+                await axios.post(
+                    route("jenis-data.retryUpload", res.data.data.id)
+                );
+                await fetchData();
+            }
         }
     } catch (err) {
         console.log(err);
@@ -409,13 +426,17 @@ onMounted(fetchData);
                             class="ml-2 mt-1 px-2 py-1 mb-2 rounded-md"
                         />
 
-                        <table class="table-auto border border-gray-300 w-full">
+                        <table
+                            class="table-fixed border border-gray-300 w-full"
+                        >
                             <thead>
                                 <tr>
                                     <th
                                         v-for="col in columns"
                                         :key="col.key"
                                         class="border px-4 py-2"
+                                        :class="col.class"
+                                        :style="{ width: col.width }"
                                     >
                                         {{ col.header }}
                                     </th>
@@ -444,9 +465,24 @@ onMounted(fetchData);
                                     :key="row.id"
                                     class="hover:bg-gray-100"
                                 >
-                                    <td class="p-2">{{ row.judul_data }}</td>
-                                    <td class="p-2">{{ row.nama_seksi }}</td>
-                                    <td class="p-2 text-center">
+                                    <td
+                                        class="border border-gray-300 p-2 capitalize"
+                                    >
+                                        <span class="block font-semibold">{{
+                                            row.judul_data
+                                        }}</span>
+                                        <span
+                                            class="block text-gray-500 text-sm"
+                                            >{{ row.nama_seksi }} ·
+                                            <span
+                                                class="normal-case text-gray-400"
+                                                >{{ row.tahun }}</span
+                                            ></span
+                                        >
+                                    </td>
+                                    <td
+                                        class="border border-gray-300 p-2 text-center"
+                                    >
                                         <span
                                             v-if="!row.deskripsi"
                                             class="text-gray-400"
@@ -464,33 +500,75 @@ onMounted(fetchData);
                                             Lihat Deskripsi
                                         </a>
                                     </td>
-                                    <td class="p-2 text-center">
-                                        {{ row.tahun }}
-                                    </td>
-                                    <td class="p-2 text-center capitalize">
+                                    <td
+                                        class="border border-gray-300 p-2 text-center capitalize"
+                                    >
                                         {{ row.status_data }}
                                     </td>
-                                    <td class="p-2">
+
+                                    <td
+                                        class="border border-gray-300 p-2 text-center align-middle"
+                                    >
+                                        <div class="flex flex-col items-center">
+                                            <span
+                                                class="font-semibold capitalize text-gray-800"
+                                                :class="{
+                                                    'text-green-600':
+                                                        row.status_upload ===
+                                                        'success',
+                                                    'text-yellow-600':
+                                                        row.status_upload ===
+                                                        'pending',
+                                                    'text-red-500':
+                                                        row.status_upload ===
+                                                        'failed',
+                                                }"
+                                            >
+                                                {{ row.status_upload }}
+                                            </span>
+                                            <span
+                                                v-if="row.error_message_upload"
+                                                class="text-xs text-red-500 italic truncate max-w-40"
+                                            >
+                                                {{ row.error_message_upload }}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td class="border border-gray-300 p-2">
                                         <span
                                             v-if="!row.file_path"
                                             class="text-gray-400"
                                             >Tidak ada file</span
                                         >
-                                        <a
+
+                                        <div
                                             v-else
-                                            :href="`/storage/${row.file_path}`"
-                                            target="_blank"
-                                            class="text-blue-600 hover:underline"
+                                            class="flex flex-col items-center"
                                         >
-                                            Lihat File
-                                        </a>
+                                            <span>
+                                                <a
+                                                    :href="`/storage/${row.file_path}`"
+                                                    target="_blank"
+                                                    class="text-blue-600 hover:underline"
+                                                >
+                                                    Lihat File
+                                                </a>
+                                            </span>
+                                            <span
+                                                class="text-xs text-black-500 italic truncate max-w-20"
+                                                >({{
+                                                    row.nama_original_file
+                                                }})</span
+                                            >
+                                        </div>
                                     </td>
-                                    <td class="p-2">
+                                    <td class="border border-gray-300 p-2">
                                         <ActionButtons
                                             :item="row"
                                             @edit="openModal"
                                             @delete="deleteItem"
                                             @toggleStatus="toggleStatus"
+                                            @retryUpload="retryUpload"
                                         />
                                     </td>
                                 </tr>

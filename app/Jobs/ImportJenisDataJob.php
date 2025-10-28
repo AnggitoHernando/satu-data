@@ -26,7 +26,7 @@ class ImportJenisDataJob implements ShouldQueue
     public function __construct($jenisDataId)
     {
         $this->jenisDataId = $jenisDataId;
-        Log::info("[Job] Constructed with ID: {$jenisDataId}");
+        // Log::info("[Job] Constructed with ID: {$jenisDataId}");
     }
 
     /**
