@@ -3,7 +3,8 @@ import HomeLayout from "@/Layouts/HomeLayout.vue";
 import { Head, Link, router, usePage } from "@inertiajs/vue3";
 import { Search, Database } from "lucide-vue-next";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
-import { ref, computed, onMounted, onUnmounted } from "vue";
+import { ref, computed, onMounted, onUnmounted, watch, watchEffect } from "vue";
+import ModalHeadnessUI from "@/Components/ModalHeadnessUI.vue";
 
 const data_controller = usePage();
 const list_seksi = computed(() => data_controller.props?.list_seksi ?? []);
@@ -12,10 +13,20 @@ const nextPageUrl = ref(data_controller.props.list_data.next_page_url);
 const loading = ref(false);
 const observer = ref(null);
 const sentinel = ref(null);
+const openModal = ref(false);
+const dataDetail = ref([]);
+const fieldsDetail = ref([]);
+const loadingDetail = ref(false);
 
 const search = ref(data_controller.props.filters.q || "");
 const selectedFilter = ref(data_controller.props.filters.seksi || "semua");
 const hasSearched = ref(false);
+const total = ref(0);
+const page = ref(1);
+const perPage = ref(10);
+const sortBy = ref("jenis_data.id");
+const sortDir = ref("desc");
+const selectedId = ref(null);
 
 const list_slug_seksi = ref([
     { nama_seksi: "Sub Bagian Tata Usaha", slug: "tata-usaha" },
@@ -33,6 +44,38 @@ const list_slug_seksi = ref([
         slug: "semua",
     },
 ]);
+const openDetail = async (data) => {
+    selectedId.value = data.id;
+    page.value = 1;
+    openModal.value = true;
+    fetch_detail();
+};
+
+const fetch_detail = async () => {
+    if (!selectedId.value) return;
+    loadingDetail.value = true;
+    try {
+        const res = await axios.get("/api/api-detail-data", {
+            params: {
+                id: selectedId.value,
+                search: data_controller.props.filters.q,
+                page: page.value,
+                perPage: perPage.value,
+                sortBy: sortBy.value,
+                sortDir: sortDir.value,
+            },
+        });
+        fieldsDetail.value = res.data.fields;
+        dataDetail.value = [...res.data.records.data.map((r) => r.data_json)];
+        loadingDetail.value = true;
+        total.value = res.data.records.total;
+    } catch (error) {
+        console.error(error);
+        Swal.fire("Error", "Gagal load detail data", "error");
+    } finally {
+        loadingDetail.value = false;
+    }
+};
 
 function handleSearch() {
     const params = {};
@@ -52,8 +95,9 @@ function handleSearch() {
         data: params,
         preserveState: true,
         replace: true,
-        onSuccess: () => {
+        onSuccess: (res) => {
             hasSearched.value = true;
+            nextPageUrl.value = res.props.list_data.next_page_url;
         },
     });
 }
@@ -66,10 +110,18 @@ function selectFilter(filter) {
 async function loadMore() {
     if (!nextPageUrl.value || loading.value) return;
     loading.value = true;
-
     try {
         const res = await axios.get(nextPageUrl.value);
-        list_data.value.push(...res.data.data);
+        res.data.data.forEach((newItem) => {
+            const index = list_data.value.findIndex(
+                (item) => item.id === newItem.id
+            );
+            if (index !== -1) {
+                list_data.value[index] = newItem; // update
+            } else {
+                list_data.value.push(newItem); // tambah
+            }
+        });
         nextPageUrl.value = res.data.next_page_url;
     } catch (err) {
         console.error("Gagal memuat data:", err);
@@ -79,10 +131,10 @@ async function loadMore() {
 }
 
 function createObserver() {
-    observer.value = new IntersectionObserver((entries) => {
+    observer.value = new IntersectionObserver(async (entries) => {
         const entry = entries[0];
         if (entry.isIntersecting && !loading.value) {
-            loadMore();
+            await loadMore();
         }
     });
     if (sentinel.value) observer.value.observe(sentinel.value);
@@ -95,6 +147,16 @@ onMounted(() => {
 onUnmounted(() => {
     if (observer.value && sentinel.value) {
         observer.value.unobserve(sentinel.value);
+    }
+});
+watch([page, perPage, search, sortBy, sortDir], fetch_detail);
+watchEffect(() => {
+    if (search !== "") {
+        hasSearched.value = true;
+    }
+    if (sentinel.value) {
+        if (observer.value) observer.value.disconnect();
+        createObserver();
     }
 });
 </script>
@@ -170,7 +232,7 @@ onUnmounted(() => {
             <!-- Dibawah Filter  -->
             <section class="max-w-7xl pb-8">
                 <p
-                    v-if="search !== '' && hasSearched"
+                    v-if="hasSearched"
                     class="text-gray-500 text-sm sm:text-base mb-6 text-center"
                 >
                     Ditemukan
@@ -178,7 +240,9 @@ onUnmounted(() => {
                         list_data.length
                     }}</span>
                     data untuk
-                    <span class="font-semibold">"{{ search }}"</span>
+                    <span class="font-semibold"
+                        >"{{ data_controller.props.filters.q }}"</span
+                    >
                     <span v-if="selectedFilter !== 'semua'">
                         dalam kategori
                         <span class="text-green-700 font-medium"
@@ -213,7 +277,11 @@ onUnmounted(() => {
                                 <p
                                     class="text-xs uppercase text-gray-400 font-medium mt-1"
                                 >
-                                    {{ data.seksi?.nama_seksi }} ·
+                                    {{
+                                        data.nama_seksi ||
+                                        data.seksi?.nama_seksi
+                                    }}
+                                    ·
                                     <span class="normal-case text-gray-400">{{
                                         data.tahun
                                     }}</span>
@@ -226,7 +294,28 @@ onUnmounted(() => {
                         >
                             {{ data.deskripsi }}
                         </p>
-                        <div class="mt-4 flex justify-end items-center">
+                        <div class="mt-4 flex items-center justify-between">
+                            <div
+                                v-if="data.jumlah_data > 0 && hasSearched"
+                                @click="openDetail(data)"
+                                class="flex items-center gap-2 bg-green-50 border border-green-100 text-green-700 px-3 py-1.5 rounded-lg text-xs sm:text-sm"
+                            >
+                                <Database class="w-4 h-4" />
+                                <span class="font-medium">
+                                    {{ data.jumlah_data }} hasil untuk
+                                    <span class="italic text-green-800"
+                                        >"{{
+                                            data_controller.props.filters.q
+                                        }}"</span
+                                    >
+                                </span>
+                                <button
+                                    class="text-green-700 hover:text-green-800 underline font-medium"
+                                >
+                                    Lihat
+                                </button>
+                            </div>
+
                             <button
                                 class="text-sm font-medium text-green-700 hover:text-green-800"
                             >
@@ -262,6 +351,76 @@ onUnmounted(() => {
                 </div>
                 <div ref="sentinel" class="h-1"></div>
             </section>
+            <ModalHeadnessUI :open-modal="openModal" @close="openModal = false">
+                <div
+                    v-if="loadingDetail"
+                    class="flex flex-col items-center justify-center py-10 space-y-3"
+                >
+                    <div
+                        class="w-10 h-10 border-4 border-green-600 border-t-transparent rounded-full animate-spin"
+                    ></div>
+
+                    <p class="text-gray-500 text-sm font-medium">
+                        Sedang mengambil data dari server
+                    </p>
+                </div>
+                <div class="w-full overflow-x-auto">
+                    <table class="border border-gray-300 w-full">
+                        <thead>
+                            <tr>
+                                <th
+                                    v-for="(col, index) in fieldsDetail"
+                                    :key="index"
+                                    class="border px-4 py-2 capitalize"
+                                >
+                                    {{ col }}
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr
+                                v-for="(row, index) in dataDetail"
+                                :key="index"
+                                class="hover:bg-gray-100"
+                            >
+                                <td
+                                    v-for="(field, j) in fieldsDetail"
+                                    :key="j"
+                                    class="px-3 py-2 border border-gray-300 text-gray-600"
+                                >
+                                    {{ row[field] || "" }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Pagination -->
+                    <div
+                        class="ml-3 mr-3 mt-4 mb-3 flex justify-between items-center"
+                    >
+                        <button
+                            @click="page > 1 ? page-- : null"
+                            :disabled="page === 1"
+                        >
+                            Prev
+                        </button>
+                        <span
+                            >Page {{ page }} of
+                            {{ Math.ceil(total / perPage) }}</span
+                        >
+                        <button
+                            @click="
+                                page < Math.ceil(total / perPage)
+                                    ? page++
+                                    : null
+                            "
+                            :disabled="page >= Math.ceil(total / perPage)"
+                        >
+                            Next
+                        </button>
+                    </div>
+                </div>
+            </ModalHeadnessUI>
         </div>
     </HomeLayout>
 </template>

@@ -9,3 +9,4 @@ Route::get('/ping', function () {
 });
 Route::get('/jenis_data_all', [JenisDataController::class, 'apiIndex']);
 Route::get('/portal-data', [PortalDataController::class, 'apiIndex']);
+Route::get('/api-detail-data', [PortalDataController::class, 'apiDetail']);
