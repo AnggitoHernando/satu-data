@@ -96,7 +96,14 @@ function handleSearch() {
         preserveState: true,
         replace: true,
         onSuccess: (res) => {
-            hasSearched.value = true;
+            if (
+                data_controller.props.filters.q === "" ||
+                data_controller.props.filters.q === null
+            ) {
+                hasSearched.value = false;
+            } else {
+                hasSearched.value = true;
+            }
             nextPageUrl.value = res.props.list_data.next_page_url;
         },
     });
@@ -151,8 +158,9 @@ onUnmounted(() => {
 });
 watch([page, perPage, search, sortBy, sortDir], fetch_detail);
 watchEffect(() => {
-    if (search !== "") {
-        hasSearched.value = true;
+    if (search.value === "") {
+        hasSearched.value = false;
+        handleSearch();
     }
     if (sentinel.value) {
         if (observer.value) observer.value.disconnect();
