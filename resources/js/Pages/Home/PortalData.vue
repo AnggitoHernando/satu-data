@@ -17,6 +17,7 @@ const openModal = ref(false);
 const dataDetail = ref([]);
 const fieldsDetail = ref([]);
 const loadingDetail = ref(false);
+const inputSearch = ref(null);
 
 const search = ref(data_controller.props.filters.q || "");
 const selectedFilter = ref(data_controller.props.filters.seksi || "semua");
@@ -105,6 +106,7 @@ function handleSearch() {
                 hasSearched.value = true;
             }
             nextPageUrl.value = res.props.list_data.next_page_url;
+            inputSearch.value.focus();
         },
     });
 }
@@ -113,6 +115,18 @@ function selectFilter(filter) {
     selectedFilter.value = filter;
     handleSearch();
 }
+
+const gotoDetail = (row) => {
+    let intSlug = `${row.slug}-${row.id}`;
+    router.get(
+        route("PortalData.detail", { slug: intSlug }),
+        {},
+        {
+            preserveScroll: false,
+            preserveState: true,
+        }
+    );
+};
 
 async function loadMore() {
     if (!nextPageUrl.value || loading.value) return;
@@ -149,6 +163,9 @@ function createObserver() {
 
 onMounted(() => {
     createObserver();
+    if (search.value !== "" && hasSearched.value === false) {
+        hasSearched.value = true;
+    }
 });
 
 onUnmounted(() => {
@@ -158,7 +175,7 @@ onUnmounted(() => {
 });
 watch([page, perPage, search, sortBy, sortDir], fetch_detail);
 watchEffect(() => {
-    if (search.value === "") {
+    if (search.value === "" && hasSearched.value === true) {
         hasSearched.value = false;
         handleSearch();
     }
@@ -194,6 +211,8 @@ watchEffect(() => {
                             class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5"
                         />
                         <input
+                            id="input-search"
+                            ref="inputSearch"
                             type="text"
                             v-model="search"
                             placeholder="Cari data..."
@@ -267,7 +286,10 @@ watchEffect(() => {
                         :key="data.id"
                         class="group bg-white/90 backdrop-blur-sm border border-gray-200 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 p-5 cursor-pointer hover:-translate-y-1"
                     >
-                        <div class="flex items-start gap-3 mb-3">
+                        <div
+                            class="flex items-start gap-3 mb-3"
+                            @click="gotoDetail(data)"
+                        >
                             <span
                                 class="absolute top-3 right-3 text-xs font-semibold px-2 py-1 rounded-md uppercase bg-green-50 text-green-700 border border-green-200"
                             >
@@ -325,6 +347,7 @@ watchEffect(() => {
                             </div>
 
                             <button
+                                @click="gotoDetail(data)"
                                 class="text-sm font-medium text-green-700 hover:text-green-800"
                             >
                                 Lihat Detail →

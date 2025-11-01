@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
+use Illuminate\Support\Str;
+use PhpParser\Node\Stmt\Return_;
 
 class PortalDataController extends Controller
 {
@@ -137,6 +139,7 @@ class PortalDataController extends Controller
             ->select([
                 'a.id',
                 DB::raw('MAX(a.tahun) as tahun'),
+                DB::raw('MAX(a.slug) as slug'),
                 DB::raw('MAX(a.judul_data) as judul_data'),
                 DB::raw('MAX(a.deskripsi) as deskripsi'),
                 DB::raw('MAX(a.sumber_data) as sumber_data'),
@@ -153,7 +156,7 @@ class PortalDataController extends Controller
             })
             ->groupBy('a.id')
             ->orderByDesc('a.created_at');
-        Log::info('Generated SQL:', [$query->toSql()]);
+        // Log::info('Generated SQL:', [$query->toSql()]);
         // dd($query->toSql(), $query->getBindings());
         // dd($slugSeksi);
         return $query;
@@ -186,12 +189,39 @@ class PortalDataController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function detail($slug)
     {
-        //
+        $id = (int) Str::afterLast($slug, '-');
+        $query = JenisData::with('seksi:id,nama_seksi')
+            ->where('status_data', 'publik')
+            ->where('id', $id);
+        $data = $query->firstOrFail();
+        return Inertia::render('Home/Detail', [
+            'data' => $data,
+            'api_url' => route('api_portal_data', ['slug' => $data->slug . "-" . $data->id]),
+        ]);
+    }
+
+    public function api_portal_data($slug)
+    {
+        $id = (int) Str::afterLast($slug, '-');
+        // $fields = DB::table('jenis_data_fields')
+        //     ->where('jenis_data_id', $id)
+        //     ->orderBy('urutan')
+        //     ->pluck('nama_field');
+
+        $records = DB::table('jenis_data_records')
+            ->where('jenis_data_id', $id)
+            ->get()
+            ->map(function ($r) {
+                $r->data_json = json_decode($r->data_json, true);
+                return $r;
+            });
+
+        return response()->json([
+            // 'fields' => $fields,
+            'records' => $records,
+        ]);
     }
 
     /**

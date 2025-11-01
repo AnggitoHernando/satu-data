@@ -16,6 +16,26 @@ import Swal from "sweetalert2";
 window.Toastify = Toastify;
 window.Swal = Swal;
 
+window.toast = (text, type = "info") => {
+    const colors = {
+        success: "#4CAF50",
+        error: "#f44336",
+        info: "#2196F3",
+        warning: "#FFC107",
+    };
+
+    Toastify({
+        text,
+        duration: 3000,
+        gravity: "top",
+        position: "right",
+        close: true,
+        style: {
+            background: colors[type] || colors.info,
+        },
+    }).showToast();
+};
+
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     resolve: (name) =>
