@@ -18,7 +18,7 @@ class UsersTableSeeder extends Seeder
             'name' => 'Admin',
             'username' => 'administrator',
             'password' => Hash::make('123'), // enkripsi password
-            'role' => 'admin',
+            'role' => 'super-admin',
             'created_at' => now(),
             'updated_at' => now(),
         ]);

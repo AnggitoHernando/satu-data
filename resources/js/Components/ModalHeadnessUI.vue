@@ -27,7 +27,7 @@ defineEmits(["close"]);
                     class="fixed inset-0 bg-black bg-opacity-20 backdrop-blur-md z-40"
                 />
 
-                <TransitionChild
+                <!-- <TransitionChild
                     enter="ease-out duration-300"
                     enter-from="opacity-0 scale-95"
                     enter-to="opacity-100 scale-100"
@@ -35,7 +35,7 @@ defineEmits(["close"]);
                     leave-from="opacity-100 scale-100"
                     leave-to="opacity-0 scale-95"
                 >
-                </TransitionChild>
+                </TransitionChild> -->
                 <DialogPanel
                     class="bg-white rounded-lg shadow-lg w-full max-w-3xl p-6 z-50 relative"
                 >

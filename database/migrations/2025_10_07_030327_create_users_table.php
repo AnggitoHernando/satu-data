@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('seksi_id')->nullable();
+            $table->foreign('seksi_id')->references('id')->on('seksi')->onDelete('set null');
             $table->string('name');
             $table->string('username')->unique();
             $table->string('password');
-            $table->enum('role', ['admin', 'super-admin', 'operator'])->default('operator');
-            $table->integer('id_seksi')->nullable();
+            $table->enum('role', ['admin', 'super-admin', 'operator', 'user'])->default('user');
             $table->rememberToken();
             $table->timestamps();
         });

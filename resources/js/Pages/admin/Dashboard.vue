@@ -1,6 +1,7 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Head } from "@inertiajs/vue3";
+import { Head, Link } from "@inertiajs/vue3";
+import PrimaryButtonAdmin from "@/Components/PrimaryButtonAdmin.vue";
 </script>
 
 <template>
@@ -23,6 +24,9 @@ import { Head } from "@inertiajs/vue3";
                         Login!
                     </div>
                 </div>
+                <Link :href="route('Beranda')">
+                    <PrimaryButtonAdmin> Beranda</PrimaryButtonAdmin>
+                </Link>
             </div>
         </div>
     </AuthenticatedLayout>

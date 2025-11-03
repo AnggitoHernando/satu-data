@@ -33,12 +33,18 @@ const list_slug_seksi = ref([
     { nama_seksi: "Sub Bagian Tata Usaha", slug: "tata-usaha" },
     { nama_seksi: "Pendidikan Madrasah", slug: "pendidikan-madrasah" },
     { nama_seksi: "Bimbingan Masyarakat Islam", slug: "bimas-islam" },
-    { nama_seksi: "Penyelenggara Haji dan Umroh", slug: "phu" },
-    { nama_seksi: "Penyelenggara Zakat dan Wakaf", slug: "penzawa" },
-    { nama_seksi: "Pendidikan Agama Islam", slug: "pais" },
+    {
+        nama_seksi: "Penyelenggara Haji dan Umroh",
+        slug: "penyelenggara-haji-dan-umroh",
+    },
+    {
+        nama_seksi: "Penyelenggara Zakat dan Wakaf",
+        slug: "penyelenggara-zakat-dan-wakaf",
+    },
+    { nama_seksi: "Pendidikan Agama Islam", slug: "pendidikan-agama-islam" },
     {
         nama_seksi: "Pendidikan Diniyah dan Pondok Pesantren",
-        slug: "pd-pontren",
+        slug: "pendidikan-diniyah-dan-pondok-pesantren",
     },
     {
         nama_seksi: "semua",

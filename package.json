@@ -18,7 +18,7 @@
         "vue": "^3.4.0"
     },
     "dependencies": {
-        "@headlessui/vue": "^1.7.23",
+        "@headlessui/vue": "^1.7.14",
         "@tanstack/vue-table": "^8.21.3",
         "lucide-vue-next": "^0.545.0",
         "sweetalert2": "^11.26.0",

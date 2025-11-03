@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\ImportJenisDataJob;
+use App\Jobs\ImportJenisDataJobDispatchSync;
 use App\Models\JenisData;
 use App\Models\JenisDataFields;
 use App\Models\JenisDataRecords;
@@ -173,6 +174,9 @@ class JenisDataController extends Controller
             $validated['extension_file'] = $extension;
             if (in_array($extension, ['xls', 'xlsx', 'csv'])) {
                 $validated["status_upload"] = "pending";
+            } else {
+                $jenisData->rows()->delete();
+                $jenisData->fields()->delete();
             }
         } else {
             unset($validated['file_path']);
@@ -218,7 +222,7 @@ class JenisDataController extends Controller
         $data->fields()->delete();
 
         // Dispatch job lagi
-        ImportJenisDataJob::dispatch($data->id);
+        ImportJenisDataJobDispatchSync::dispatchSync($data->id);
 
         return response()->json([
             'success' => true,
