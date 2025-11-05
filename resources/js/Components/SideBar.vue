@@ -1,6 +1,6 @@
 <script setup>
 import SidebarLink from "./SidebarLink.vue";
-import { LayoutDashboard, Database } from "lucide-vue-next";
+import { LayoutDashboard, Database, Users } from "lucide-vue-next";
 </script>
 <template>
     <aside
@@ -27,6 +27,14 @@ import { LayoutDashboard, Database } from "lucide-vue-next";
                         :logo="Database"
                         value="Jenis Data"
                         :active="$page.url === '/jenis-data'"
+                    ></SidebarLink>
+                </li>
+                <li>
+                    <SidebarLink
+                        :href="route('users.show')"
+                        :logo="Users"
+                        value="Users"
+                        :active="$page.url === '/users'"
                     ></SidebarLink>
                 </li>
             </ul>

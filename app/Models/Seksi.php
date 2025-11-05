@@ -14,4 +14,10 @@ class Seksi extends Model
     {
         return $this->hasMany(JenisData::class, 'seksi_id');
     }
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'role_user_seksi')
+            ->withPivot('role')
+            ->withTimestamps();
+    }
 }

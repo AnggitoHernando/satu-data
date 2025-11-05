@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\JenisDataController;
 use App\Http\Controllers\PortalDataController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/ping', function () {
@@ -10,3 +11,4 @@ Route::get('/ping', function () {
 Route::get('/jenis_data_all', [JenisDataController::class, 'apiIndex']);
 Route::get('/portal-data', [PortalDataController::class, 'apiIndex']);
 Route::get('/api-detail-data', [PortalDataController::class, 'apiDetail']);
+Route::get('/users-all', [UserController::class, 'apiIndex']);

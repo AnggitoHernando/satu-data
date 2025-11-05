@@ -98,15 +98,15 @@ const fetchData = async () => {
 };
 
 // Delete data
-const deleteItem = async (id, nama) => {
+const deleteItem = async (item) => {
     const confirm = await Swal.fire({
-        title: `Apakah Kamu Ingin Menghapus Data "${nama}"?`,
+        title: `Apakah Kamu Ingin Menghapus Data "${item.judul_data}"?`,
         icon: "warning",
         showCancelButton: true,
     });
     if (confirm.isConfirmed) {
         const confirm = await Swal.fire({
-            title: `Apakah kamu Yakin Menghapus Data "${nama}" ini?`,
+            title: `Apakah kamu Yakin Menghapus Data "${item.judul_data}" ini?`,
             icon: "warning",
             showCancelButton: true,
             confirmButtonText: "Ya, hapus",
@@ -114,7 +114,7 @@ const deleteItem = async (id, nama) => {
         });
 
         if (confirm.isConfirmed) {
-            router.delete(route("jenis_data.destroy", id), {
+            router.delete(route("jenis_data.destroy", item.id), {
                 onSuccess: async () => {
                     await fetchData();
                     Swal.fire("Berhasil!", "Data telah dihapus.", "success");
