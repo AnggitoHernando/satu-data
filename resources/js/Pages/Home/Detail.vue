@@ -50,7 +50,7 @@ const copyLink = async () => {
 
 const copyApi = async () => {
     try {
-        await navigator.clipboard.writeText(apiUrl);
+        await navigator.clipboard.writeText(apiUrl.value);
         toast("Link Berhasil Disalin", "success");
     } catch {
         toast("Link Gagal disalin", "error");

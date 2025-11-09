@@ -1,49 +1,46 @@
 <script setup>
 import HomeLayout from "@/Layouts/HomeLayout.vue";
-import { Head, Link, router } from "@inertiajs/vue3";
+import { Head, Link, router, usePage } from "@inertiajs/vue3";
 import { Search } from "lucide-vue-next";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import subagtu from "@assets/icon/subbag1.svg";
-import haji from "@assets/icon/haji1.svg";
-import bimas from "@assets/icon/bimas.svg";
-import pais from "@assets/icon/pais.svg";
-import pdpontren from "@assets/icon/pdpontren.svg";
-import pendma from "@assets/icon/pendma1.svg";
-import zawa from "@assets/icon/zawa.svg";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 
-const list_seksi = [
-    { nama: "SUBBAG TU", desc: "Sub Bagian Tata Usaha", img: subagtu },
-    { nama: "PENDMA", desc: "Pendidikan Madrasah", img: pendma },
-    { nama: "PHU", desc: "Penyelenggara Haji dan Umroh", img: haji },
-    { nama: "BIMAS", desc: "Bimbingan Masyarakat Islam", img: bimas },
-    { nama: "PAIS", desc: "Pendidikan Agama Islam", img: pais },
-    {
-        nama: "PD-PONTREN",
-        desc: "Pendidikan Diniyah dan Pondok Pesantren",
-        img: pdpontren,
-    },
-    { nama: "PENZAWA", desc: "Penyelenggara Zakat dan Wakaf", img: zawa },
-];
+const page = usePage();
+const list_seksi = computed(() => page.props.list_seksi || []);
 
+console.log();
 const stats = [
-    { label: "Data", value: 238 },
-    { label: "Seksi", value: 7 },
-    { label: "Publikasi Dokumen", value: 5 },
+    { label: "Data", value: page.props.statistik.jumlah_dokumen },
+    { label: "Seksi", value: page.props.statistik.jumlah_seksi },
+    {
+        label: "Dokumen Publik",
+        value: page.props.statistik.jumlah_dokumen_publik,
+    },
 ];
 
 const search = ref("");
+const seksi = ref("");
+function selectSeksi(filter) {
+    seksi.value = filter;
+    handleSearch();
+}
 function handleSearch() {
+    const params = {};
     if (search.value.trim() !== "") {
-        router.visit(route("PortalData.search"), {
-            data: { q: search.value },
-        });
+        params.q = search.value.trim();
     }
+    if (seksi.value !== "") {
+        params.seksi = seksi.value;
+    }
+
+    router.visit(route("PortalData.search"), {
+        data: params,
+    });
 }
 </script>
 <template>
@@ -108,8 +105,9 @@ function handleSearch() {
                 >
                     <swiper-slide
                         class="bg-gray-200 rounded-xl"
-                        v-for="(seksi, index) in list_seksi"
-                        :key="index"
+                        v-for="seksi in list_seksi"
+                        :key="seksi.id"
+                        @click="selectSeksi(seksi.slug)"
                     >
                         <div
                             class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300 cursor-pointer flex flex-col items-center justify-between h-[15rem] sm:h-[15.5rem]"
@@ -118,8 +116,8 @@ function handleSearch() {
                                 class="h-1/2 flex mt-2 items-center justify-center w-full bg-gray-50"
                             >
                                 <img
-                                    :src="seksi.img"
-                                    :alt="seksi.nama"
+                                    :src="`/icon/${seksi.icon_seksi}`"
+                                    :alt="seksi.nama_seksi"
                                     class="object-contain w-2/3 sm:w-1/2 h-full"
                                 />
                             </div>
@@ -129,12 +127,12 @@ function handleSearch() {
                                 <h3
                                     class="text-base sm:text-lg font-semibold text-gray-800"
                                 >
-                                    {{ seksi.nama }}
+                                    {{ seksi.deskripsi_seksi }}
                                 </h3>
                                 <p
                                     class="text-gray-600 text-xs sm:text-sm mt-1"
                                 >
-                                    {{ seksi.desc }}
+                                    {{ seksi.nama_seksi }}
                                 </p>
                             </div>
                         </div>

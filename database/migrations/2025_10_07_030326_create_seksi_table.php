@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('seksi', function (Blueprint $table) {
             $table->id();
             $table->string('nama_seksi');
+            $table->string('deskripsi_seksi')->nullable();
             $table->string('slug')->nullable();
             $table->string('icon_seksi')->nullable();
             $table->timestamps();

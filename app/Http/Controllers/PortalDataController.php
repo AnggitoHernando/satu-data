@@ -19,7 +19,7 @@ class PortalDataController extends Controller
      */
     public function index(Request $request)
     {
-        $seksi = Seksi::select('id', 'nama_seksi')->get();
+        $seksi = Seksi::select('id', 'nama_seksi', 'slug')->get();
         $query = JenisData::with('seksi:id,nama_seksi')
             ->where('status_data', 'publik')
             ->orderByDesc('created_at')
@@ -68,21 +68,11 @@ class PortalDataController extends Controller
 
     public function search(Request $request)
     {
-        $slugMap = [
-            'tata-usaha' => 'Sub Bagian Tata Usaha',
-            'pendidikan-madrasah' => 'Pendidikan Madrasah',
-            'bimas-islam' => 'Bimbingan Masyarakat Islam',
-            'phu' => 'Penyelenggara Haji dan Umroh',
-            'penzawa' => 'Penyelenggara Zakat dan Wakaf',
-            'pais' => 'Pendidikan Agama Islam',
-            'pd-pontren' => 'Pendidikan Diniyah dan Pondok Pesantren',
-        ];
         $search = $request->input('q');
         $slug = $request->input('seksi');
+        $slugSeksi = $slug === 'semua' ? null : $slug;
 
-        $slugSeksi = $slugMap[$slug] ?? null;
-
-        $seksi = Seksi::select('id', 'nama_seksi')->get();
+        $seksi = Seksi::select('id', 'nama_seksi', 'slug')->get();
         $query = $this->query_search($search, $slugSeksi);
         $data = $query->paginate(10);
         $baseUrl = url('/api/portal-data');
@@ -106,7 +96,7 @@ class PortalDataController extends Controller
 
     public function query_non_search()
     {
-        $query = JenisData::with('seksi:id,nama_seksi')
+        $query = JenisData::with('seksi:id,nama_seksi,slug')
             ->where('status_data', 'publik')
             ->orderByDesc('created_at');
         return $query;
@@ -152,7 +142,7 @@ class PortalDataController extends Controller
             })
             ->join('seksi as c', 'c.id', '=', 'a.seksi_id')
             ->when($slugSeksi, function ($q) use ($slugSeksi) {
-                $q->where('c.nama_seksi', $slugSeksi);
+                $q->where('c.slug', $slugSeksi);
             })
             ->groupBy('a.id')
             ->orderByDesc('a.created_at');
@@ -192,7 +182,7 @@ class PortalDataController extends Controller
     public function detail($slug)
     {
         $id = (int) Str::afterLast($slug, '-');
-        $query = JenisData::with('seksi:id,nama_seksi')
+        $query = JenisData::with('seksi:id,nama_seksi,slug')
             ->where('status_data', 'publik')
             ->where('id', $id);
         $data = $query->firstOrFail();

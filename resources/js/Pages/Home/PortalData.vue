@@ -21,6 +21,7 @@ const inputSearch = ref(null);
 
 const search = ref(data_controller.props.filters.q || "");
 const selectedFilter = ref(data_controller.props.filters.seksi || "semua");
+console.log(selectedFilter);
 const hasSearched = ref(false);
 const total = ref(0);
 const page = ref(1);
@@ -29,28 +30,6 @@ const sortBy = ref("jenis_data.id");
 const sortDir = ref("desc");
 const selectedId = ref(null);
 
-const list_slug_seksi = ref([
-    { nama_seksi: "Sub Bagian Tata Usaha", slug: "tata-usaha" },
-    { nama_seksi: "Pendidikan Madrasah", slug: "pendidikan-madrasah" },
-    { nama_seksi: "Bimbingan Masyarakat Islam", slug: "bimas-islam" },
-    {
-        nama_seksi: "Penyelenggara Haji dan Umroh",
-        slug: "penyelenggara-haji-dan-umroh",
-    },
-    {
-        nama_seksi: "Penyelenggara Zakat dan Wakaf",
-        slug: "penyelenggara-zakat-dan-wakaf",
-    },
-    { nama_seksi: "Pendidikan Agama Islam", slug: "pendidikan-agama-islam" },
-    {
-        nama_seksi: "Pendidikan Diniyah dan Pondok Pesantren",
-        slug: "pendidikan-diniyah-dan-pondok-pesantren",
-    },
-    {
-        nama_seksi: "semua",
-        slug: "semua",
-    },
-]);
 const openDetail = async (data) => {
     selectedId.value = data.id;
     page.value = 1;
@@ -90,12 +69,7 @@ function handleSearch() {
     if (search.value.trim() !== "") {
         params.q = search.value.trim();
     }
-    if (selectedFilter.value) {
-        const selected = list_slug_seksi.value.find(
-            (f) => f.nama_seksi === selectedFilter.value
-        );
-        if (selected) params.seksi = selected.slug;
-    }
+    params.seksi = selectedFilter.value;
 
     router.visit(route("PortalData.search"), {
         method: "get",
@@ -248,10 +222,10 @@ watchEffect(() => {
                             <button
                                 v-for="f in list_seksi"
                                 :key="f.nama_seksi"
-                                @click="selectFilter(f.nama_seksi)"
+                                @click="selectFilter(f.slug)"
                                 class="px-4 py-2 text-sm font-medium rounded-full border border-gray-300 whitespace-nowrap transition-all duration-150"
                                 :class="
-                                    selectedFilter === f.nama_seksi
+                                    selectedFilter === f.slug
                                         ? 'bg-green-700 text-white border-green-700 shadow-sm'
                                         : 'bg-white text-gray-600 hover:text-green-700 hover:border-green-700'
                                 "

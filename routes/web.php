@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\JenisDataController;
 use App\Http\Controllers\PortalDataController;
 use App\Http\Controllers\ProfileController;
@@ -10,14 +11,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', function () {
-    return Inertia::render('Home/Home', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-})->name('Beranda');
+Route::get('/', [HomeController::class, 'index'])->name('Beranda');
 
 Route::get('/portal-data', [PortalDataController::class, 'index'])->name('PortalData');
 Route::get('/portal-data/search', [PortalDataController::class, 'search'])->name('PortalData.search');
