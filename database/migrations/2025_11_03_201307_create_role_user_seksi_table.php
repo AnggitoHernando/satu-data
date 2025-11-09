@@ -12,21 +12,19 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('role_user_seksi', function (Blueprint $table) {
-            $table->id();
-
-            // relasi ke users
             $table->foreignId('user_id')
                 ->constrained('users')
-                ->cascadeOnDelete();
+                ->onDelete('cascade');
 
-            // relasi ke seksi
             $table->foreignId('seksi_id')
-                ->nullable()
                 ->constrained('seksi')
-                ->nullOnDelete();
-            $table->string('role', 70);
+                ->onDelete('cascade');
+
+            // timestamps opsional (boleh dihapus kalau tidak mau)
             $table->timestamps();
-            $table->unique(['user_id', 'seksi_id']);
+
+            // kombinasi unik (primary key gabungan)
+            $table->primary(['user_id', 'seksi_id']);
         });
     }
 

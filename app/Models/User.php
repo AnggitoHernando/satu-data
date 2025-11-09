@@ -52,4 +52,9 @@ class User extends Authenticatable
             ->withPivot('role')
             ->withTimestamps();
     }
+
+    public function seksi()
+    {
+        return $this->belongsToMany(Seksi::class, 'role_user_seksi', 'user_id', 'seksi_id')->withTimestamps();;
+    }
 }

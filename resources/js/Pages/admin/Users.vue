@@ -9,12 +9,11 @@ import ModalHeadnessUI from "@/Components/ModalHeadnessUI.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import TextInput from "@/Components/TextInput.vue";
 import SelectButton from "@/Components/SelectButton.vue";
-import TextArea from "@/Components/TextArea.vue";
+import Checkbox from "@/Components/Checkbox.vue";
+import { UserCog } from "lucide-vue-next";
 import { router } from "@inertiajs/vue3";
-// import route from "ziggy-js";
 
 const controller = usePage();
-const { list_seksi } = controller.props;
 
 //Form
 const form = useForm({
@@ -31,18 +30,6 @@ const years = Array.from({ length: 11 }, (_, i) => currentYear - 5 + i);
 //Modal Add
 const isOpen = ref(false);
 
-//Modal Deskripsi
-const isOpenDeskripsi = ref(false);
-const currentDescription = ref("");
-const currentJudulDescription = ref("");
-
-//Deskripsi
-const openDeskripsi = (description, judul) => {
-    currentDescription.value = description;
-    currentJudulDescription.value = "Deskripsi " + judul;
-    isOpenDeskripsi.value = true;
-};
-
 // Table state
 const total = ref(0);
 const page = ref(1);
@@ -50,23 +37,19 @@ const perPage = ref(10);
 const search = ref("");
 const sortBy = ref("id");
 const sortDir = ref("desc");
-const fileInput = ref(null);
 
 // Data & State
 const data = ref([]);
 const loading = ref(false);
 
-const handleFileChange = (event) => {
-    const files = event.target.files;
-    form.file_path = files.length ? files[0] : null;
-};
-
 const columns = [
-    { header: "Nama", key: "name", width: "30%" },
+    { header: "Nama", key: "name", width: "20%" },
     { header: "Username", key: "username", width: "10%" },
     { header: "Role", key: "role", width: "10%" },
-    { header: "Aksi", key: "actions", width: "50%" },
+    { header: "Seksi", key: "seksi", width: "30%" },
+    { header: "Aksi", key: "actions", width: "30%" },
 ];
+
 // Fetch API
 const fetchData = async () => {
     loading.value = true;
@@ -80,8 +63,12 @@ const fetchData = async () => {
                 sortDir: sortDir.value,
             },
         });
-        data.value = [...res.data.data]; // reactive array
-        total.value = res.data.total;
+        data.value = res.data.data ?? [];
+        total.value = res.data.total ?? 0;
+        data.value = res.data.data.map((user) => ({
+            ...user,
+            list_seksi: user.list_seksi ? JSON.parse(user.list_seksi) : [],
+        }));
     } catch (error) {
         console.error(error);
         Swal.fire("Error", "Gagal load data", "error");
@@ -196,6 +183,55 @@ const generateSlug = () => {
         .replace(/-+/g, "-");
 };
 
+const modalRole = ref(false);
+const formRole = ref("");
+const lengthFormRole = ref(0);
+const listSeksi = ref([]);
+const roleSubmit = useForm({
+    user_id: "",
+    role: "",
+    seksi_id: [],
+});
+const selectedSeksi = ref([]);
+const openModalRole = async (id) => {
+    try {
+        const res = await axios.get(route("users.formRole", id));
+        formRole.value = res.data.formRole;
+        listSeksi.value = [...res.data.listSeksi];
+        lengthFormRole.value = formRole.value.length;
+        roleSubmit.user_id = res.data.user.id;
+        roleSubmit.role = res.data.user.role;
+        selectedSeksi.value = listSeksi.value
+            .filter((s) => s.checked === 1)
+            .map((s) => s.id);
+        modalRole.value = true;
+    } catch (error) {
+        console.error(error);
+        Swal.fire("Error", "Gagal load modal", "error");
+    }
+};
+
+const submitRole = async () => {
+    roleSubmit.seksi_id = selectedSeksi.value;
+    try {
+        await roleSubmit.post(route("users.storeRole"), {
+            onSuccess: () => {
+                Swal.fire("Sukses", "Role berhasil disimpan", "success");
+                modalRole.value = false;
+                roleSubmit.reset();
+                fetchData();
+            },
+            onError: (errors) => {
+                Swal.fire("Validasi Gagal", "Periksa input kamu", "warning");
+                console.error(errors);
+            },
+        });
+    } catch (error) {
+        console.error("Terjadi error:", error);
+        Swal.fire("Error", "Koneksi server gagal", "error");
+    }
+};
+
 watch([page, perPage, search, sortBy, sortDir], fetchData);
 
 onMounted(fetchData);
@@ -276,40 +312,57 @@ onMounted(fetchData);
                                     <td
                                         class="border border-gray-300 p-2 text-center"
                                     >
-                                        <a
-                                            @click="
-                                                openDeskripsi(
-                                                    row.deskripsi,
-                                                    row.judul_data
-                                                )
-                                            "
-                                            class="text-blue-600 hover:underline cursor-pointer"
-                                        >
-                                            Lihat Role
-                                        </a>
+                                        <span class="capitalize">{{
+                                            row.role
+                                        }}</span>
                                     </td>
                                     <td class="border border-gray-300 p-2">
-                                        <ActionButtons
-                                            :item="row"
-                                            @edit="openModal"
-                                            @delete="deleteItem"
-                                            :visible-buttons="[
-                                                'edit',
-                                                'delete',
-                                            ]"
-                                        />
+                                        <div
+                                            v-if="row.list_seksi.length > 0"
+                                            class="flex flex-wrap gap-1.5"
+                                        >
+                                            <span
+                                                v-for="(
+                                                    seksi, i
+                                                ) in row.list_seksi"
+                                                :key="i"
+                                                class="text-[12px] px-2 py-0.5 rounded-md bg-gray-100 text-gray-700 border border-gray-200"
+                                            >
+                                                {{ seksi }}
+                                            </span>
+                                        </div>
+                                        <span
+                                            v-else
+                                            class="text-gray-400 italic text-sm"
+                                            >Tidak ada seksi</span
+                                        >
+                                    </td>
+                                    <td class="border border-gray-300 p-2">
+                                        <div class="flex gap-2 justify-center">
+                                            <ActionButtons
+                                                :item="row"
+                                                @edit="openModal"
+                                                @delete="deleteItem"
+                                                :visible-buttons="[
+                                                    'edit',
+                                                    'delete',
+                                                ]"
+                                            />
+                                            <button
+                                                class="bg-green-500 text-white px-2 py-1 rounded"
+                                                @click="openModalRole(row.id)"
+                                                title="Tambah/Ganti Role"
+                                            >
+                                                <component
+                                                    :is="UserCog"
+                                                    class="w-5 h-5 text-white transition duration-75 dark:text-white group-hover:text-white dark:group-hover:text-yellow-400"
+                                                />
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
-                        <ModalHeadnessUI
-                            :open-modal="isOpenDeskripsi"
-                            @close="isOpenDeskripsi = false"
-                            :judul_modal="currentJudulDescription"
-                            ><p>
-                                {{ currentDescription }}
-                            </p></ModalHeadnessUI
-                        >
 
                         <!-- Pagination -->
                         <div
@@ -389,6 +442,75 @@ onMounted(fetchData);
                     <button
                         type="button"
                         @click="isOpen = false"
+                        class="bg-gray-300 hover:bg-gray-400 text-black px-4 py-2 rounded"
+                    >
+                        Batal
+                    </button>
+                    <PrimaryButtonAdmin type="submit"
+                        >Simpan</PrimaryButtonAdmin
+                    >
+                </div>
+            </form>
+        </ModalHeadnessUI>
+        <ModalHeadnessUI
+            :open-modal="modalRole"
+            @close="modalRole = false"
+            judul_modal="Role"
+        >
+            <form @submit.prevent="submitRole">
+                <div>
+                    <InputLabel for="role" value="Role" />
+
+                    <TextInput
+                        v-if="lengthFormRole.value > 1"
+                        readonly
+                        id="role"
+                        type="text"
+                        class="mt-1 block w-full bg-gray-300"
+                        autocomplete="role"
+                        v-model="roleSubmit.role"
+                    />
+                    <SelectButton
+                        v-else
+                        id="role"
+                        name="role"
+                        v-model="roleSubmit.role"
+                        class="capitalize"
+                    >
+                        <option disabled value="">-- Pilih Role --</option>
+                        <option
+                            v-for="(role, i) in formRole"
+                            :key="i"
+                            :value="String(role)"
+                            class="capitalize"
+                        >
+                            {{ role }}
+                        </option>
+                    </SelectButton>
+                </div>
+                <div class="mt-4" v-if="roleSubmit.role === 'operator'">
+                    <InputLabel for="seksi" value="Seksi" />
+                    <div class="grid grid-cols-2 gap-x-4 gap-y-2">
+                        <label
+                            v-for="seksi in listSeksi"
+                            :key="seksi.id"
+                            class="flex items-center space-x-2 cursor-pointer"
+                        >
+                            <Checkbox
+                                :id="`seksi-${seksi.id}`"
+                                v-model:checked="selectedSeksi"
+                                :value="seksi.id"
+                            />
+                            <span class="text-gray-800 text-sm">{{
+                                seksi.nama_seksi
+                            }}</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2 mt-8">
+                    <button
+                        type="button"
+                        @click="modalRole = false"
                         class="bg-gray-300 hover:bg-gray-400 text-black px-4 py-2 rounded"
                     >
                         Batal

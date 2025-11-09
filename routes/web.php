@@ -47,6 +47,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/users/simpan', [UserController::class, 'store'])->name('users.save');
     Route::patch('/users/update/{user}', [UserController::class, 'update'])->name('users.update');
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+    Route::get('/users/get-form-role/{id}', [UserController::class, 'apiFormRole'])->name('users.formRole');
+    Route::post('/users/simpan-role', [UserController::class, 'storeRole'])->name('users.storeRole');
 });
 
 require __DIR__ . '/auth.php';
