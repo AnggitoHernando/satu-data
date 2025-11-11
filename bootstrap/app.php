@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Middleware\RoleMiddleware;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -17,8 +19,20 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
         ]);
 
-        //
+        $middleware->alias([
+            'role' => RoleMiddleware::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->render(function (AuthorizationException $e, $request) {
+            if ($request->expectsJson() || $request->header('X-Inertia')) {
+                return response()->json([
+                    'message' => 'Anda tidak memiliki izin untuk melakukan aksi ini.'
+                ], 403);
+            }
+
+            return response()->view('errors.403', [
+                'message' => 'Anda tidak memiliki izin untuk melakukan aksi ini.'
+            ], 403);
+        });
     })->create();

@@ -9,6 +9,7 @@ use App\Models\JenisDataFields;
 use App\Models\JenisDataRecords;
 use App\Models\Seksi;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -18,11 +19,20 @@ class JenisDataController extends Controller
 {
     public function index()
     {
-        $seksi = Seksi::all();
+        $this->authorize('viewAny', JenisData::class);
+        $filterSeksi = Seksi::all();
+        $user = Auth::user();
+        $query = Seksi::query();
+        if ($user->role === 'operator') {
+            $seksiIds = $user->seksi->pluck('id');
+            $query->whereIn('id', $seksiIds);
+        }
+        $allowedSeksi = $query->get();
         return Inertia::render(
             'Admin/JenisData',
             [
-                'list_seksi' => $seksi
+                'list_seksi' => $filterSeksi,
+                'allowedSeksi' => $allowedSeksi
 
             ]
         );
@@ -30,6 +40,12 @@ class JenisDataController extends Controller
 
     public function apiIndex(Request $request)
     {
+        if (!Auth::check()) {
+            abort(401, 'User belum login');
+        }
+
+        $this->authorize('viewAny', JenisData::class);
+
         $query = JenisData::query()
             ->join('seksi', 'jenis_data.seksi_id', '=', 'seksi.id')
             ->select(
@@ -53,6 +69,10 @@ class JenisDataController extends Controller
         if ($request->search) {
             $query->where('judul_data', 'like', '%' . $request->search . '%')
                 ->orWhere('deskripsi', 'like', '%' . $request->search . '%');
+        }
+
+        if ($request->seksiFilter) {
+            $query->where('seksi_id', '=', $request->seksiFilter);
         }
 
         // Sorting
@@ -89,6 +109,7 @@ class JenisDataController extends Controller
             'sumber_data' => 'required|string',
             'file_path' => 'required|file|max:2048',
         ]);
+        $this->authorize('create', $validated["seksi_id"]);
 
         $exists = JenisData::where('judul_data', $validated['judul_data'])
             ->where('tahun', $validated['tahun'])
@@ -135,6 +156,7 @@ class JenisDataController extends Controller
 
     public function destroy(JenisData $jenisData)
     {
+        $this->authorize('delete', $jenisData);
         if ($jenisData->file_path && Storage::disk('public')->exists($jenisData->file_path)) {
             Storage::disk('public')->delete($jenisData->file_path);
         }
@@ -146,6 +168,7 @@ class JenisDataController extends Controller
 
     public function update(Request $request, JenisData $jenisData)
     {
+        $cekAkses = $this->authorize('update', $jenisData);
         $validated = $request->validate([
             'judul_data' => 'required|string|max:255',
             'seksi_id' => 'required|string',
@@ -196,6 +219,7 @@ class JenisDataController extends Controller
     }
     public function updateStatus(Request $request, JenisData $jenisData)
     {
+        $this->authorize('updateStatus', $jenisData);
         $jenisData->update([
             'status_data' => $request->status_data,
         ]);

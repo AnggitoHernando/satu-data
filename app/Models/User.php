@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+/**
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Seksi[] $seksi
+ * @method \Illuminate\Database\Eloquent\Relations\BelongsToMany seksi()
+ */
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -53,6 +57,12 @@ class User extends Authenticatable
             ->withTimestamps();
     }
 
+
+    /**
+     * Relasi ke seksi
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function seksi()
     {
         return $this->belongsToMany(Seksi::class, 'role_user_seksi', 'user_id', 'seksi_id')->withTimestamps();;

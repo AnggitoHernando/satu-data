@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, usePage, useForm } from "@inertiajs/vue3";
-import { ref, watch, onMounted, h } from "vue";
+import { ref, watch, onMounted, h, computed } from "vue";
 import axios from "axios";
 import ActionButtons from "@/Components/ActionButtons.vue";
 import PrimaryButtonAdmin from "@/Components/PrimaryButtonAdmin.vue";
@@ -11,10 +11,22 @@ import TextInput from "@/Components/TextInput.vue";
 import SelectButton from "@/Components/SelectButton.vue";
 import TextArea from "@/Components/TextArea.vue";
 import { router } from "@inertiajs/vue3";
+import {
+    LucideSearch,
+    LucideFilter,
+    LucideArrowUpDown,
+    LucideArrowUp,
+    LucideRotateCcw,
+} from "lucide-vue-next";
+
 // import route from "ziggy-js";
 
 const controller = usePage();
-const { list_seksi } = controller.props;
+const { list_seksi, allowedSeksi } = controller.props;
+const userRole = computed(() => controller.props.auth.user.role || null);
+const allowedSeksiId = computed(
+    () => controller.props.allowedSeksi.map((s) => s.id) || null
+);
 
 //Form
 const form = useForm({
@@ -66,7 +78,7 @@ const handleFileChange = (event) => {
     form.file_path = files.length ? files[0] : null;
 };
 
-const columns = [
+const allColumns = [
     { header: "Nama Data", key: "judul_data", width: "25%" },
     { header: "Deskripsi", key: "deskripsi", width: "10%" },
     { header: "Status Data", key: "status_data", width: "10%" },
@@ -74,17 +86,25 @@ const columns = [
     { header: "File", key: "file_path", width: "15%" },
     { header: "Aksi", key: "actions", width: "20%" },
 ];
+const columns = computed(() => {
+    if (userRole.value === "user") {
+        return allColumns.filter((col) => col.key !== "actions");
+    }
+    return allColumns;
+});
 // Fetch API
+const selectedSeksiFilter = ref("");
 const fetchData = async () => {
     loading.value = true;
     try {
-        const res = await axios.get("/api/jenis_data_all", {
+        const res = await axios.get(route("jenis_data.api-show"), {
             params: {
                 page: page.value,
                 perPage: perPage.value,
                 search: search.value,
                 sortBy: sortBy.value,
                 sortDir: sortDir.value,
+                seksiFilter: selectedSeksiFilter.value,
             },
         });
         data.value = [...res.data.data]; // reactive array
@@ -120,11 +140,10 @@ const deleteItem = async (item) => {
                     Swal.fire("Berhasil!", "Data telah dihapus.", "success");
                 },
                 onError: () => {
-                    Swal.fire(
-                        "Gagal!",
-                        "Terjadi kesalahan saat menghapus data.",
-                        "error"
-                    );
+                    const message =
+                        error?.response?.data?.message ||
+                        "Terjadi kesalahan saat menghapus data.";
+                    Swal.fire("Gagal!", message, "error");
                 },
             });
         }
@@ -170,7 +189,15 @@ const toggleStatus = async (item, newStatus) => {
                 "success"
             );
         } catch (err) {
-            Swal.fire("Gagal!", "Tidak dapat mengubah status.", "error");
+            if (err.response && err.response.status === 403) {
+                Swal.fire(
+                    "Tidak Diizinkan",
+                    "Anda Tidak Memiliki Akses Untuk Ini",
+                    "error"
+                );
+            } else {
+                Swal.fire("Gagal!", "Tidak dapat mengubah status.", "error");
+            }
             console.error(err);
         }
     }
@@ -243,6 +270,12 @@ const submit = async () => {
                     },
                 }).showToast();
             });
+        } else if (err.response && err.response.status === 403) {
+            Swal.fire(
+                "Tidak Diizinkan",
+                "Anda Tidak Memiliki Akses Untuk Ini",
+                "error"
+            );
         } else {
             Swal.fire("Error", "Terjadi kesalahan server", "error");
             console.log(err);
@@ -259,7 +292,7 @@ const generateSlug = () => {
         .replace(/-+/g, "-");
 };
 
-watch([page, perPage, search, sortBy, sortDir], fetchData);
+watch([page, perPage, search, sortBy, sortDir, selectedSeksiFilter], fetchData);
 
 onMounted(fetchData);
 </script>
@@ -278,153 +311,115 @@ onMounted(fetchData);
         <div class="py-16 relative z-40">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div class="mb-3 flex justify-end">
-                    <PrimaryButtonAdmin @click="() => openModal(null)"
+                    <PrimaryButtonAdmin
+                        v-if="userRole !== 'user'"
+                        @click="() => openModal(null)"
                         >+ Tambah Data</PrimaryButtonAdmin
                     >
-                    <ModalHeadnessUI
-                        :open-modal="isOpen"
-                        @close="isOpen = false"
-                        judul_modal="Tambah Jenis Data"
-                    >
-                        <form @submit.prevent="submit">
-                            <div>
-                                <InputLabel
-                                    for="seksi_id"
-                                    value="Pilih Seksi"
-                                />
-                                <SelectButton
-                                    id="seksi_id"
-                                    name="seksi_id"
-                                    v-model="form.seksi_id"
-                                >
-                                    <option disabled value="">
-                                        -- Pilih Seksi --
-                                    </option>
-                                    <option
-                                        v-for="seksi in list_seksi"
-                                        :key="seksi.id"
-                                        :value="String(seksi.id)"
-                                    >
-                                        {{ seksi.nama_seksi }}
-                                    </option>
-                                </SelectButton>
-                            </div>
-                            <div class="mt-4">
-                                <InputLabel
-                                    for="judul_data"
-                                    value="Nama Data"
-                                />
-
-                                <TextInput
-                                    id="judul_data"
-                                    type="text"
-                                    @input="generateSlug"
-                                    placeholder="Masukkan Nama Data"
-                                    class="mt-1 block w-full"
-                                    v-model="form.judul_data"
-                                    required
-                                    autocomplete="judul_data"
-                                />
-                            </div>
-                            <div class="mt-4">
-                                <InputLabel for="slug" value="Slug" />
-
-                                <TextInput
-                                    id="slug"
-                                    type="text"
-                                    placeholder=""
-                                    class="mt-1 block w-full bg-gray-300"
-                                    v-model="form.slug"
-                                    required
-                                    readonly
-                                    autocomplete="slug"
-                                />
-                            </div>
-                            <div class="mt-4">
-                                <InputLabel for="deskripsi" value="Deskripsi" />
-
-                                <TextArea
-                                    id="deskripsi"
-                                    name="deskrpisi"
-                                    placeholder="Masukkan Deskripsi"
-                                    v-model="form.deskripsi"
-                                />
-                            </div>
-                            <div class="mt-4">
-                                <InputLabel for="tahun" value="Tahun" />
-
-                                <SelectButton
-                                    id="tahun"
-                                    name="tahun"
-                                    v-model="form.tahun"
-                                >
-                                    <option disabled value="">
-                                        -- Pilih Tahun --
-                                    </option>
-                                    <option
-                                        v-for="year in years"
-                                        :key="year"
-                                        :value="String(year)"
-                                        :selected="year === currentYear"
-                                    >
-                                        {{ year }}
-                                    </option>
-                                </SelectButton>
-                            </div>
-                            <div class="mt-4">
-                                <InputLabel
-                                    for="sumber_data"
-                                    value="Sumber Data"
-                                />
-
-                                <TextInput
-                                    id="sumber_data"
-                                    type="text"
-                                    placeholder="Masukkan Sumber Data"
-                                    class="mt-1 block w-full"
-                                    v-model="form.sumber_data"
-                                    required
-                                    autocomplete="sumber_data"
-                                />
-                            </div>
-                            <!-- <div v-if="modalMode === 'edit'" class="mt-4">
-                                <InputLabel for="nama_file" value="File Lama" />
-                                <span v-if="form.file_path">AAA</span>
-                            </div> -->
-                            <div class="mt-4">
-                                <InputLabel for="file_path" value="File" />
-
-                                <input
-                                    id="file_path"
-                                    type="file"
-                                    class="mt-1 block w-full border rounded px-2 py-1"
-                                    ref="fileInput"
-                                    :required="modalMode == 'create'"
-                                    @change="handleFileChange"
-                                />
-                            </div>
-                            <div class="flex justify-end gap-2 mt-2">
-                                <button
-                                    type="button"
-                                    @click="isOpen = false"
-                                    class="bg-gray-300 hover:bg-gray-400 text-black px-4 py-2 rounded"
-                                >
-                                    Batal
-                                </button>
-                                <PrimaryButtonAdmin type="submit"
-                                    >Simpan</PrimaryButtonAdmin
-                                >
-                            </div>
-                        </form>
-                    </ModalHeadnessUI>
                 </div>
                 <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                     <div>
-                        <input
-                            v-model="search"
-                            placeholder="Search..."
-                            class="ml-2 mt-1 px-2 py-1 mb-2 rounded-md"
-                        />
+                        <div
+                            class="flex flex-col sm:flex-row justify-between items-center gap-3 bg-gray-50 px-4 py-3 border border-gray-200 rounded-md mb-3 shadow-sm"
+                        >
+                            <!-- Left: Filters -->
+                            <div class="flex flex-wrap items-center gap-3">
+                                <!-- Search -->
+                                <div class="relative">
+                                    <LucideSearch
+                                        class="absolute left-2 top-2.5 text-gray-400"
+                                        :size="18"
+                                    />
+                                    <input
+                                        v-model="search"
+                                        type="text"
+                                        placeholder="Cari data..."
+                                        class="pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                    />
+                                </div>
+
+                                <!-- Filter Seksi -->
+                                <div class="relative">
+                                    <LucideFilter
+                                        class="absolute left-2 top-2.5 text-gray-400"
+                                        :size="18"
+                                    />
+                                    <select
+                                        v-model="selectedSeksiFilter"
+                                        class="pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white"
+                                    >
+                                        <option value="">Semua Seksi</option>
+                                        <option
+                                            v-for="seksi in list_seksi"
+                                            :key="seksi.id"
+                                            :value="String(seksi.id)"
+                                        >
+                                            {{ seksi.nama_seksi }}
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <!-- Sort By -->
+                                <div class="relative">
+                                    <LucideArrowUpDown
+                                        class="absolute left-2 top-2.5 text-gray-400"
+                                        :size="18"
+                                    />
+                                    <select
+                                        v-model="sortBy"
+                                        class="pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white"
+                                    >
+                                        <option disabled value="">
+                                            Urutkan Berdasarkan
+                                        </option>
+                                        <option value="judul_data">
+                                            Nama Data
+                                        </option>
+                                        <option value="tahun">Tahun</option>
+                                        <option value="status_data">
+                                            Status Data
+                                        </option>
+                                        <option value="status_upload">
+                                            Status Upload
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <!-- Sort Direction -->
+                                <button
+                                    @click="
+                                        sortDir =
+                                            sortDir === 'asc' ? 'desc' : 'asc'
+                                    "
+                                    class="flex items-center gap-1 px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition"
+                                    :title="`Urutan: ${sortDir.toUpperCase()}`"
+                                >
+                                    <LucideArrowUp
+                                        :class="{
+                                            'rotate-180': sortDir === 'desc',
+                                        }"
+                                        :size="16"
+                                    />
+                                    <span class="text-sm">{{
+                                        sortDir === "asc" ? "Naik" : "Turun"
+                                    }}</span>
+                                </button>
+                            </div>
+
+                            <!-- Right: Reset Filters -->
+                            <button
+                                @click="
+                                    search = '';
+                                    form.seksi_id = '';
+                                    sortBy = 'jenis_data.id';
+                                    sortDir = 'desc';
+                                "
+                                class="flex items-center gap-1 px-3 py-2 text-sm border border-gray-300 rounded-md text-gray-600 hover:bg-gray-100"
+                            >
+                                <LucideRotateCcw :size="16" />
+                                <span>Reset</span>
+                            </button>
+                        </div>
 
                         <table
                             class="table-fixed border border-gray-300 w-full"
@@ -562,8 +557,17 @@ onMounted(fetchData);
                                             >
                                         </div>
                                     </td>
-                                    <td class="border border-gray-300 p-2">
+                                    <td
+                                        v-if="userRole !== 'user'"
+                                        class="border border-gray-300 p-2"
+                                    >
                                         <ActionButtons
+                                            v-if="
+                                                userRole === 'operator' &&
+                                                allowedSeksiId.includes(
+                                                    row.seksi_id
+                                                )
+                                            "
                                             :item="row"
                                             @edit="openModal"
                                             @delete="deleteItem"
@@ -612,5 +616,124 @@ onMounted(fetchData);
                 </div>
             </div>
         </div>
+        <ModalHeadnessUI
+            :open-modal="isOpen"
+            @close="isOpen = false"
+            judul_modal="Tambah Jenis Data"
+        >
+            <form @submit.prevent="submit">
+                <div>
+                    <InputLabel for="seksi_id" value="Pilih Seksi" />
+                    <SelectButton
+                        id="seksi_id"
+                        name="seksi_id"
+                        v-model="form.seksi_id"
+                    >
+                        <option disabled value="">-- Pilih Seksi --</option>
+                        <option
+                            v-for="seksi in allowedSeksi"
+                            :key="seksi.id"
+                            :value="String(seksi.id)"
+                        >
+                            {{ seksi.nama_seksi }}
+                        </option>
+                    </SelectButton>
+                </div>
+                <div class="mt-4">
+                    <InputLabel for="judul_data" value="Nama Data" />
+
+                    <TextInput
+                        id="judul_data"
+                        type="text"
+                        @input="generateSlug"
+                        placeholder="Masukkan Nama Data"
+                        class="mt-1 block w-full"
+                        v-model="form.judul_data"
+                        required
+                        autocomplete="judul_data"
+                    />
+                </div>
+                <div class="mt-4">
+                    <InputLabel for="slug" value="Slug" />
+
+                    <TextInput
+                        id="slug"
+                        type="text"
+                        placeholder=""
+                        class="mt-1 block w-full bg-gray-300"
+                        v-model="form.slug"
+                        required
+                        readonly
+                        autocomplete="slug"
+                    />
+                </div>
+                <div class="mt-4">
+                    <InputLabel for="deskripsi" value="Deskripsi" />
+
+                    <TextArea
+                        id="deskripsi"
+                        name="deskrpisi"
+                        placeholder="Masukkan Deskripsi"
+                        v-model="form.deskripsi"
+                    />
+                </div>
+                <div class="mt-4">
+                    <InputLabel for="tahun" value="Tahun" />
+
+                    <SelectButton id="tahun" name="tahun" v-model="form.tahun">
+                        <option disabled value="">-- Pilih Tahun --</option>
+                        <option
+                            v-for="year in years"
+                            :key="year"
+                            :value="String(year)"
+                            :selected="year === currentYear"
+                        >
+                            {{ year }}
+                        </option>
+                    </SelectButton>
+                </div>
+                <div class="mt-4">
+                    <InputLabel for="sumber_data" value="Sumber Data" />
+
+                    <TextInput
+                        id="sumber_data"
+                        type="text"
+                        placeholder="Masukkan Sumber Data"
+                        class="mt-1 block w-full"
+                        v-model="form.sumber_data"
+                        required
+                        autocomplete="sumber_data"
+                    />
+                </div>
+                <!-- <div v-if="modalMode === 'edit'" class="mt-4">
+                                <InputLabel for="nama_file" value="File Lama" />
+                                <span v-if="form.file_path">AAA</span>
+                            </div> -->
+                <div class="mt-4">
+                    <InputLabel for="file_path" value="File" />
+
+                    <input
+                        id="file_path"
+                        type="file"
+                        class="mt-1 block w-full border rounded px-2 py-1"
+                        ref="fileInput"
+                        :required="modalMode == 'create'"
+                        @change="handleFileChange"
+                    />
+                </div>
+                <div class="flex justify-end gap-2 mt-2">
+                    <button
+                        type="button"
+                        @click="isOpen = false"
+                        class="bg-gray-300 hover:bg-gray-400 text-black px-4 py-2 rounded"
+                    >
+                        Batal
+                    </button>
+                    <PrimaryButtonAdmin type="submit"
+                        >Simpan</PrimaryButtonAdmin
+                    >
+                </div>
+            </form>
+        </ModalHeadnessUI>
     </AuthenticatedLayout>
 </template>

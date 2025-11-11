@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Seksi;
 use App\Models\User;
+use Illuminate\Auth\Events\Validated;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 
 class UserController extends Controller
@@ -161,8 +163,9 @@ class UserController extends Controller
             'password' => 'nullable|string',
         ]);
 
+
         if (!empty($validated['password'])) {
-            $validated['password'] = md5($validated['password']);
+            $validated['password'] = Hash::make($validated['password']);
         } else {
             unset($validated['password']);
         }

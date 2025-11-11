@@ -22,6 +22,7 @@ const emit = defineEmits(["edit", "delete", "toggleStatus", "retryUpload"]);
             v-if="visibleButtons.includes('edit')"
             class="bg-blue-500 text-white px-2 py-1 rounded"
             @click="emit('edit', item)"
+            title="Edit Data"
         >
             <component
                 :is="PencilLine"
@@ -32,6 +33,7 @@ const emit = defineEmits(["edit", "delete", "toggleStatus", "retryUpload"]);
             v-if="visibleButtons.includes('delete')"
             class="bg-red-500 text-white px-2 py-1 rounded"
             @click="emit('delete', item)"
+            title="Hapus Data"
         >
             <component
                 :is="Trash"
@@ -43,6 +45,7 @@ const emit = defineEmits(["edit", "delete", "toggleStatus", "retryUpload"]);
                 v-if="item.status_data === 'private'"
                 class="bg-yellow-500 text-white px-2 py-1 rounded"
                 @click="emit('toggleStatus', item, 'publik')"
+                title="Set Data Publik"
             >
                 <component
                     :is="Globe"
@@ -53,6 +56,7 @@ const emit = defineEmits(["edit", "delete", "toggleStatus", "retryUpload"]);
                 v-else
                 class="bg-yellow-500 text-white px-2 py-1 rounded"
                 @click="emit('toggleStatus', item, 'private')"
+                title="Set Data Private"
             >
                 <component
                     :is="GlobeLock"
@@ -68,6 +72,7 @@ const emit = defineEmits(["edit", "delete", "toggleStatus", "retryUpload"]);
             "
             class="bg-green-500 text-white px-2 py-1 rounded"
             @click="emit('retryUpload', item)"
+            title="ulangi upload"
         >
             <component
                 :is="RotateCcw"

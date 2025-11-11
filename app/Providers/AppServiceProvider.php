@@ -2,9 +2,12 @@
 
 namespace App\Providers;
 
+use App\Models\JenisData;
+use App\Policies\JenisDataPolicy;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Gate;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,5 +26,6 @@ class AppServiceProvider extends ServiceProvider
     {
         Vite::prefetch(concurrency: 3);
         App::setLocale(config('app.locale'));
+        Gate::policy(JenisData::class, JenisDataPolicy::class);
     }
 }
