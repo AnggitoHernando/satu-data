@@ -563,10 +563,12 @@ onMounted(fetchData);
                                     >
                                         <ActionButtons
                                             v-if="
-                                                userRole === 'operator' &&
-                                                allowedSeksiId.includes(
-                                                    row.seksi_id
-                                                )
+                                                (userRole === 'operator' &&
+                                                    allowedSeksiId.includes(
+                                                        row.seksi_id
+                                                    )) ||
+                                                userRole === 'admin' ||
+                                                userRole === 'super-admin'
                                             "
                                             :item="row"
                                             @edit="openModal"
