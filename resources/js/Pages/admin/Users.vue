@@ -54,7 +54,7 @@ const columns = [
 const fetchData = async () => {
     loading.value = true;
     try {
-        const res = await axios.get("/api/users-all", {
+        const res = await axios.get(route("users.api.getAll"), {
             params: {
                 page: page.value,
                 perPage: perPage.value,
@@ -70,8 +70,12 @@ const fetchData = async () => {
             list_seksi: user.list_seksi ? JSON.parse(user.list_seksi) : [],
         }));
     } catch (error) {
-        console.error(error);
-        Swal.fire("Error", "Gagal load data", "error");
+        console.error(error.status);
+        if (error.status === 403) {
+            Swal.fire("Error", "Anda Tidak Mempunyai Akses", "error");
+        } else {
+            Swal.fire("Error", "Gagal load data", "error");
+        }
     } finally {
         loading.value = false;
     }
@@ -222,7 +226,8 @@ const submitRole = async () => {
                 fetchData();
             },
             onError: (errors) => {
-                Swal.fire("Validasi Gagal", "Periksa input kamu", "warning");
+                const message = Object.values(errors).join("\n");
+                Swal.fire("Validasi Gagal", message, "warning");
                 console.error(errors);
             },
         });

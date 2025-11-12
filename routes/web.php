@@ -39,6 +39,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/jenis-data/{id}/retryUpload', [JenisDataController::class, 'retryUpload'])->name('jenis-data.retryUpload');
     //User
     Route::get('/users', [UserController::class, 'index'])->name('users.show');
+    Route::get('/users/api-get-all', [UserController::class, 'apiIndex'])->name('users.api.getAll');
     Route::post('/users/simpan', [UserController::class, 'store'])->name('users.save');
     Route::patch('/users/update/{user}', [UserController::class, 'update'])->name('users.update');
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');

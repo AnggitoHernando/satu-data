@@ -1,6 +1,11 @@
 <script setup>
 import SidebarLink from "./SidebarLink.vue";
 import { LayoutDashboard, Database, Users } from "lucide-vue-next";
+import { usePage } from "@inertiajs/vue3";
+
+const page = usePage();
+const roleUser = page.props.auth.user.role ?? null;
+const allowedUser = ["super-admin", "admin"];
 </script>
 <template>
     <aside
@@ -29,7 +34,7 @@ import { LayoutDashboard, Database, Users } from "lucide-vue-next";
                         :active="$page.url === '/jenis-data'"
                     ></SidebarLink>
                 </li>
-                <li>
+                <li v-if="allowedUser.includes(roleUser)">
                     <SidebarLink
                         :href="route('users.show')"
                         :logo="Users"

@@ -110,7 +110,7 @@ const fetchData = async () => {
         data.value = [...res.data.data]; // reactive array
         total.value = res.data.total;
     } catch (error) {
-        console.error(error);
+        // console.error(error);
         Swal.fire("Error", "Gagal load data", "error");
     } finally {
         loading.value = false;
@@ -198,7 +198,7 @@ const toggleStatus = async (item, newStatus) => {
             } else {
                 Swal.fire("Gagal!", "Tidak dapat mengubah status.", "error");
             }
-            console.error(err);
+            // console.error(err);
         }
     }
 };
@@ -211,7 +211,7 @@ const retryUpload = async (item) => {
         Swal.fire("Berhasil!", `Upload Berhasil`, "success");
     } catch (err) {
         Swal.fire("Gagal!", "Tidak dapat Mengupload", "error");
-        console.error(err);
+        // console.error(err);
     }
 };
 
@@ -256,7 +256,7 @@ const submit = async () => {
             }
         }
     } catch (err) {
-        console.log(err);
+        // console.log(err);
         if (err.response && err.response.status === 422) {
             Object.values(err.response.data.errors).forEach((msg) => {
                 Toastify({
@@ -278,7 +278,7 @@ const submit = async () => {
             );
         } else {
             Swal.fire("Error", "Terjadi kesalahan server", "error");
-            console.log(err);
+            // console.log(err);
         }
     }
 };

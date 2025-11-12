@@ -5,8 +5,9 @@ import { createInertiaApp } from "@inertiajs/vue3";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { createApp, h } from "vue";
 import { ZiggyVue } from "../../vendor/tightenco/ziggy";
+import { router } from "@inertiajs/vue3";
 
-const appName = import.meta.env.VITE_APP_NAME || "Pusat Data";
+const appName = import.meta.env.VITE_APP_NAME || "Mandat";
 
 import "toastify-js/src/toastify.css";
 import Toastify from "toastify-js";
@@ -53,3 +54,13 @@ createInertiaApp({
         color: "#4B5563",
     },
 });
+
+axios.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response && error.response.status === 403) {
+            router.visit(route("dashboard"));
+        }
+        return Promise.reject(error);
+    }
+);
