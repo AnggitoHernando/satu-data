@@ -1,32 +1,103 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Head, Link } from "@inertiajs/vue3";
+import { Head, Link, usePage } from "@inertiajs/vue3";
 import PrimaryButtonAdmin from "@/Components/PrimaryButtonAdmin.vue";
+import DashboardPieChart from "@/Components/DashboardPieChart.vue";
+
+const page = usePage();
+const result = page.props;
+const jumlah_data_all = result.jumlah_data_all;
+const persentase_all = result.persentase_all;
+const persentase_per_seksi = result.persentase_per_seksi;
+const labels = persentase_all.map((item) => item.nama_seksi);
+const data = persentase_all.map((item) => item.persentase);
+console.log(labels);
 </script>
 
 <template>
     <Head title="Dashboard" />
 
     <AuthenticatedLayout>
-        <!-- <template #header>
-            <h2
-                class="text-xl font-semibold leading-tight text-gray-800"
-            >
-                Dashboard
-            </h2>
-        </template> -->
-
         <div class="py-12">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900">
-                        Halo {{ $page.props.auth.user.name }} , Kamu Sudah
-                        Login!
+                    <div
+                        class="p-6 text-gray-900 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6"
+                    >
+                        <div
+                            class="p-6 bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-200 border border-gray-100 flex flex-col space-y-5"
+                        >
+                            <div
+                                class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+                            >
+                                <Link
+                                    :href="route('Beranda')"
+                                    class="sm:w-auto"
+                                >
+                                    <PrimaryButtonAdmin
+                                        >Beranda</PrimaryButtonAdmin
+                                    >
+                                </Link>
+
+                                <div
+                                    class="bg-gray-50 border border-gray-200 rounded-xl px-6 py-4 text-center shadow-inner sm:w-64"
+                                >
+                                    <p class="text-sm text-gray-500 mb-1">
+                                        Jumlah Data Keseluruhan
+                                    </p>
+                                    <p
+                                        class="text-3xl font-bold text-indigo-600"
+                                    >
+                                        {{ jumlah_data_all }}
+                                    </p>
+                                </div>
+                            </div>
+                            <div>
+                                <h3
+                                    class="text-lg font-semibold mb-2 text-gray-800"
+                                >
+                                    Selamat Datang
+                                </h3>
+                                <p class="text-gray-600 mb-4 leading-relaxed">
+                                    Halo {{ $page.props.auth.user.name }}, kamu
+                                    sudah login! <br />
+                                </p>
+                            </div>
+                        </div>
+                        <DashboardPieChart
+                            title="Persentase Semua Seksi"
+                            :labels="labels"
+                            :data="data"
+                        />
+                    </div>
+                    <div
+                        class="p-6 bg-gray-50 rounded-2xl shadow-sm hover:shadow-md transition-all duration-200"
+                    >
+                        <h3
+                            class="text-lg font-semibold text-gray-800 mb-6 text-center"
+                        >
+                            Persentase Data per Seksi
+                        </h3>
+
+                        <!-- Grid 2 kolom -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div
+                                v-for="(item, i) in persentase_per_seksi"
+                                :key="i"
+                                class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col items-center justify-center"
+                            >
+                                <DashboardPieChart
+                                    :title="item.nama_seksi"
+                                    :labels="['Publik', 'Private']"
+                                    :data="[
+                                        item.persentase_publik,
+                                        item.persentase_private,
+                                    ]"
+                                />
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <Link :href="route('Beranda')">
-                    <PrimaryButtonAdmin> Beranda</PrimaryButtonAdmin>
-                </Link>
             </div>
         </div>
     </AuthenticatedLayout>

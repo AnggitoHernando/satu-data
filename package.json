@@ -20,9 +20,11 @@
     "dependencies": {
         "@headlessui/vue": "^1.7.14",
         "@tanstack/vue-table": "^8.21.3",
+        "chart.js": "^4.5.1",
         "lucide-vue-next": "^0.545.0",
         "sweetalert2": "^11.26.0",
         "swiper": "^12.0.3",
-        "toastify-js": "^1.12.0"
+        "toastify-js": "^1.12.0",
+        "vue-chartjs": "^5.3.3"
     }
 }
