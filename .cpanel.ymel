@@ -1,0 +1,23 @@
+---
+deployment:
+  tasks:
+    # Lokasi folder domain di hosting
+    - export DEPLOYPATH=/home/u1482575/public_html/mandat.kemenaggresik.id
+
+    # Salin semua file Laravel ke folder deploy (kecuali .git dan file sistem)
+    - /bin/rsync -av --exclude '.git' --exclude '.cpanel.yml' ./ $DEPLOYPATH
+
+    # Masuk ke folder deploy
+    - cd $DEPLOYPATH
+
+    # Jalankan Composer agar dependensi Laravel terinstall
+    - /opt/cpanel/composer/bin/composer install --no-dev --optimize-autoloader
+
+    # Set permission storage & bootstrap agar Laravel bisa menulis
+    - find storage -type d -exec chmod 775 {} \;
+    - find bootstrap/cache -type d -exec chmod 775 {} \;
+
+    # Cache config & route agar performa cepat
+    - php artisan config:cache
+    - php artisan route:cache
+    - php artisan view:cache
