@@ -100,6 +100,7 @@ class JenisDataController extends Controller
         //         'tahun' => ['Tahun wajib diisi'],
         //     ]
         // ], 422);
+        $user = Auth::user(); // instance App\Models\User atau null jika tidak login
         $validated = $request->validate([
             'judul_data' => 'required|string|max:255',
             'seksi_id' => 'required|string',
@@ -109,7 +110,7 @@ class JenisDataController extends Controller
             'sumber_data' => 'required|string',
             'file_path' => 'required|file|max:2048',
         ]);
-        $this->authorize('create', $validated["seksi_id"]);
+        $this->authorize('create', $user, $validated["seksi_id"]);
 
         $exists = JenisData::where('judul_data', $validated['judul_data'])
             ->where('tahun', $validated['tahun'])
@@ -156,7 +157,8 @@ class JenisDataController extends Controller
 
     public function destroy(JenisData $jenisData)
     {
-        $this->authorize('delete', $jenisData);
+        $user = Auth::user();
+        $this->authorize('delete', $user, $jenisData);
         if ($jenisData->file_path && Storage::disk('public')->exists($jenisData->file_path)) {
             Storage::disk('public')->delete($jenisData->file_path);
         }
@@ -168,7 +170,8 @@ class JenisDataController extends Controller
 
     public function update(Request $request, JenisData $jenisData)
     {
-        $cekAkses = $this->authorize('update', $jenisData);
+        $user = Auth::user();
+        $this->authorize('update', $user, $jenisData);
         $validated = $request->validate([
             'judul_data' => 'required|string|max:255',
             'seksi_id' => 'required|string',
@@ -219,7 +222,8 @@ class JenisDataController extends Controller
     }
     public function updateStatus(Request $request, JenisData $jenisData)
     {
-        $this->authorize('updateStatus', $jenisData);
+        $user = Auth::user();
+        $this->authorize('updateStatus', $user, $jenisData);
         $jenisData->update([
             'status_data' => $request->status_data,
         ]);
