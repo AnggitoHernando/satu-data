@@ -2,7 +2,7 @@
 deployment:
   tasks:
     # Tentukan path folder tujuan di hosting (domain folder)
-    - export DEPLOYPATH=/home/u1482575/public_html/mandat/
+    - export DEPLOYPATH=/home/u1482575/public_html/mandat
 
     # Salin semua file dari repo ke folder deploy (kecuali file sistem & git)
     - /bin/rsync -av --exclude '.git' --exclude '.cpanel.yml' ./ $DEPLOYPATH
