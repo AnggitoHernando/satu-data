@@ -1,7 +1,7 @@
 ---
 deployment:
   tasks:
-    # Lokasi folder domain di hosting
+    # Lokasi folder domain di hosting 1
     - export DEPLOYPATH=/home/u1482575/public_html/mandat.kemenaggresik.id
 
     # Salin semua file Laravel ke folder deploy (kecuali .git dan file sistem)
