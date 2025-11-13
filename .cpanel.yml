@@ -1,23 +1,33 @@
 ---
 deployment:
   tasks:
-    # Lokasi folder domain di hosting 1
+    # 1️⃣ Tentukan path folder tujuan di hosting (domain folder)
     - export DEPLOYPATH=/home/u1482575/public_html/mandat.kemenaggresik.id
 
-    # Salin semua file Laravel ke folder deploy (kecuali .git dan file sistem)
+    # 2️⃣ Salin semua file dari repo ke folder deploy (kecuali file sistem & git)
     - /bin/rsync -av --exclude '.git' --exclude '.cpanel.yml' ./ $DEPLOYPATH
 
-    # Masuk ke folder deploy
+    # 3️⃣ Masuk ke folder deploy
     - cd $DEPLOYPATH
 
-    # Jalankan Composer agar dependensi Laravel terinstall
+    # 4️⃣ Jalankan Composer agar dependensi Laravel terinstall
     - /opt/cpanel/composer/bin/composer install --no-dev --optimize-autoloader
 
-    # Set permission storage & bootstrap agar Laravel bisa menulis
+    # 5️⃣ Pastikan .env sudah ada (jangan dihapus saat deploy)
+    - if [ ! -f .env ]; then echo ".env file not found!"; exit 1; fi
+
+    # 6️⃣ Set permission agar Laravel bisa menulis di storage & cache
     - find storage -type d -exec chmod 775 {} \;
     - find bootstrap/cache -type d -exec chmod 775 {} \;
 
-    # Cache config & route agar performa cepat
+    # 7️⃣ Jalankan migrasi database (opsional, kalau mau otomatis update DB)
+    # - php artisan migrate --force
+
+    # 8️⃣ Cache config, route, dan view untuk performa maksimal
+    - php artisan config:clear
     - php artisan config:cache
     - php artisan route:cache
     - php artisan view:cache
+
+    # 9️⃣ Set permission ulang untuk file cache
+    - chmod -R 775 storage bootstrap/cache
