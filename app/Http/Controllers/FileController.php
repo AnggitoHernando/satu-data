@@ -19,4 +19,11 @@ class FileController extends Controller
 
         return response()->download($path, $data->nama_original_file);
     }
+
+    public function downloadTemplate()
+    {
+        $path = storage_path('app/Template/Template_Upload_MANDAT.xls');
+
+        return response()->download($path, 'Template_Upload_MANDAT.xls');
+    }
 }

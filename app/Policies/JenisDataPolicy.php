@@ -68,8 +68,9 @@ class JenisDataPolicy
         return false;
     }
 
-    public function updateStatus(User $user, JenisData $jenisData): bool
+    public function updateStatus(User $user, JenisData $jenisData)
     {
+        return $user;
         if ($user->role === 'admin' || $user->role === 'super-admin') return true;
 
         if ($user->role === 'operator') {

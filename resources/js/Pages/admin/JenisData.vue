@@ -5,6 +5,7 @@ import { ref, watch, onMounted, h, computed } from "vue";
 import axios from "axios";
 import ActionButtons from "@/Components/ActionButtons.vue";
 import PrimaryButtonAdmin from "@/Components/PrimaryButtonAdmin.vue";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
 import ModalHeadnessUI from "@/Components/ModalHeadnessUI.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import TextInput from "@/Components/TextInput.vue";
@@ -292,6 +293,13 @@ const generateSlug = () => {
         .replace(/-+/g, "-");
 };
 
+const downloadFile = () => {
+    const url = route("download.template");
+    window.open(url, "_blank");
+
+    toast("Download Dimulai", "success");
+};
+
 watch([page, perPage, search, sortBy, sortDir, selectedSeksiFilter], fetchData);
 
 onMounted(fetchData);
@@ -310,7 +318,12 @@ onMounted(fetchData);
         </template> -->
         <div class="py-16 relative z-40">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                <div class="mb-3 flex justify-end">
+                <div class="mb-3 flex justify-end gap-4">
+                    <PrimaryButton
+                        v-if="userRole !== 'user'"
+                        @click="() => downloadFile()"
+                        >Template Excel</PrimaryButton
+                    >
                     <PrimaryButtonAdmin
                         v-if="userRole !== 'user'"
                         @click="() => openModal(null)"
