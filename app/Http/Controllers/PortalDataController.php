@@ -104,12 +104,14 @@ class PortalDataController extends Controller
 
     public function query_search($search, $slugSeksi)
     {
+        $search = strtolower($search);
+
         $sub1 = DB::table('jenis_data as a')
             ->select([
                 'a.id',
                 DB::raw('NULL AS jumlah_data')
             ])
-            ->where('a.judul_data', 'like', "%{$search}%")
+            ->where(DB::raw('LOWER(a.judul_data)'), 'like', "%{$search}%")
             ->where('a.status_data', '=', 'publik');
 
         $sub2 = DB::table('jenis_data_records as a')
@@ -119,8 +121,15 @@ class PortalDataController extends Controller
             ])
             ->join('jenis_data as b', 'b.id', '=', 'a.jenis_data_id')
             ->where('b.status_data', '=', 'publik');
-        ($search === "" || $search === null ? $sub2->where('a.data_json', 'like', "NULL") : $sub2->where('a.data_json', 'like', "%{$search}%"))
-            ->groupBy('a.jenis_data_id');
+
+        // kondisi pencarian
+        if ($search === "" || $search === null) {
+            $sub2->whereNull('a.data_json');
+        } else {
+            $sub2->where(DB::raw('LOWER(a.data_json)'), 'like', "%{$search}%");
+        }
+
+        $sub2->groupBy('a.jenis_data_id');
         // dd($sub2->toSql(), $sub2->getBindings());
         $unionSub = $sub1->unionAll($sub2);
 
@@ -154,7 +163,7 @@ class PortalDataController extends Controller
 
     public function apiDetail(Request $request)
     {
-        $search = $request->input('search');
+        $search = strtolower($request->input('search'));
         $id = $request->input('id');
 
         $fields = DB::table('jenis_data_fields')
@@ -165,7 +174,7 @@ class PortalDataController extends Controller
         $perPage = $request->perPage ?? 10;
         $records = DB::table('jenis_data_records')
             ->where('jenis_data_id', $id)
-            ->where('data_json', 'like', "%{$search}%")
+            ->where(DB::raw('LOWER(data_json)'), 'like', "%{$search}%")
             ->paginate($perPage)
             ->appends($request->query());
         $records->getCollection()->transform(function ($r) {

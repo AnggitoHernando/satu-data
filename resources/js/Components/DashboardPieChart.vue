@@ -10,16 +10,14 @@ const props = defineProps({
     data: Array,
 });
 
-// Fungsi buat warna random sesuai jumlah data
+// Generate warna random
 const generateRandomColors = (count) => {
-    const colors = [];
-    for (let i = 0; i < count; i++) {
+    return Array.from({ length: count }, () => {
         const r = Math.floor(Math.random() * 180) + 50;
         const g = Math.floor(Math.random() * 180) + 50;
         const b = Math.floor(Math.random() * 180) + 50;
-        colors.push(`rgba(${r}, ${g}, ${b}, 0.85)`);
-    }
-    return colors;
+        return `rgba(${r}, ${g}, ${b}, 0.85)`;
+    });
 };
 
 const backgroundColors = generateRandomColors(props.data.length);
@@ -38,29 +36,42 @@ const chartData = {
 
 const chartOptions = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
-        legend: { position: "bottom" },
+        legend: {
+            position: "bottom",
+            labels: {
+                font: {
+                    size: 12, // kecil biar muat di mobile
+                },
+            },
+        },
         tooltip: {
             callbacks: {
                 label: (context) => {
                     const label = context.label || "";
-                    const value = context.parsed.toFixed(1);
+                    const value = context.parsed?.toFixed(1) ?? 0;
                     return `${label}: ${value}%`;
                 },
             },
         },
     },
-    maintainAspectRatio: false,
 };
 </script>
 
 <template>
-    <div class="bg-white p-4 rounded-2xl shadow-sm border flex flex-col">
-        <h3 class="text-center font-semibold text-gray-800 mb-3">
+    <div class="bg-white p-4 rounded-2xl shadow-sm border flex flex-col w-full">
+        <h3
+            class="text-center font-semibold text-gray-800 mb-3 text-sm sm:text-base"
+        >
             {{ title }}
         </h3>
-        <div class="flex-1">
-            <Pie :data="chartData" :options="chartOptions" class="h-100" />
+
+        <!-- Container chart -->
+        <div
+            class="relative flex-1 min-h-[200px] sm:min-h-[250px] md:min-h-[300px]"
+        >
+            <Pie :data="chartData" :options="chartOptions" />
         </div>
     </div>
 </template>

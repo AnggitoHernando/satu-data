@@ -117,13 +117,16 @@ const deleteItem = async (item) => {
 };
 
 const modalMode = ref("create");
+const judulModal = ref("");
 const openModal = (item = null) => {
     if (item) {
         modalMode.value = "edit";
         Object.assign(form, item);
+        judulModal.value = "Ubah User";
     } else {
         modalMode.value = "create";
         form.reset();
+        judulModal.value = "Tambah User";
     }
     isOpen.value = true;
 };
@@ -250,7 +253,7 @@ onMounted(fetchData);
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div class="mb-3 flex justify-end">
                     <PrimaryButtonAdmin @click="() => openModal(null)"
-                        >+ Tambah Data</PrimaryButtonAdmin
+                        >+ Tambah User</PrimaryButtonAdmin
                     >
                 </div>
                 <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
@@ -260,114 +263,186 @@ onMounted(fetchData);
                             placeholder="Search..."
                             class="ml-2 mt-1 px-2 py-1 mb-2 rounded-md"
                         />
-
-                        <table
-                            class="table-fixed border border-gray-300 w-full"
-                        >
-                            <thead>
-                                <tr>
-                                    <th
-                                        v-for="col in columns"
-                                        :key="col.key"
-                                        class="border px-4 py-2"
-                                        :class="col.class"
-                                        :style="{ width: col.width }"
-                                    >
-                                        {{ col.header }}
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-if="loading">
-                                    <td
-                                        :colspan="columns.length"
-                                        class="text-center py-2"
-                                    >
-                                        Loading...
-                                    </td>
-                                </tr>
-                                <tr v-else-if="data.length === 0">
-                                    <td
-                                        :colspan="columns.length"
-                                        class="text-center py-2"
-                                    >
-                                        Data Tidak Ditemukan
-                                    </td>
-                                </tr>
-                                <tr
-                                    v-else
-                                    v-for="row in data"
-                                    :key="row.id"
-                                    class="hover:bg-gray-100"
-                                >
-                                    <td
-                                        class="border border-gray-300 p-2 capitalize"
-                                    >
-                                        <span class="block font-semibold">{{
-                                            row.name
-                                        }}</span>
-                                    </td>
-                                    <td
-                                        class="border border-gray-300 p-2 capitalize"
-                                    >
-                                        <span class="block font-semibold">{{
-                                            row.username
-                                        }}</span>
-                                    </td>
-                                    <td
-                                        class="border border-gray-300 p-2 text-center"
-                                    >
-                                        <span class="capitalize">{{
-                                            row.role
-                                        }}</span>
-                                    </td>
-                                    <td class="border border-gray-300 p-2">
-                                        <div
-                                            v-if="row.list_seksi.length > 0"
-                                            class="flex flex-wrap gap-1.5"
+                        <div class="hidden md:block">
+                            <table
+                                class="table-fixed border border-gray-300 w-full"
+                            >
+                                <thead>
+                                    <tr>
+                                        <th
+                                            v-for="col in columns"
+                                            :key="col.key"
+                                            class="border px-4 py-2"
+                                            :class="col.class"
+                                            :style="{ width: col.width }"
                                         >
+                                            {{ col.header }}
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-if="loading">
+                                        <td
+                                            :colspan="columns.length"
+                                            class="text-center py-2"
+                                        >
+                                            Loading...
+                                        </td>
+                                    </tr>
+                                    <tr v-else-if="data.length === 0">
+                                        <td
+                                            :colspan="columns.length"
+                                            class="text-center py-2"
+                                        >
+                                            Data Tidak Ditemukan
+                                        </td>
+                                    </tr>
+                                    <tr
+                                        v-else
+                                        v-for="row in data"
+                                        :key="row.id"
+                                        class="hover:bg-gray-100"
+                                    >
+                                        <td
+                                            class="border border-gray-300 p-2 capitalize"
+                                        >
+                                            <span class="block font-semibold">{{
+                                                row.name
+                                            }}</span>
+                                        </td>
+                                        <td
+                                            class="border border-gray-300 p-2 capitalize"
+                                        >
+                                            <span class="block font-semibold">{{
+                                                row.username
+                                            }}</span>
+                                        </td>
+                                        <td
+                                            class="border border-gray-300 p-2 text-center"
+                                        >
+                                            <span class="capitalize">{{
+                                                row.role
+                                            }}</span>
+                                        </td>
+                                        <td class="border border-gray-300 p-2">
+                                            <div
+                                                v-if="row.list_seksi.length > 0"
+                                                class="flex flex-wrap gap-1.5"
+                                            >
+                                                <span
+                                                    v-for="(
+                                                        seksi, i
+                                                    ) in row.list_seksi"
+                                                    :key="i"
+                                                    class="text-[12px] px-2 py-0.5 rounded-md bg-gray-100 text-gray-700 border border-gray-200"
+                                                >
+                                                    {{ seksi }}
+                                                </span>
+                                            </div>
                                             <span
-                                                v-for="(
-                                                    seksi, i
-                                                ) in row.list_seksi"
-                                                :key="i"
-                                                class="text-[12px] px-2 py-0.5 rounded-md bg-gray-100 text-gray-700 border border-gray-200"
+                                                v-else
+                                                class="text-gray-400 italic text-sm"
+                                                >Tidak ada seksi</span
                                             >
-                                                {{ seksi }}
-                                            </span>
-                                        </div>
-                                        <span
-                                            v-else
-                                            class="text-gray-400 italic text-sm"
-                                            >Tidak ada seksi</span
-                                        >
-                                    </td>
-                                    <td class="border border-gray-300 p-2">
-                                        <div class="flex gap-2 justify-center">
-                                            <ActionButtons
-                                                :item="row"
-                                                @edit="openModal"
-                                                @delete="deleteItem"
-                                                :visible-buttons="[
-                                                    'edit',
-                                                    'delete',
-                                                ]"
-                                            />
-                                            <button
-                                                class="bg-green-500 text-white px-2 py-1 rounded"
-                                                @click="openModalRole(row.id)"
-                                                title="Tambah/Ganti Role"
+                                        </td>
+                                        <td class="border border-gray-300 p-2">
+                                            <div
+                                                class="flex gap-2 justify-center"
                                             >
-                                                <component
-                                                    :is="UserCog"
-                                                    class="w-5 h-5 text-white transition duration-75 dark:text-white group-hover:text-white dark:group-hover:text-yellow-400"
+                                                <ActionButtons
+                                                    :item="row"
+                                                    @edit="openModal"
+                                                    @delete="deleteItem"
+                                                    :visible-buttons="[
+                                                        'edit',
+                                                        'delete',
+                                                    ]"
                                                 />
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                                                <button
+                                                    class="bg-green-500 text-white px-2 py-1 rounded"
+                                                    @click="
+                                                        openModalRole(row.id)
+                                                    "
+                                                    title="Tambah/Ganti Role"
+                                                >
+                                                    <component
+                                                        :is="UserCog"
+                                                        class="w-5 h-5 text-white transition duration-75 dark:text-white group-hover:text-white dark:group-hover:text-yellow-400"
+                                                    />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="md:hidden px-3 pb-4 space-y-4">
+                            <div
+                                v-for="row in data"
+                                :key="row.id"
+                                class="border rounded-xl p-4 bg-white shadow-sm"
+                            >
+                                <div class="text-lg font-semibold capitalize">
+                                    {{ row.name }}
+                                </div>
+
+                                <div class="text-gray-500 text-sm">
+                                    Username:
+                                    <span class="font-medium">{{
+                                        row.username
+                                    }}</span>
+                                </div>
+
+                                <div class="mt-3">
+                                    <strong>Role:</strong>
+                                    <span class="capitalize">{{
+                                        row.role
+                                    }}</span>
+                                </div>
+
+                                <div class="mt-3">
+                                    <strong>Seksi:</strong>
+                                    <div
+                                        v-if="row.list_seksi.length > 0"
+                                        class="flex flex-wrap gap-1.5 mt-1"
+                                    >
+                                        <span
+                                            v-for="(seksi, i) in row.list_seksi"
+                                            :key="i"
+                                            class="text-[12px] px-2 py-0.5 rounded-md bg-gray-100 text-gray-700 border border-gray-200"
+                                        >
+                                            {{ seksi }}
+                                        </span>
+                                    </div>
+                                    <span
+                                        v-else
+                                        class="text-gray-400 italic text-sm"
+                                        >Tidak ada seksi</span
+                                    >
+                                </div>
+
+                                <div class="mt-4 flex gap-3">
+                                    <ActionButtons
+                                        :item="row"
+                                        @edit="openModal"
+                                        @delete="deleteItem"
+                                        :visible-buttons="['edit', 'delete']"
+                                    />
+
+                                    <button
+                                        class="bg-green-500 text-white px-3 py-2 rounded-md flex items-center gap-1"
+                                        @click="openModalRole(row.id)"
+                                        title="Tambah/Ganti Role"
+                                    >
+                                        <component
+                                            :is="UserCog"
+                                            class="w-5 h-5"
+                                        />
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
 
                         <!-- Pagination -->
                         <div
@@ -460,7 +535,7 @@ onMounted(fetchData);
         <ModalHeadnessUI
             :open-modal="modalRole"
             @close="modalRole = false"
-            judul_modal="Role"
+            :judul_modal="judulModal"
         >
             <form @submit.prevent="submitRole">
                 <div>

@@ -6,9 +6,12 @@ import DropdownLink from "@/Components/DropdownLink.vue";
 import NavLink from "@/Components/NavLink.vue";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
 import SideBar from "@/Components/SideBar.vue";
-import { Link } from "@inertiajs/vue3";
+import { Link, usePage } from "@inertiajs/vue3";
 
 const showingNavigationDropdown = ref(false);
+const page = usePage();
+const roleUser = page.props.auth.user.role ?? null;
+const allowedUser = ["super-admin", "admin"];
 </script>
 
 <template>
@@ -29,9 +32,11 @@ const showingNavigationDropdown = ref(false);
                                         class="block h-9 w-auto fill-current text-gray-800"
                                     />
                                 </Link>
-                                <span class="text-white ml-2"
-                                    >Manajemen Data Terpadu Kemenag Gresik</span
+                                <span
+                                    class="text-black dark:text-white ml-2 sm:text-xs"
                                 >
+                                    Manajemen Data Terpadu Kemenag Gresik
+                                </span>
                             </div>
 
                             <!-- Navigation Links -->
@@ -47,7 +52,7 @@ const showingNavigationDropdown = ref(false);
                             </div> -->
                         </div>
 
-                        <div class="hidden sm:ms-6 sm:flex sm:items-center">
+                        <div class="hidden md:ms-6 md:flex md:items-center">
                             <!-- Settings Dropdown -->
                             <div class="relative ms-3">
                                 <Dropdown align="right" width="48">
@@ -94,7 +99,7 @@ const showingNavigationDropdown = ref(false);
                         </div>
 
                         <!-- Hamburger -->
-                        <div class="-me-2 flex items-center sm:hidden">
+                        <div class="-me-2 flex items-center md:hidden">
                             <button
                                 @click="
                                     showingNavigationDropdown =
@@ -142,7 +147,7 @@ const showingNavigationDropdown = ref(false);
                         block: showingNavigationDropdown,
                         hidden: !showingNavigationDropdown,
                     }"
-                    class="sm:hidden"
+                    class="md:hidden"
                 >
                     <div class="space-y-1 pb-3 pt-2">
                         <ResponsiveNavLink
@@ -150,6 +155,19 @@ const showingNavigationDropdown = ref(false);
                             :active="route().current('dashboard')"
                         >
                             Dashboard
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            :href="route('jenis_data.show')"
+                            :active="$page.url === '/jenis-data'"
+                        >
+                            Jenis Data
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            v-if="allowedUser.includes(roleUser)"
+                            :href="route('users.show')"
+                            :active="$page.url === '/users'"
+                        >
+                            Users
                         </ResponsiveNavLink>
                     </div>
 
@@ -188,12 +206,12 @@ const showingNavigationDropdown = ref(false);
             </header>
 
             <!-- Page Content -->
-            <div class="mt-10 ml-64">
+            <div class="mt-16 md:ml-64 ml-0 px-3 md:px-0">
                 <main :key="$page.url">
                     <slot />
                 </main>
             </div>
         </div>
     </div>
-    <SideBar />
+    <SideBar class="hidden md:block" />
 </template>

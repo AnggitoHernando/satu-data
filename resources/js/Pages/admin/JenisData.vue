@@ -152,16 +152,19 @@ const deleteItem = async (item) => {
 };
 
 const modalMode = ref("create");
+const judulModal = ref("");
 const openModal = (item = null) => {
     if (item) {
         modalMode.value = "edit";
         Object.assign(form, item);
+        judulModal.value = "Ubah Jenis Data";
     } else {
         modalMode.value = "create";
         form.reset();
         form.file_path = null;
 
         if (fileInput.value) fileInput.value.value = null;
+        judulModal.value = "Tambah Jenis Data";
     }
     isOpen.value = true;
 };
@@ -309,16 +312,9 @@ onMounted(fetchData);
     <Head title="Jenis Data" />
 
     <AuthenticatedLayout>
-        <!-- <template #header>
-            <h2
-                class="text-xl font-semibold leading-tight text-gray-800"
-            >
-                Dashboard
-            </h2>
-        </template> -->
         <div class="py-16 relative z-40">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                <div class="mb-3 flex justify-end gap-4">
+                <div class="mb-4 flex flex-col sm:flex-row justify-end gap-3">
                     <PrimaryButton
                         v-if="userRole !== 'user'"
                         @click="() => downloadFile()"
@@ -333,12 +329,14 @@ onMounted(fetchData);
                 <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                     <div>
                         <div
-                            class="flex flex-col sm:flex-row justify-between items-center gap-3 bg-gray-50 px-4 py-3 border border-gray-200 rounded-md mb-3 shadow-sm"
+                            class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 bg-gray-50 px-4 py-3 border border-gray-200 rounded-md mb-3 shadow-sm"
                         >
-                            <!-- Left: Filters -->
-                            <div class="flex flex-wrap items-center gap-3">
+                            <!-- Left filters -->
+                            <div
+                                class="flex flex-wrap items-center gap-3 w-full"
+                            >
                                 <!-- Search -->
-                                <div class="relative">
+                                <div class="relative w-full sm:w-auto">
                                     <LucideSearch
                                         class="absolute left-2 top-2.5 text-gray-400"
                                         :size="18"
@@ -347,19 +345,19 @@ onMounted(fetchData);
                                         v-model="search"
                                         type="text"
                                         placeholder="Cari data..."
-                                        class="pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                        class="pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm w-full sm:w-auto"
                                     />
                                 </div>
 
                                 <!-- Filter Seksi -->
-                                <div class="relative">
+                                <div class="relative w-full sm:w-auto">
                                     <LucideFilter
                                         class="absolute left-2 top-2.5 text-gray-400"
                                         :size="18"
                                     />
                                     <select
                                         v-model="selectedSeksiFilter"
-                                        class="pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white"
+                                        class="pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white w-full sm:w-auto"
                                     >
                                         <option value="">Semua Seksi</option>
                                         <option
@@ -373,14 +371,14 @@ onMounted(fetchData);
                                 </div>
 
                                 <!-- Sort By -->
-                                <div class="relative">
+                                <div class="relative w-full sm:w-auto">
                                     <LucideArrowUpDown
                                         class="absolute left-2 top-2.5 text-gray-400"
                                         :size="18"
                                     />
                                     <select
                                         v-model="sortBy"
-                                        class="pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white"
+                                        class="pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white w-full sm:w-auto"
                                     >
                                         <option disabled value="">
                                             Urutkan Berdasarkan
@@ -404,7 +402,7 @@ onMounted(fetchData);
                                         sortDir =
                                             sortDir === 'asc' ? 'desc' : 'asc'
                                     "
-                                    class="flex items-center gap-1 px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition"
+                                    class="flex items-center gap-1 px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition w-full sm:w-auto"
                                     :title="`Urutan: ${sortDir.toUpperCase()}`"
                                 >
                                     <LucideArrowUp
@@ -419,7 +417,7 @@ onMounted(fetchData);
                                 </button>
                             </div>
 
-                            <!-- Right: Reset Filters -->
+                            <!-- Reset -->
                             <button
                                 @click="
                                     search = '';
@@ -427,99 +425,250 @@ onMounted(fetchData);
                                     sortBy = 'jenis_data.id';
                                     sortDir = 'desc';
                                 "
-                                class="flex items-center gap-1 px-3 py-2 text-sm border border-gray-300 rounded-md text-gray-600 hover:bg-gray-100"
+                                class="flex items-center gap-1 px-3 py-2 text-sm border border-gray-300 rounded-md text-gray-600 hover:bg-gray-100 w-full md:w-auto"
                             >
                                 <LucideRotateCcw :size="16" />
                                 <span>Reset</span>
                             </button>
                         </div>
 
-                        <table
-                            class="table-fixed border border-gray-300 w-full"
-                        >
-                            <thead>
-                                <tr>
-                                    <th
-                                        v-for="col in columns"
-                                        :key="col.key"
-                                        class="border px-4 py-2"
-                                        :class="col.class"
-                                        :style="{ width: col.width }"
-                                    >
-                                        {{ col.header }}
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-if="loading">
-                                    <td
-                                        :colspan="columns.length"
-                                        class="text-center py-2"
-                                    >
-                                        Loading...
-                                    </td>
-                                </tr>
-                                <tr v-else-if="data.length === 0">
-                                    <td
-                                        :colspan="columns.length"
-                                        class="text-center py-2"
-                                    >
-                                        Data Tidak Ditemukan
-                                    </td>
-                                </tr>
-                                <tr
-                                    v-else
+                        <div class="w-full">
+                            <!-- DESKTOP TABLE -->
+                            <div class="hidden md:block overflow-x-auto">
+                                <table
+                                    class="table-fixed border border-gray-300 w-full"
+                                >
+                                    <thead>
+                                        <tr>
+                                            <th
+                                                v-for="col in columns"
+                                                :key="col.key"
+                                                class="border px-4 py-2"
+                                                :class="col.class"
+                                                :style="{ width: col.width }"
+                                            >
+                                                {{ col.header }}
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-if="loading">
+                                            <td
+                                                :colspan="columns.length"
+                                                class="text-center py-2"
+                                            >
+                                                Loading...
+                                            </td>
+                                        </tr>
+
+                                        <tr v-else-if="data.length === 0">
+                                            <td
+                                                :colspan="columns.length"
+                                                class="text-center py-2"
+                                            >
+                                                Data Tidak Ditemukan
+                                            </td>
+                                        </tr>
+
+                                        <tr
+                                            v-else
+                                            v-for="row in data"
+                                            :key="row.id"
+                                            class="hover:bg-gray-100"
+                                        >
+                                            <td class="border p-2 capitalize">
+                                                <span
+                                                    class="block font-semibold"
+                                                    >{{ row.judul_data }}</span
+                                                >
+                                                <span
+                                                    class="block text-gray-500 text-sm"
+                                                >
+                                                    {{ row.nama_seksi }} ·
+                                                    <span
+                                                        class="normal-case text-gray-400"
+                                                        >{{ row.tahun }}</span
+                                                    >
+                                                </span>
+                                            </td>
+
+                                            <td class="border p-2 text-center">
+                                                <span
+                                                    v-if="!row.deskripsi"
+                                                    class="text-gray-400"
+                                                ></span>
+                                                <a
+                                                    v-else
+                                                    @click="
+                                                        openDeskripsi(
+                                                            row.deskripsi,
+                                                            row.judul_data
+                                                        )
+                                                    "
+                                                    class="text-blue-600 hover:underline cursor-pointer"
+                                                >
+                                                    Lihat Deskripsi
+                                                </a>
+                                            </td>
+
+                                            <td
+                                                class="border p-2 text-center capitalize"
+                                            >
+                                                {{ row.status_data }}
+                                            </td>
+
+                                            <td class="border p-2 text-center">
+                                                <div
+                                                    class="flex flex-col items-center"
+                                                >
+                                                    <span
+                                                        class="font-semibold capitalize text-gray-800"
+                                                        :class="{
+                                                            'text-green-600':
+                                                                row.status_upload ===
+                                                                'success',
+                                                            'text-yellow-600':
+                                                                row.status_upload ===
+                                                                'pending',
+                                                            'text-red-500':
+                                                                row.status_upload ===
+                                                                'failed',
+                                                        }"
+                                                    >
+                                                        {{ row.status_upload }}
+                                                    </span>
+                                                    <span
+                                                        v-if="
+                                                            row.error_message_upload
+                                                        "
+                                                        class="text-xs text-red-500 italic truncate max-w-40"
+                                                    >
+                                                        {{
+                                                            row.error_message_upload
+                                                        }}
+                                                    </span>
+                                                </div>
+                                            </td>
+
+                                            <td class="border p-2 text-center">
+                                                <span
+                                                    v-if="!row.file_path"
+                                                    class="text-gray-400"
+                                                    >Tidak ada file</span
+                                                >
+                                                <div
+                                                    v-else
+                                                    class="flex flex-col items-center"
+                                                >
+                                                    <a
+                                                        :href="`/storage/${row.file_path}`"
+                                                        target="_blank"
+                                                        class="text-blue-600 hover:underline"
+                                                    >
+                                                        Lihat File
+                                                    </a>
+                                                    <span
+                                                        class="text-xs italic truncate max-w-20"
+                                                    >
+                                                        ({{
+                                                            row.nama_original_file
+                                                        }})
+                                                    </span>
+                                                </div>
+                                            </td>
+
+                                            <td
+                                                v-if="userRole !== 'user'"
+                                                class="border p-2"
+                                            >
+                                                <ActionButtons
+                                                    v-if="
+                                                        (userRole ===
+                                                            'operator' &&
+                                                            allowedSeksiId.includes(
+                                                                row.seksi_id
+                                                            )) ||
+                                                        userRole === 'admin' ||
+                                                        userRole ===
+                                                            'super-admin'
+                                                    "
+                                                    :item="row"
+                                                    @edit="openModal"
+                                                    @delete="deleteItem"
+                                                    @toggleStatus="toggleStatus"
+                                                    @retryUpload="retryUpload"
+                                                />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- MOBILE CARD VIEW -->
+                            <div class="md:hidden space-y-4">
+                                <div
                                     v-for="row in data"
                                     :key="row.id"
-                                    class="hover:bg-gray-100"
+                                    class="border rounded-xl p-4 shadow-sm bg-white"
                                 >
-                                    <td
-                                        class="border border-gray-300 p-2 capitalize"
-                                    >
-                                        <span class="block font-semibold">{{
-                                            row.judul_data
-                                        }}</span>
-                                        <span
-                                            class="block text-gray-500 text-sm"
-                                            >{{ row.nama_seksi }} ·
-                                            <span
-                                                class="normal-case text-gray-400"
-                                                >{{ row.tahun }}</span
-                                            ></span
+                                    <!-- Header -->
+                                    <div class="mb-3">
+                                        <div
+                                            class="text-lg font-semibold leading-tight capitalize"
                                         >
-                                    </td>
-                                    <td
-                                        class="border border-gray-300 p-2 text-center"
-                                    >
-                                        <span
-                                            v-if="!row.deskripsi"
-                                            class="text-gray-400"
-                                        ></span>
-                                        <a
-                                            v-else
-                                            @click="
-                                                openDeskripsi(
-                                                    row.deskripsi,
-                                                    row.judul_data
-                                                )
-                                            "
-                                            class="text-blue-600 hover:underline cursor-pointer"
-                                        >
-                                            Lihat Deskripsi
-                                        </a>
-                                    </td>
-                                    <td
-                                        class="border border-gray-300 p-2 text-center capitalize"
-                                    >
-                                        {{ row.status_data }}
-                                    </td>
+                                            {{ row.judul_data }}
+                                        </div>
+                                        <div class="text-gray-500 text-sm">
+                                            {{ row.nama_seksi }} ·
+                                            <span>{{ row.tahun }}</span>
+                                        </div>
+                                    </div>
 
-                                    <td
-                                        class="border border-gray-300 p-2 text-center align-middle"
-                                    >
-                                        <div class="flex flex-col items-center">
-                                            <span
-                                                class="font-semibold capitalize text-gray-800"
+                                    <!-- Content -->
+                                    <div class="space-y-3 text-sm">
+                                        <!-- Deskripsi -->
+                                        <div>
+                                            <span class="text-gray-500"
+                                                >Deskripsi</span
+                                            >
+                                            <div class="mt-0.5">
+                                                <span
+                                                    v-if="!row.deskripsi"
+                                                    class="text-gray-400"
+                                                    >Tidak ada</span
+                                                >
+                                                <a
+                                                    v-else
+                                                    @click="
+                                                        openDeskripsi(
+                                                            row.deskripsi,
+                                                            row.judul_data
+                                                        )
+                                                    "
+                                                    class="text-blue-600 hover:underline cursor-pointer"
+                                                >
+                                                    Lihat Deskripsi
+                                                </a>
+                                            </div>
+                                        </div>
+
+                                        <!-- Status Data -->
+                                        <div>
+                                            <span class="text-gray-500"
+                                                >Status Data</span
+                                            >
+                                            <div class="font-medium capitalize">
+                                                {{ row.status_data }}
+                                            </div>
+                                        </div>
+
+                                        <!-- Status Upload -->
+                                        <div>
+                                            <span class="text-gray-500"
+                                                >Status Upload</span
+                                            >
+                                            <div
+                                                class="font-medium capitalize"
                                                 :class="{
                                                     'text-green-600':
                                                         row.status_upload ===
@@ -533,46 +682,43 @@ onMounted(fetchData);
                                                 }"
                                             >
                                                 {{ row.status_upload }}
-                                            </span>
-                                            <span
+                                            </div>
+
+                                            <div
                                                 v-if="row.error_message_upload"
-                                                class="text-xs text-red-500 italic truncate max-w-40"
+                                                class="text-xs text-red-500 italic mt-1"
                                             >
                                                 {{ row.error_message_upload }}
-                                            </span>
+                                            </div>
                                         </div>
-                                    </td>
-                                    <td class="border border-gray-300 p-2">
-                                        <span
-                                            v-if="!row.file_path"
-                                            class="text-gray-400"
-                                            >Tidak ada file</span
-                                        >
 
-                                        <div
-                                            v-else
-                                            class="flex flex-col items-center"
-                                        >
-                                            <span>
+                                        <!-- File -->
+                                        <div>
+                                            <span class="text-gray-500"
+                                                >File</span
+                                            >
+                                            <div class="mt-0.5">
+                                                <span
+                                                    v-if="!row.file_path"
+                                                    class="text-gray-400"
+                                                    >Tidak ada file</span
+                                                >
                                                 <a
+                                                    v-else
                                                     :href="`/storage/${row.file_path}`"
                                                     target="_blank"
                                                     class="text-blue-600 hover:underline"
                                                 >
                                                     Lihat File
                                                 </a>
-                                            </span>
-                                            <span
-                                                class="text-xs text-black-500 italic truncate max-w-20"
-                                                >({{
-                                                    row.nama_original_file
-                                                }})</span
-                                            >
+                                            </div>
                                         </div>
-                                    </td>
-                                    <td
+                                    </div>
+
+                                    <!-- Action Buttons -->
+                                    <div
                                         v-if="userRole !== 'user'"
-                                        class="border border-gray-300 p-2"
+                                        class="flex justify-end gap-3 mt-4"
                                     >
                                         <ActionButtons
                                             v-if="
@@ -589,18 +735,10 @@ onMounted(fetchData);
                                             @toggleStatus="toggleStatus"
                                             @retryUpload="retryUpload"
                                         />
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <ModalHeadnessUI
-                            :open-modal="isOpenDeskripsi"
-                            @close="isOpenDeskripsi = false"
-                            :judul_modal="currentJudulDescription"
-                            ><p>
-                                {{ currentDescription }}
-                            </p></ModalHeadnessUI
-                        >
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                         <!-- Pagination -->
                         <div
@@ -634,7 +772,7 @@ onMounted(fetchData);
         <ModalHeadnessUI
             :open-modal="isOpen"
             @close="isOpen = false"
-            judul_modal="Tambah Jenis Data"
+            :judul_modal="judulModal"
         >
             <form @submit.prevent="submit">
                 <div>
@@ -750,5 +888,13 @@ onMounted(fetchData);
                 </div>
             </form>
         </ModalHeadnessUI>
+        <ModalHeadnessUI
+            :open-modal="isOpenDeskripsi"
+            @close="isOpenDeskripsi = false"
+            :judul_modal="currentJudulDescription"
+            ><p>
+                {{ currentDescription }}
+            </p></ModalHeadnessUI
+        >
     </AuthenticatedLayout>
 </template>
