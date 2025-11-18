@@ -4,11 +4,13 @@ import { Head, Link, router, usePage } from "@inertiajs/vue3";
 import { Search } from "lucide-vue-next";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import { Database, Rocket, ShieldCheck } from "lucide-vue-next";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { ref, computed } from "vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
+import PrimaryButtonAdmin from "@/Components/PrimaryButtonAdmin.vue";
 
 const page = usePage();
 const list_seksi = computed(() => page.props.list_seksi || []);
@@ -89,40 +91,99 @@ function handleSearch() {
                 </div>
             </section>
 
-            <!-- Swiper Section -->
-            <section class="max-w-7xl mx-auto text-center px-4">
-                <Swiper
-                    :modules="[Navigation, Pagination]"
-                    :slidesPerView="4"
-                    :breakpoints="{
-                        640: { slidesPerView: 2 },
-                        1024: { slidesPerView: 4 },
-                    }"
-                    :spaceBetween="20"
-                    pagination
-                    navigation
-                    class="w-full h-64 sm:h-64 md:h-72 rounded-xl overflow-hidden"
-                >
-                    <swiper-slide
-                        class="bg-gray-200 rounded-xl"
-                        v-for="seksi in list_seksi"
-                        :key="seksi.id"
-                        @click="selectSeksi(seksi.slug)"
+            <section class="py-10 sm:py-14 bg-white">
+                <div class="max-w-6xl mx-auto px-4 sm:px-6">
+                    <h2
+                        class="text-2xl sm:text-3xl font-bold text-center text-gray-800 mb-8"
+                    >
+                        Fitur Utama Portal
+                    </h2>
+
+                    <div
+                        class="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center"
                     >
                         <div
-                            class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300 cursor-pointer flex flex-col items-center justify-between h-[15rem] sm:h-[15.5rem]"
+                            class="p-6 bg-gray-50 rounded-xl shadow hover:shadow-lg transition"
+                        >
+                            <Database
+                                class="mx-auto h-10 w-10 text-green-700"
+                            />
+                            <h3
+                                class="text-lg font-semibold text-gray-800 mt-3"
+                            >
+                                Integrasi Data
+                            </h3>
+                            <p class="text-gray-600 text-sm mt-2">
+                                Semua data lintas seksi terhubung dalam satu
+                                platform terpadu.
+                            </p>
+                        </div>
+
+                        <div
+                            class="p-6 bg-gray-50 rounded-xl shadow hover:shadow-lg transition"
+                        >
+                            <Rocket class="mx-auto h-10 w-10 text-green-700" />
+                            <h3
+                                class="text-lg font-semibold text-gray-800 mt-3"
+                            >
+                                Akses Lebih Cepat
+                            </h3>
+                            <p class="text-gray-600 text-sm mt-2">
+                                Sistem dirancang untuk pencarian data yang cepat
+                                dan efisien.
+                            </p>
+                        </div>
+
+                        <div
+                            class="p-6 bg-gray-50 rounded-xl shadow hover:shadow-lg transition"
+                        >
+                            <ShieldCheck
+                                class="mx-auto h-10 w-10 text-green-700"
+                            />
+                            <h3
+                                class="text-lg font-semibold text-gray-800 mt-3"
+                            >
+                                Transparan & Akuntabel
+                            </h3>
+                            <p class="text-gray-600 text-sm mt-2">
+                                Data publik disajikan secara terbuka dan dapat
+                                dipertanggungjawabkan.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section
+                class="bg-gradient-to-b from-gray-50 to-white py-10 sm:py-12"
+            >
+                <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <h2
+                        class="text-2xl sm:text-3xl font-bold text-center text-gray-800 mb-8"
+                    >
+                        Pilih Kategori Data
+                    </h2>
+                    <div
+                        class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 text-center gap-6 sm:gap-8"
+                    >
+                        <div
+                            v-for="seksi in list_seksi"
+                            :key="seksi.id"
+                            @click="selectSeksi(seksi.slug)"
+                            class="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer flex flex-col items-center min-h-[15rem]"
                         >
                             <div
-                                class="h-1/2 flex mt-2 items-center justify-center w-full bg-gray-50"
+                                class="flex items-center justify-center w-full bg-gray-50 py-4"
                             >
                                 <img
                                     :src="`/icon/${seksi.icon_seksi}`"
                                     :alt="seksi.nama_seksi"
-                                    class="object-contain w-2/3 sm:w-1/2 h-full"
+                                    class="object-contain w-2/3 sm:w-1/2 h-24"
                                 />
                             </div>
+
                             <div
-                                class="p-3 sm:p-4 text-center h-1/2 flex flex-col justify-center"
+                                class="p-3 sm:p-4 text-center flex flex-col justify-center flex-1"
                             >
                                 <h3
                                     class="text-base sm:text-lg font-semibold text-gray-800"
@@ -136,15 +197,19 @@ function handleSearch() {
                                 </p>
                             </div>
                         </div>
-                    </swiper-slide>
-                </Swiper>
+                    </div>
+                </div>
             </section>
 
-            <!-- Statistik -->
             <section
                 class="bg-gradient-to-b from-gray-50 to-white py-10 sm:py-12"
             >
                 <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <h2
+                        class="text-2xl sm:text-3xl font-bold text-center text-gray-800 mb-8"
+                    >
+                        Statistik Ringkas
+                    </h2>
                     <div
                         class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 text-center gap-6 sm:gap-8"
                     >
@@ -164,6 +229,28 @@ function handleSearch() {
                                 {{ item.label }}
                             </p>
                         </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="py-12 bg-white">
+                <div class="max-w-5xl mx-auto px-4 sm:px-6 text-center">
+                    <h2 class="text-2xl sm:text-3xl font-bold text-gray-800">
+                        Tentang Portal MANDAT Gresik
+                    </h2>
+                    <div
+                        class="p-6 bg-gray-50 rounded-xl shadow hover:shadow-lg transition"
+                    >
+                        <p
+                            class="mt-4 text-gray-600 text-base sm:text-lg leading-relaxed max-w-3xl mx-auto"
+                        >
+                            Portal MANDAT Gresik merupakan sistem manajemen data
+                            terpadu Kementerian Agama Kabupaten Gresik yang
+                            mengintegrasikan seluruh data lintas seksi dalam
+                            satu platform. Portal ini mendukung transparansi
+                            informasi publik dan meningkatkan efektivitas
+                            layanan berbasis data.
+                        </p>
                     </div>
                 </div>
             </section>
