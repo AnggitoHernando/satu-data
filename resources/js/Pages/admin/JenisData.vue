@@ -25,10 +25,11 @@ import {
 const controller = usePage();
 const { list_seksi, allowedSeksi } = controller.props;
 const userRole = computed(() => controller.props.auth.user.role || null);
-const allowedSeksiId = computed(
-    () => controller.props.allowedSeksi.map((s) => s.id) || null
+const allowedSeksiId = computed(() =>
+    controller.props.allowedSeksi
+        ? controller.props.allowedSeksi.map((s) => s.id)
+        : []
 );
-console.log(allowedSeksiId);
 
 //Form
 const form = useForm({
