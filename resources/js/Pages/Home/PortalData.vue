@@ -21,7 +21,6 @@ const inputSearch = ref(null);
 
 const search = ref(data_controller.props.filters.q || "");
 const selectedFilter = ref(data_controller.props.filters.seksi || "semua");
-console.log(selectedFilter);
 const hasSearched = ref(false);
 const total = ref(0);
 const page = ref(1);
@@ -266,58 +265,65 @@ watchEffect(() => {
                         :key="data.id"
                         class="group bg-white/90 backdrop-blur-sm border border-gray-200 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 p-5 cursor-pointer hover:-translate-y-1"
                     >
+                        <!-- HEADER: ICON | JUDUL | BADGE -->
                         <div
-                            class="flex items-start gap-3 mb-3"
+                            class="grid grid-cols-[auto_minmax(0,1fr)_auto] gap-4 w-full items-start"
                             @click="gotoDetail(data)"
                         >
-                            <span
-                                class="absolute top-3 right-3 text-xs font-semibold px-2 py-1 rounded-md uppercase bg-green-50 text-green-700 border border-green-200"
-                            >
-                                {{ data.extension_file }}
-                            </span>
+                            <!-- Icon -->
                             <div class="p-2 bg-green-50 rounded-lg">
-                                <Database class="w-5 h-5 text-green-700" />
+                                <Database class="w-6 h-6 text-green-700" />
                             </div>
-                            <div>
+
+                            <!-- Title Section -->
+                            <div class="min-w-0">
+                                <!-- Judul -->
                                 <h3
-                                    class="capitalize font-semibold text-lg group-hover:text-green-700 transition"
+                                    class="capitalize font-semibold text-lg group-hover:text-green-700 transition leading-snug break-words"
                                 >
                                     {{ data.judul_data }}
                                 </h3>
+
+                                <!-- Seksi & Tahun -->
                                 <p
-                                    class="text-xs uppercase text-gray-400 font-medium mt-1"
+                                    class="text-xs uppercase text-gray-400 font-medium mt-1 truncate"
                                 >
                                     {{
                                         data.nama_seksi ||
                                         data.seksi?.nama_seksi
                                     }}
-                                    ·
-                                    <span class="normal-case text-gray-400">{{
-                                        data.tahun
-                                    }}</span>
+                                    · {{ data.tahun }}
                                 </p>
                             </div>
+
+                            <!-- File Badge -->
+                            <span
+                                class="text-xs font-semibold px-2 py-1 rounded-md uppercase bg-green-50 text-green-700 border border-green-200 whitespace-nowrap"
+                            >
+                                {{ data.extension_file }}
+                            </span>
                         </div>
 
+                        <!-- Deskripsi -->
                         <p
-                            class="text-sm text-gray-600 line-clamp-3 leading-relaxed"
+                            class="text-sm text-gray-600 line-clamp-3 leading-relaxed mt-3"
                         >
                             {{ data.deskripsi }}
                         </p>
+
+                        <!-- Footer -->
                         <div class="mt-4 flex items-center justify-between">
                             <div
                                 v-if="data.jumlah_data > 0 && hasSearched"
                                 @click="openDetail(data)"
-                                class="flex items-center gap-2 bg-green-50 border border-green-100 text-green-700 px-3 py-1.5 rounded-lg text-xs sm:text-sm"
+                                class="flex items-center gap-2 bg-green-50 border border-green-100 text-green-700 px-3 py-1.5 rounded-lg text-xs sm:text-sm cursor-pointer"
                             >
                                 <Database class="w-4 h-4" />
                                 <span class="font-medium">
                                     {{ data.jumlah_data }} hasil untuk
-                                    <span class="italic text-green-800"
-                                        >"{{
-                                            data_controller.props.filters.q
-                                        }}"</span
-                                    >
+                                    <span class="italic text-green-800">
+                                        "{{ data_controller.props.filters.q }}"
+                                    </span>
                                 </span>
                                 <button
                                     class="text-green-700 hover:text-green-800 underline font-medium"
