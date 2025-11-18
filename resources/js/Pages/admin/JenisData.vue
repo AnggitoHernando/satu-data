@@ -287,6 +287,13 @@ const submit = async () => {
     }
 };
 
+const lihatFile = (id) => {
+    const url = route("download.file", { id });
+    window.open(url, "_blank");
+
+    toast("Download Dimulai", "success");
+};
+
 const generateSlug = () => {
     form.slug = form.judul_data
         .toLowerCase()
@@ -561,9 +568,11 @@ onMounted(fetchData);
                                                     class="flex flex-col items-center"
                                                 >
                                                     <a
-                                                        :href="`/storage/${row.file_path}`"
+                                                        @click="
+                                                            lihatFile(row.id)
+                                                        "
                                                         target="_blank"
-                                                        class="text-blue-600 hover:underline"
+                                                        class="text-blue-600 hover:underline cursor-pointer"
                                                     >
                                                         Lihat File
                                                     </a>

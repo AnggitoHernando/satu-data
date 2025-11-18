@@ -1,1 +1,0 @@
-import{c as o,u as s,g as c}from"./app-C3i50yTy.js";const t="/build/assets/Logo1-D7HDi6ga.png",e=["src"],l={__name:"ApplicationLogo",setup(a){return(n,r)=>(c(),o("img",{class:"w-14 mx-auto",src:s(t)},null,8,e))}};export{l as _};
