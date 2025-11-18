@@ -30,7 +30,7 @@ class UserController extends Controller
 
     public function apiIndex(Request $request)
     {
-        $this->authorize('viewAny',User::Class);
+        $this->authorize('viewAny');
         $base = DB::table('users as a')
             ->leftJoin('role_user_seksi as b', 'b.user_id', '=', 'a.id')
             ->leftJoin('seksi as c', 'c.id', '=', 'b.seksi_id')
@@ -82,13 +82,13 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $this->authorize('create',User::Class);
+        $this->authorize('create');
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'username' => 'required|string',
             'password' => 'required|string|min:8',
         ]);
-        $validated["password"] = md5($validated["password"]);
+        $validated["password"] = Hash::make($validated['password']);
         $data = User::create($validated);
         return response()->json([
             'success' => true,
@@ -134,7 +134,7 @@ class UserController extends Controller
      */
     public function storeRole(Request $request)
     {
-        $this->authorize('create',User::Class);
+        $this->authorize('create');
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
             'role' => 'required|string|in:admin,operator,user',
@@ -160,7 +160,7 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        $this->authorize('update',$user);
+        $this->authorize('update', $user);
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'username' => 'required|string',
@@ -187,7 +187,7 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        $this->authorize('delete',$user);
+        $this->authorize('delete', $user);
         $user->delete();
 
         return redirect()->back()->with('success', 'Data berhasil dihapus.');
