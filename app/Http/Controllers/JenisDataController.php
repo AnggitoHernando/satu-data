@@ -8,6 +8,7 @@ use App\Models\JenisData;
 use App\Models\JenisDataFields;
 use App\Models\JenisDataRecords;
 use App\Models\Seksi;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -19,7 +20,7 @@ class JenisDataController extends Controller
 {
     public function index()
     {
-        $this->authorize('viewAny', JenisData::class);
+        $this->authorize('viewAny', User::class);
         $filterSeksi = Seksi::all();
         $user = Auth::user();
         $query = Seksi::query();
@@ -44,7 +45,7 @@ class JenisDataController extends Controller
             abort(401, 'User belum login');
         }
 
-        $this->authorize('viewAny', JenisData::class);
+        $this->authorize('viewAny', User::class);
 
         $query = JenisData::query()
             ->join('seksi', 'jenis_data.seksi_id', '=', 'seksi.id')
@@ -110,7 +111,7 @@ class JenisDataController extends Controller
             'sumber_data' => 'required|string',
             'file_path' => 'required|file|max:2048',
         ]);
-        $this->authorize('create', $user, $validated["seksi_id"]);
+        $this->authorize('create', [User::class, $validated["seksi_id"]]);
 
         $exists = JenisData::where('judul_data', $validated['judul_data'])
             ->where('tahun', $validated['tahun'])

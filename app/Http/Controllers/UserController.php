@@ -30,7 +30,7 @@ class UserController extends Controller
 
     public function apiIndex(Request $request)
     {
-        $this->authorize('viewAny');
+        $this->authorize('viewAny', User::class);
         $base = DB::table('users as a')
             ->leftJoin('role_user_seksi as b', 'b.user_id', '=', 'a.id')
             ->leftJoin('seksi as c', 'c.id', '=', 'b.seksi_id')
@@ -82,7 +82,7 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $this->authorize('create');
+        $this->authorize('create', User::class);
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'username' => 'required|string',
@@ -134,7 +134,7 @@ class UserController extends Controller
      */
     public function storeRole(Request $request)
     {
-        $this->authorize('create');
+        $this->authorize('create', User::class);
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
             'role' => 'required|string|in:admin,operator,user',
