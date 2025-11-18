@@ -206,6 +206,7 @@ const toggleStatus = async (item, newStatus) => {
 
 // fungsi retry
 const retryUpload = async (item) => {
+    pageLoading.value = true;
     try {
         await axios.post(route("jenis-data.retryUpload", item.id));
         await fetchData();
@@ -213,6 +214,8 @@ const retryUpload = async (item) => {
     } catch (err) {
         Swal.fire("Gagal!", "Tidak dapat Mengupload", "error");
         // console.error(err);
+    } finally {
+        pageLoading.value = false;
     }
 };
 
@@ -308,12 +311,26 @@ const downloadFile = () => {
 };
 
 watch([page, perPage, search, sortBy, sortDir, selectedSeksiFilter], fetchData);
-
-onMounted(fetchData);
+const pageLoading = ref(true);
+onMounted(async () => {
+    await fetchData();
+    pageLoading.value = false;
+});
 </script>
 
 <template>
     <Head title="Jenis Data" />
+    <div
+        v-if="pageLoading"
+        class="fixed inset-0 z-50 bg-white/70 backdrop-blur-sm flex flex-col items-center justify-center"
+    >
+        <div
+            class="w-10 h-10 border-4 border-green-500 border-t-transparent rounded-full animate-spin"
+        ></div>
+        <p class="mt-3 text-gray-600 text-sm font-medium animate-pulse">
+            Loading
+        </p>
+    </div>
 
     <AuthenticatedLayout>
         <div class="py-16 relative z-40">
