@@ -25,11 +25,6 @@ import {
 const controller = usePage();
 const { list_seksi, allowedSeksi } = controller.props;
 const userRole = computed(() => controller.props.auth.user.role || null);
-const allowedSeksiId = computed(() =>
-    controller.props.allowedSeksi
-        ? controller.props.allowedSeksi.map((s) => s.id)
-        : []
-);
 
 //Form
 const form = useForm({
@@ -593,16 +588,7 @@ onMounted(fetchData);
                                                 class="border p-2"
                                             >
                                                 <ActionButtons
-                                                    v-if="
-                                                        (userRole ===
-                                                            'operator' &&
-                                                            allowedSeksiId.includes(
-                                                                row.seksi_id
-                                                            )) ||
-                                                        userRole === 'admin' ||
-                                                        userRole ===
-                                                            'super-admin'
-                                                    "
+                                                    v-if="row.can_edit == '1'"
                                                     :item="row"
                                                     @edit="openModal"
                                                     @delete="deleteItem"
@@ -732,14 +718,7 @@ onMounted(fetchData);
                                         class="flex justify-end gap-3 mt-4"
                                     >
                                         <ActionButtons
-                                            v-if="
-                                                (userRole === 'operator' &&
-                                                    allowedSeksiId.includes(
-                                                        row.seksi_id
-                                                    )) ||
-                                                userRole === 'admin' ||
-                                                userRole === 'super-admin'
-                                            "
+                                            v-if="row.can_edit == '1'"
                                             :item="row"
                                             @edit="openModal"
                                             @delete="deleteItem"

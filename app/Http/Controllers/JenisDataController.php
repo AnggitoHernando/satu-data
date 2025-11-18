@@ -46,6 +46,12 @@ class JenisDataController extends Controller
         }
 
         $this->authorize('viewAny', JenisData::class);
+        $user = Auth::user();
+        $role = $user->role;
+
+        $allowedSeksi = $role === 'operator'
+            ? $user->seksi->pluck('id')->toArray()
+            : [];
 
         $query = JenisData::query()
             ->join('seksi', 'jenis_data.seksi_id', '=', 'seksi.id')
@@ -66,6 +72,16 @@ class JenisDataController extends Controller
                 'jenis_data.updated_at',
                 'seksi.nama_seksi as nama_seksi'
             );
+        $query->selectRaw("
+                CASE
+                    WHEN '$role' IN ('admin','super-admin') THEN 1
+                    WHEN '$role' = 'operator' AND jenis_data.seksi_id IN (" .
+            (count($allowedSeksi) ? implode(',', $allowedSeksi) : 0) .
+            ") THEN 1
+                    ELSE 0
+                END as can_edit
+            ");
+
 
         if ($request->search) {
             $query->where('judul_data', 'like', '%' . $request->search . '%')
