@@ -28,7 +28,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Vite::prefetch(concurrency: 3);
         App::setLocale(config('app.locale'));
-        Gate::policy(JenisData::class, JenisDataPolicy::class);
-        Gate::policy(User::class, UserPolicy::class);
+        // Gate::policy(JenisData::class, JenisDataPolicy::class);
+        // Gate::policy(User::class, UserPolicy::class);
     }
 }

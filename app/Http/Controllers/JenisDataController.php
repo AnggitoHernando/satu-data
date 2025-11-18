@@ -20,7 +20,7 @@ class JenisDataController extends Controller
 {
     public function index()
     {
-        $this->authorize('viewAny', User::class);
+        $this->authorize('viewAny', JenisData::class);
         $filterSeksi = Seksi::all();
         $user = Auth::user();
         $query = Seksi::query();
@@ -45,7 +45,7 @@ class JenisDataController extends Controller
             abort(401, 'User belum login');
         }
 
-        $this->authorize('viewAny', User::class);
+        $this->authorize('viewAny', JenisData::class);
 
         $query = JenisData::query()
             ->join('seksi', 'jenis_data.seksi_id', '=', 'seksi.id')
@@ -111,7 +111,7 @@ class JenisDataController extends Controller
             'sumber_data' => 'required|string',
             'file_path' => 'required|file|max:2048',
         ]);
-        $this->authorize('create', [User::class, $validated["seksi_id"]]);
+        $this->authorize('create', [JenisData::class, $validated["seksi_id"]]);
 
         $exists = JenisData::where('judul_data', $validated['judul_data'])
             ->where('tahun', $validated['tahun'])
