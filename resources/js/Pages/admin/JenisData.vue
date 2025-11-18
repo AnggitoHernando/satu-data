@@ -28,6 +28,7 @@ const userRole = computed(() => controller.props.auth.user.role || null);
 const allowedSeksiId = computed(
     () => controller.props.allowedSeksi.map((s) => s.id) || null
 );
+console.log(allowedSeksiId);
 
 //Form
 const form = useForm({
