@@ -3,7 +3,7 @@ import HomeLayout from "@/Layouts/HomeLayout.vue";
 import PrimaryButtonAdmin from "@/Components/PrimaryButtonAdmin.vue";
 import { Head, Link, router, usePage } from "@inertiajs/vue3";
 import { ref, computed, onMounted, onUnmounted, watch, watchEffect } from "vue";
-import { Search } from "lucide-vue-next";
+import { Search, Download, DownloadCloud } from "lucide-vue-next";
 
 const page = usePage();
 const headerPage = ref(page.props?.data.judul_data ?? "Detail");
@@ -19,6 +19,7 @@ const sortDir = ref("desc");
 const searchDetail = ref("");
 const apiUrl = ref(page.props?.api_url ?? "");
 let debounceTimer = null;
+const qrCode = page.props.qr;
 
 const capitalizeEachWord = (str) => {
     return str
@@ -106,6 +107,13 @@ function handleSearchInput(e) {
         loadDetailData(data.value.id);
     }, 500);
 }
+const downloadQR = () => {
+    const link = document.createElement("a");
+    link.href = qrCode;
+    link.download = `${data.value.judul_data}-qr-code.png`;
+    link.click();
+    console.log(data.judul_data);
+};
 
 watch([pageTable, perPage, sortBy, sortDir], () => {
     loadDetailData(data.value.id);
@@ -196,6 +204,24 @@ watch([pageTable, perPage, sortBy, sortDir], () => {
                                         >Kantor Kementerian Agama Kabupaten
                                         Gresik</span
                                     >
+                                </div>
+                                <div v-if="qrCode" className="flex flex-col">
+                                    <div
+                                        class="flex items-center gap-2 group mb-1"
+                                    >
+                                        <span class="text-slate-400"
+                                            >Qr Code</span
+                                        >
+
+                                        <Download
+                                            @click="downloadQR"
+                                            class="w-5 h-5 text-slate-400 cursor-pointer motion-safe:transition-transform motion-safe:duration-300 group-focus-within:rotate-12"
+                                        />
+                                    </div>
+                                    <img
+                                        :src="qrCode"
+                                        class="w-24 h-24 border"
+                                    />
                                 </div>
                             </div>
                         </section>

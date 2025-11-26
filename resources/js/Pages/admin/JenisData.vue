@@ -78,9 +78,9 @@ const handleFileChange = (event) => {
 
 const allColumns = [
     { header: "Nama Data", key: "judul_data", width: "25%" },
-    { header: "Deskripsi", key: "deskripsi", width: "10%" },
-    { header: "Status Data", key: "status_data", width: "10%" },
-    { header: "Status Upload", key: "status_upload", width: "20%" },
+    { header: "Deskripsi", key: "deskripsi", width: "15%" },
+    { header: "Status Data", key: "status_data", width: "15%" },
+    { header: "Status Upload", key: "status_upload", width: "10%" },
     { header: "File", key: "file_path", width: "15%" },
     { header: "Aksi", key: "actions", width: "20%" },
 ];
@@ -497,9 +497,11 @@ onMounted(async () => {
                                             :key="row.id"
                                             class="hover:bg-gray-100"
                                         >
-                                            <td class="border p-2 capitalize">
+                                            <td
+                                                class="block font-semibold whitespace-normal break-words border p-2 capitalize"
+                                            >
                                                 <span
-                                                    class="block font-semibold"
+                                                    class="block font-semibold whitespace-normal break-words capitalize"
                                                     >{{ row.judul_data }}</span
                                                 >
                                                 <span

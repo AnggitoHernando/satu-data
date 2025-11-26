@@ -26,4 +26,17 @@ class FileController extends Controller
 
         return response()->download($path, 'Template_Upload_MANDAT.xls');
     }
+
+    public function viewFile($id)
+    {
+        $data = JenisData::findOrFail($id);
+
+        $path = storage_path("app/public/" . $data->file_path);
+
+        if (!file_exists($path)) {
+            abort(404, 'File tidak ditemukan.');
+        }
+
+        return response()->file($path);
+    }
 }

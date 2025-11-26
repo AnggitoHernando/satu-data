@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
 use PhpParser\Node\Stmt\Return_;
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\Writer\PngWriter;
+use Endroid\QrCode\Logo\Logo;
+use Endroid\QrCode\ErrorCorrectionLevel;
 
 class PortalDataController extends Controller
 {
@@ -195,9 +199,25 @@ class PortalDataController extends Controller
             ->where('status_data', 'publik')
             ->where('id', $id);
         $data = $query->firstOrFail();
+
+        #QR CODE
+        $url = route('view.file', $id); // contoh route untuk QR
+
+        $qrCode = QrCode::create($url)
+            ->setSize(300)
+            ->setMargin(10)
+            ->setErrorCorrectionLevel(ErrorCorrectionLevel::High);
+
+        $logo = Logo::create(public_path('Logo.png'))
+            ->setResizeToWidth(60);
+
+        $writer = new PngWriter();
+        $result = $writer->write($qrCode, $logo);
+
         return Inertia::render('Home/Detail', [
             'data' => $data,
             'api_url' => route('api_portal_data', ['slug' => $data->slug . "-" . $data->id]),
+            'qr' => 'data:image/png;base64,' . base64_encode($result->getString())
         ]);
     }
 

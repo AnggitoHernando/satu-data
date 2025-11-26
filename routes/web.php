@@ -18,6 +18,7 @@ Route::get('/portal-data', [PortalDataController::class, 'index'])->name('Portal
 Route::get('/portal-data/search', [PortalDataController::class, 'search'])->name('PortalData.search');
 Route::get('/portal-data/{slug}', [PortalDataController::class, 'detail'])->name('PortalData.detail');
 Route::get('/download/{id}', [FileController::class, 'download'])->name('download.file');
+Route::get('/view-file/{id}', [FileController::class, 'viewFile'])->name('view.file');
 Route::get('/download-template-excel', [FileController::class, 'downloadTemplate'])->name('download.template');
 Route::get('/api-portal-data/{slug}', [PortalDataController::class, 'api_portal_data'])->name('api_portal_data');
 
