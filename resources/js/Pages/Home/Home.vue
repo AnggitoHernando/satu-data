@@ -164,7 +164,7 @@ function handleSearch() {
                         Pilih Kategori Data
                     </h2>
                     <div
-                        class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 text-center gap-6 sm:gap-8"
+                        class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 text-center gap-6 sm:gap-8"
                     >
                         <div
                             v-for="seksi in list_seksi"
