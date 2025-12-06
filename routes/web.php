@@ -4,6 +4,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\JenisDataController;
+use App\Http\Controllers\KritikSaranController;
 use App\Http\Controllers\PortalDataController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
@@ -21,6 +22,9 @@ Route::get('/download/{id}', [FileController::class, 'download'])->name('downloa
 Route::get('/view-file/{id}', [FileController::class, 'viewFile'])->name('view.file');
 Route::get('/download-template-excel', [FileController::class, 'downloadTemplate'])->name('download.template');
 Route::get('/api-portal-data/{slug}', [PortalDataController::class, 'api_portal_data'])->name('api_portal_data');
+Route::post('/kritik-saran', [KritikSaranController::class, 'store'])
+    ->middleware('throttle:1,1')
+    ->name('kritik.store');
 
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
@@ -46,6 +50,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
     Route::get('/users/get-form-role/{id}', [UserController::class, 'apiFormRole'])->name('users.formRole');
     Route::post('/users/simpan-role', [UserController::class, 'storeRole'])->name('users.storeRole');
+
+    //Kritik dan Saran
+    Route::get('/kritik-saran', [KritikSaranController::class, 'index'])->name('admin.kritik.index');
+    Route::delete('/kritik-saran/{id}', [KritikSaranController::class, 'destroy'])->name('admin.kritik.destroy');
 });
 
 require __DIR__ . '/auth.php';

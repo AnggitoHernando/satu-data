@@ -164,6 +164,13 @@ const allowedUser = ["super-admin", "admin"];
                         </ResponsiveNavLink>
                         <ResponsiveNavLink
                             v-if="allowedUser.includes(roleUser)"
+                            :href="route('admin.kritik.index')"
+                            :active="$page.url === '/kritik-saran'"
+                        >
+                            Users
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            v-if="allowedUser.includes(roleUser)"
                             :href="route('users.show')"
                             :active="$page.url === '/users'"
                         >

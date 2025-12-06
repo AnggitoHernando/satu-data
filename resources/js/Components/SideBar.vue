@@ -1,6 +1,11 @@
 <script setup>
 import SidebarLink from "./SidebarLink.vue";
-import { LayoutDashboard, Database, Users } from "lucide-vue-next";
+import {
+    LayoutDashboard,
+    Database,
+    Users,
+    MessageSquare,
+} from "lucide-vue-next";
 import { usePage } from "@inertiajs/vue3";
 
 const page = usePage();
@@ -32,6 +37,14 @@ const allowedUser = ["super-admin", "admin"];
                         :logo="Database"
                         value="Jenis Data"
                         :active="$page.url === '/jenis-data'"
+                    ></SidebarLink>
+                </li>
+                <li v-if="allowedUser.includes(roleUser)">
+                    <SidebarLink
+                        :href="route('admin.kritik.index')"
+                        :logo="MessageSquare"
+                        value="Kritik dan Saran"
+                        :active="$page.url === '/kritik-saran'"
                     ></SidebarLink>
                 </li>
                 <li v-if="allowedUser.includes(roleUser)">
