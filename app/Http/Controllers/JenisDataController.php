@@ -125,7 +125,7 @@ class JenisDataController extends Controller
             'deskripsi' => 'nullable|string',
             'tahun' => 'required|string',
             'sumber_data' => 'required|string',
-            'file_path' => 'required|file|max:6048',
+            'file_path' => 'required|file|max:20971520',
         ]);
         $this->authorize('create', [JenisData::class, $validated["seksi_id"]]);
 
@@ -194,7 +194,7 @@ class JenisDataController extends Controller
             'deskripsi' => 'nullable|string',
             'tahun' => 'required|string',
             'sumber_data' => 'required|string',
-            'file_path' => 'nullable|file|max:6048',
+            'file_path' => 'nullable|file|max:20971520',
         ]);
 
         if ($request->hasFile('file_path')) {

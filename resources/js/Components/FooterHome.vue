@@ -48,9 +48,9 @@ import { Link } from "@inertiajs/vue3";
                         <li>
                             Email:
                             <a
-                                href="mailto:kemenag.gresik@kemenag.go.id"
+                                href="mailto:kemenaggresikofficial@gmail.com"
                                 class="text-gray-100 hover:text-white"
-                                >kemenag.gresik@kemenag.go.id</a
+                                >kemenaggresikofficial@gmail.com</a
                             >
                         </li>
                     </ul>

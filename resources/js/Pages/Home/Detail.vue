@@ -68,7 +68,7 @@ const downloadFile = (id) => {
 onMounted(async () => {
     if (
         ["xls", "xlsx", "csv"].includes(
-            data.value.extension_file?.toLowerCase()
+            data.value.extension_file?.toLowerCase(),
         )
     ) {
         await loadDetailData(data.value.id);
@@ -235,7 +235,7 @@ watch([pageTable, perPage, sortBy, sortDir], () => {
                                 className="text-lg font-semibold text-slate-900 mb-3"
                                 v-if="
                                     ['xls', 'xlsx', 'csv'].includes(
-                                        data.extension_file?.toLowerCase()
+                                        data.extension_file?.toLowerCase(),
                                     )
                                 "
                             >
@@ -245,7 +245,7 @@ watch([pageTable, perPage, sortBy, sortDir], () => {
                                 className="text-lg font-semibold text-slate-900 mb-3"
                                 v-if="
                                     !['xls', 'xlsx', 'csv'].includes(
-                                        data.extension_file?.toLowerCase()
+                                        data.extension_file?.toLowerCase(),
                                     )
                                 "
                             >
@@ -254,7 +254,7 @@ watch([pageTable, perPage, sortBy, sortDir], () => {
                             <div
                                 v-if="
                                     ['xls', 'xlsx', 'csv'].includes(
-                                        data.extension_file?.toLowerCase()
+                                        data.extension_file?.toLowerCase(),
                                     )
                                 "
                                 @click="copyApi"
@@ -296,7 +296,7 @@ watch([pageTable, perPage, sortBy, sortDir], () => {
                     <section
                         v-if="
                             ['xls', 'xlsx', 'csv'].includes(
-                                data.extension_file?.toLowerCase()
+                                data.extension_file?.toLowerCase(),
                             )
                         "
                         id="dynamic-content"
