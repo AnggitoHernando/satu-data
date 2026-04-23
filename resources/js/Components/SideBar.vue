@@ -5,12 +5,18 @@ import {
     Database,
     Users,
     MessageSquare,
+    ChartArea,
 } from "lucide-vue-next";
 import { usePage } from "@inertiajs/vue3";
+import SidebarItem from "@/Components/SidebarItem.vue";
 
 const page = usePage();
 const roleUser = page.props.auth.user.role ?? null;
 const allowedUser = ["super-admin", "admin"];
+const menuStatistik = [
+    { label: "Kategori Data", route: "admin.statistik.kategori-data" },
+    { label: "Isi Statistik", route: "admin.statistik.isi-statistik" },
+];
 </script>
 <template>
     <aside
@@ -54,6 +60,13 @@ const allowedUser = ["super-admin", "admin"];
                         value="Users"
                         :active="$page.url === '/users'"
                     ></SidebarLink>
+                </li>
+                <li>
+                    <SidebarItem
+                        title="Data Statistik"
+                        :icon="ChartArea"
+                        :items="menuStatistik"
+                    />
                 </li>
             </ul>
         </div>

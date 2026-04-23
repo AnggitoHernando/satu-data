@@ -7,6 +7,7 @@ use App\Http\Controllers\JenisDataController;
 use App\Http\Controllers\KritikSaranController;
 use App\Http\Controllers\PortalDataController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\StatistikController;
 use App\Http\Controllers\UserController;
 use App\Models\JenisData;
 use Illuminate\Foundation\Application;
@@ -54,6 +55,10 @@ Route::middleware('auth')->group(function () {
     //Kritik dan Saran
     Route::get('/kritik-saran', [KritikSaranController::class, 'index'])->name('admin.kritik.index');
     Route::delete('/kritik-saran/{id}', [KritikSaranController::class, 'destroy'])->name('admin.kritik.destroy');
+
+    //Statistik
+    Route::get('/statistik/kategori-data', [StatistikController::class, 'KategoriData'])->name('admin.statistik.kategori-data');
+    Route::get('/statistik/isi-statistik', [StatistikController::class, 'IsiStatistik'])->name('admin.statistik.isi-statistik');
 });
 
 require __DIR__ . '/auth.php';

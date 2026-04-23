@@ -20,8 +20,6 @@ import {
     LucideRotateCcw,
 } from "lucide-vue-next";
 
-// import route from "ziggy-js";
-
 const controller = usePage();
 const { list_seksi, allowedSeksi } = controller.props;
 const userRole = computed(() => controller.props.auth.user.role || null);
@@ -179,6 +177,7 @@ const toggleStatus = async (item, newStatus) => {
 
     if (confirm.isConfirmed) {
         // console.log(axios.patch(route("jenis_data.update")));
+        pageLoading.value = true;
         try {
             await axios.patch(route("jenis_data.update_status", item.id), {
                 status_data: newStatus,
@@ -200,6 +199,8 @@ const toggleStatus = async (item, newStatus) => {
                 Swal.fire("Gagal!", "Tidak dapat mengubah status.", "error");
             }
             // console.error(err);
+        } finally{
+            pageLoading.value= false;
         }
     }
 };
@@ -221,6 +222,7 @@ const retryUpload = async (item) => {
 
 //Fungsi Save
 const submit = async () => {
+    pageLoading.value = true;
     try {
         let res;
         if (modalMode.value == "create") {
@@ -284,6 +286,8 @@ const submit = async () => {
             Swal.fire("Error", "Terjadi kesalahan server", "error");
             // console.log(err);
         }
+    }finally{
+        pageLoading.value= false;
     }
 };
 
@@ -322,7 +326,7 @@ onMounted(async () => {
     <Head title="Jenis Data" />
     <div
         v-if="pageLoading"
-        class="fixed inset-0 z-50 bg-white/70 backdrop-blur-sm flex flex-col items-center justify-center"
+        class="fixed inset-0 z-[60] bg-white/70 backdrop-blur-sm flex flex-col items-center justify-center"
     >
         <div
             class="w-10 h-10 border-4 border-green-500 border-t-transparent rounded-full animate-spin"
