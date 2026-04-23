@@ -6,6 +6,7 @@ import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { createApp, h } from "vue";
 import { ZiggyVue } from "../../vendor/tightenco/ziggy";
 import { router } from "@inertiajs/vue3";
+import { isGlobalLoading } from "@/global-loading";
 
 const appName = import.meta.env.VITE_APP_NAME || "Mandat";
 
@@ -16,6 +17,14 @@ import Swal from "sweetalert2";
 // opsional: jadikan global biar bisa dipakai di mana pun
 window.Toastify = Toastify;
 window.Swal = Swal;
+
+router.on("start", () => {
+    isGlobalLoading.value = true;
+});
+
+router.on("finish", () => {
+    isGlobalLoading.value = false;
+});
 
 window.toast = (text, type = "info") => {
     const colors = {
