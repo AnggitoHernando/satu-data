@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Statistik;
 use Illuminate\Http\Request;
+use App\Models\KategoriData;
+use App\Models\IsiStatistik;
+use App\Models\Seksi;
 
 class StatistikController extends Controller
 {
@@ -15,9 +18,14 @@ class StatistikController extends Controller
         //
     }
 
-    public function KategoriData()
+    public function KategoriData(Request $request)
     {
-        return inertia('Admin/Statistik/KategoriData');
+        $listKategoriData = KategoriData::with("seksi")->paginate(10)->withQueryString();
+        $listSeksi = Seksi::select("id", "nama_seksi")->get();
+        return inertia('Admin/Statistik/KategoriData', [
+            "listKategoriData" => $listKategoriData,
+            "listSeksi" => $listSeksi
+        ]);
     }
 
     function IsiStatistik()
