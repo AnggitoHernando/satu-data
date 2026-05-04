@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreKategoriDataRequest;
+use App\Http\Requests\UpdateKategoriDataRequest;
 use App\Models\Statistik;
 use Illuminate\Http\Request;
 use App\Models\KategoriData;
@@ -20,12 +22,36 @@ class StatistikController extends Controller
 
     public function KategoriData(Request $request)
     {
-        $listKategoriData = KategoriData::with("seksi")->paginate(10)->withQueryString();
+        $listKategoriData = KategoriData::query()->with("seksi")
+            ->filter($request->only(['search', 'from', 'to', 'sortBy', 'sortDir', 'seksi_id']))->paginate(10)
+            ->withQueryString();
         $listSeksi = Seksi::select("id", "nama_seksi")->get();
         return inertia('Admin/Statistik/KategoriData', [
             "listKategoriData" => $listKategoriData,
             "listSeksi" => $listSeksi
         ]);
+    }
+
+    public function storeKategoriData(StoreKategoriDataRequest $request)
+    {
+        $validated = $request->validated();
+
+        KategoriData::create($validated);
+        return redirect()->back()->with('success', 'Kategori data berhasil ditambahkan.');
+    }
+
+    public function updateKategoriData(UpdateKategoriDataRequest $request, KategoriData $kategoriData)
+    {
+        $validated = $request->validated();
+
+        $kategoriData->update($validated);
+        return redirect()->back()->with('success', 'Kategori data berhasil diperbarui.');
+    }
+
+    public function destroyKategoriData(KategoriData $kategoriData)
+    {
+        $kategoriData->delete();
+        return redirect()->back()->with('success', 'Kategori data berhasil dihapus.');
     }
 
     function IsiStatistik()

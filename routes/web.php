@@ -58,6 +58,9 @@ Route::middleware('auth')->group(function () {
 
     //Statistik
     Route::get('/statistik/kategori-data', [StatistikController::class, 'KategoriData'])->name('admin.statistik.kategori-data');
+    Route::post('/statistik/kategori-data/simpan', [StatistikController::class, 'storeKategoriData'])->name('admin.statistik.kategori-data.simpan');
+    Route::patch('/statistik/kategori-data/update/{kategoriData}', [StatistikController::class, 'updateKategoriData'])->name('admin.statistik.kategori-data.update');
+    Route::delete('/statistik/kategori-data/{kategoriData}', [StatistikController::class, 'destroyKategoriData'])->name('admin.statistik.kategori-data.destroy');
     Route::get('/statistik/isi-statistik', [StatistikController::class, 'IsiStatistik'])->name('admin.statistik.isi-statistik');
 });
 

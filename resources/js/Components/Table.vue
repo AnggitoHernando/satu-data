@@ -1,7 +1,7 @@
 <script setup>
-import { ref, computed } from "vue";
-import { usePage } from "@inertiajs/vue3";
-import ActionButtons from "@/Components/ActionButtons.vue";
+import { ref, computed, watch } from "vue";
+import { usePage, Link, router } from "@inertiajs/vue3";
+import { watchDebounced } from "@vueuse/core";
 import {
     LucideSearch,
     LucideFilter,
@@ -30,7 +30,7 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
-    link: {
+    links: {
         type: Array,
         default: () => [],
     },
@@ -43,13 +43,47 @@ const props = defineProps({
     },
 });
 
-const total = ref(0);
-const page = ref(1);
-const perPage = ref(10);
-const search = ref("");
-const sortBy = ref("");
-const sortDir = ref("desc");
-const selectedSeksiFilter = ref("");
+const search = ref(
+    new URLSearchParams(window.location.search).get("search") || "",
+);
+const sortBy = ref(
+    new URLSearchParams(window.location.search).get("sortBy") || "",
+);
+const sortDir = ref(
+    new URLSearchParams(window.location.search).get("sortDir") || "desc",
+);
+const selectedSeksiFilter = ref(
+    new URLSearchParams(window.location.search).get("seksi_id") || "",
+);
+
+const updateFilters = () => {
+    router.get(
+        window.location.pathname,
+        {
+            search: search.value,
+            seksi_id: selectedSeksiFilter.value,
+            sortBy: sortBy.value,
+            sortDir: sortDir.value,
+        },
+        {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+        },
+    );
+};
+watchDebounced(search, updateFilters, { debounce: 500 });
+
+watch([selectedSeksiFilter, sortBy, sortDir], () => {
+    updateFilters();
+});
+
+const resetFilters = () => {
+    search.value = "";
+    selectedSeksiFilter.value = "";
+    sortBy.value = "";
+    sortDir.value = "desc";
+};
 </script>
 <template>
     <div>
@@ -67,6 +101,7 @@ const selectedSeksiFilter = ref("");
                     <input
                         v-model="search"
                         type="text"
+                        name="search"
                         placeholder="Cari data..."
                         class="pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm w-full sm:w-auto"
                     />
@@ -79,6 +114,7 @@ const selectedSeksiFilter = ref("");
                         :size="18"
                     />
                     <select
+                        name="selectSeksiFilter"
                         v-model="selectedSeksiFilter"
                         class="pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white w-full sm:w-auto"
                     >
@@ -100,8 +136,9 @@ const selectedSeksiFilter = ref("");
                         :size="18"
                     />
                     <select
+                        name="selectSortBy"
                         v-model="sortBy"
-                        class="pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white w-full sm:w-auto"
+                        class="pl-8 pr-8 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white w-full sm:w-auto"
                     >
                         <option disabled value="">Urutkan Berdasarkan</option>
                         <option
@@ -134,12 +171,7 @@ const selectedSeksiFilter = ref("");
 
             <!-- Reset -->
             <button
-                @click="
-                    search = '';
-                    form.seksi_id = '';
-                    sortBy = 'jenis_data.id';
-                    sortDir = 'desc';
-                "
+                @click="resetFilters"
                 class="flex items-center gap-1 px-3 py-2 text-sm border border-gray-300 rounded-md text-gray-600 hover:bg-gray-100 w-full md:w-auto"
             >
                 <LucideRotateCcw :size="16" />
@@ -205,22 +237,25 @@ const selectedSeksiFilter = ref("");
         </div>
 
         <!-- Pagination -->
-        <div class="ml-3 mr-3 mt-4 mb-3 flex justify-between items-center">
-            <button @click="page > 1 ? page-- : null" :disabled="page <= 1">
-                Prev
-            </button>
-            <span
-                >Page {{ props.meta.current_page }} of
-                {{ Math.ceil(props.meta.total / props.meta.per_page) }}</span
-            >
-            <button
-                @click="href = props.link.next"
-                :disabled="
-                    page >= Math.ceil(props.meta.total / props.meta.per_page)
-                "
-            >
-                Next
-            </button>
+        <div class="mt-4 mb-3 flex items-center justify-end gap-2">
+            <template v-for="(link, i) in links" :key="i">
+                <Link
+                    v-if="link.url"
+                    :href="link.url"
+                    v-html="link.label"
+                    class="px-3 py-1 border rounded text-sm"
+                    :class="
+                        link.active
+                            ? 'bg-primary text-white'
+                            : 'hover:bg-gray-100'
+                    "
+                />
+                <span
+                    v-else
+                    v-html="link.label"
+                    class="px-3 py-1 border rounded text-gray-400 cursor-not-allowed"
+                />
+            </template>
         </div>
     </div>
 </template>
