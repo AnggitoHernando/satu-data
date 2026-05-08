@@ -49,4 +49,9 @@ class KategoriData extends Model
     {
         return $this->belongsTo(Seksi::class, 'seksi_id');
     }
+
+    public function isiStatistik()
+    {
+        return $this->hasMany(IsiStatistik::class, 'kategori_data_id');
+    }
 }

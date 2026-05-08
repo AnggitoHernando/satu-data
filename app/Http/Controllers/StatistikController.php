@@ -56,54 +56,19 @@ class StatistikController extends Controller
 
     function IsiStatistik()
     {
-        return inertia('Admin/Statistik/IsiStatistik');
+        $isiStatistik = IsiStatistik::query()
+            ->with("kategoriData.seksi")
+            ->filter(request()->only(['search', 'from', 'to', 'sortBy', 'sortDir', 'seksi_id']))->paginate(10)->withQueryString();
+        $listSeksi = Seksi::select("id", "nama_seksi")->get();
+        return inertia('Admin/Statistik/IsiStatistik', [
+            "isiStatistik" => $isiStatistik,
+            "listSeksi" => $listSeksi
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function destroyIsiStatistik(IsiStatistik $isiStatistik)
     {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Statistik $statistik)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Statistik $statistik)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Statistik $statistik)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Statistik $statistik)
-    {
-        //
+        $isiStatistik->delete();
+        return redirect()->back()->with('success', 'Isi statistik berhasil dihapus.');
     }
 }

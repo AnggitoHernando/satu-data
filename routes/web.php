@@ -62,6 +62,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('/statistik/kategori-data/update/{kategoriData}', [StatistikController::class, 'updateKategoriData'])->name('admin.statistik.kategori-data.update');
     Route::delete('/statistik/kategori-data/{kategoriData}', [StatistikController::class, 'destroyKategoriData'])->name('admin.statistik.kategori-data.destroy');
     Route::get('/statistik/isi-statistik', [StatistikController::class, 'IsiStatistik'])->name('admin.statistik.isi-statistik');
+    Route::post('/statistik/isi-statistik/simpan', [StatistikController::class, 'storeIsiStatistik'])->name('admin.statistik.isi-statistik.simpan');
+    Route::patch('/statistik/isi-statistik/update/{isiStatistik}', [StatistikController::class, 'updateIsiStatistik'])->name('admin.statistik.isi-statistik.update');
+    Route::delete('/statistik/isi-statistik/{isiStatistik}', [StatistikController::class, 'destroyIsiStatistik'])->name('admin.statistik.isi-statistik.destroy');
 });
 
 require __DIR__ . '/auth.php';

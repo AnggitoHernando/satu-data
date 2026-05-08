@@ -11,11 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('kategori_data', function (Blueprint $table) {
+        Schema::create('isi_statistiks', function (Blueprint $table) {
             $table->id();
-            $table->foreignId("seksi_id")->constrained("seksi")->onUpdate("cascade")->onDelete("cascade");
-            $table->string("nama_kategori");
-            $table->foreignId("jenis_data_id")->constrained("jenis_data")->onUpdate("cascade")->onDelete("cascade")->nullable();
+            $table->foreignId("group_kategori_id")->constrained("group_kategoris")->onUpdate("cascade")->onDelete("cascade");
+            $table->string("label", 155);
+            $table->double("value", 15, 2)->default(0);
+            $table->integer("tahun");
             $table->timestamps();
         });
     }
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('kategori_data');
+        Schema::dropIfExists('isi_statistiks');
     }
 };
