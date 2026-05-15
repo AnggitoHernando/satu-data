@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId("seksi_id")->constrained("seksi")->onUpdate("cascade")->onDelete("cascade");
             $table->string("nama_kategori");
-            $table->foreignId("jenis_data_id")->constrained("jenis_data")->onUpdate("cascade")->onDelete("cascade")->nullable();
+            $table->foreignId("jenis_data_id")->nullable()->constrained("jenis_data")->onUpdate("cascade")->onDelete("cascade");
             $table->timestamps();
         });
     }

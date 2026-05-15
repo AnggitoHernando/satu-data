@@ -31,6 +31,7 @@ class UpdateKategoriDataRequest extends FormRequest
                 \Illuminate\Validation\Rule::unique('kategori_data', 'nama_kategori')->ignore($id),
             ],
             'seksi_id' => 'required|exists:seksi,id',
+            'jenis_data_id' => 'nullable|exists:jenis_data,id',
         ];
     }
 
@@ -41,6 +42,7 @@ class UpdateKategoriDataRequest extends FormRequest
             'nama_kategori.unique' => 'Nama kategori sudah digunakan.',
             'seksi_id.required' => 'Pilih seksi terlebih dahulu.',
             'seksi_id.exists' => 'Seksi tidak ditemukan.',
+            'jenis_data_id.exists' => 'Jenis data tidak ditemukan.',
         ];
     }
 }

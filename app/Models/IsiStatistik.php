@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class IsiStatistik extends Model
 {
     protected $fillable = [
-        "kategori_data_id",
+        "group_kategori_item_id",
         "tahun",
         "value"
     ];
@@ -49,8 +49,8 @@ class IsiStatistik extends Model
             }, fn($q) => $q->latest());
     }
 
-    public function kategoriData()
+    public function groupKategoriItem()
     {
-        return $this->belongsTo(KategoriData::class, 'kategori_data_id');
+        return $this->belongsTo(GroupKategoriItem::class, 'group_kategori_item_id');
     }
 }

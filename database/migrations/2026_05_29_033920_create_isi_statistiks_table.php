@@ -13,8 +13,7 @@ return new class extends Migration
     {
         Schema::create('isi_statistiks', function (Blueprint $table) {
             $table->id();
-            $table->foreignId("group_kategori_id")->constrained("group_kategoris")->onUpdate("cascade")->onDelete("cascade");
-            $table->string("label", 155);
+            $table->foreignId("group_kategori_item_id")->constrained("group_kategori_items")->cascadeOnDelete();
             $table->double("value", 15, 2)->default(0);
             $table->integer("tahun");
             $table->timestamps();

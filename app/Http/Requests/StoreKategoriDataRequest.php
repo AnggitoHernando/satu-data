@@ -24,6 +24,7 @@ class StoreKategoriDataRequest extends FormRequest
         return [
             'nama_kategori' => 'required|string|max:255|unique:kategori_data,nama_kategori',
             'seksi_id' => 'required|exists:seksi,id',
+            'jenis_data_id' => 'nullable|exists:jenis_data,id',
         ];
     }
     public function messages(): array
@@ -33,6 +34,7 @@ class StoreKategoriDataRequest extends FormRequest
             'nama_kategori.unique' => 'Nama kategori sudah digunakan.',
             'seksi_id.required' => 'Pilih seksi terlebih dahulu.',
             'seksi_id.exists' => 'Seksi tidak ditemukan.',
+            'jenis_data_id.exists' => 'Jenis data tidak ditemukan.',
         ];
     }
 }

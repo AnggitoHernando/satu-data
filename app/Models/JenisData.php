@@ -39,4 +39,9 @@ class JenisData extends Model
     {
         return $this->hasMany(JenisDataRecords::class, 'jenis_data_id');
     }
+
+    public function KategoriData()
+    {
+        return $this->hasMany(KategoriData::class, 'jenis_data_id');
+    }
 }

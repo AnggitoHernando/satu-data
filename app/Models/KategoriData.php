@@ -10,7 +10,8 @@ class KategoriData extends Model
 {
     protected $fillable = [
         "seksi_id",
-        "nama_kategori"
+        "nama_kategori",
+        "jenis_data_id"
     ];
 
     public function scopeFilter(Builder $query, array $filters): Builder
@@ -23,6 +24,9 @@ class KategoriData extends Model
 
                         ->orWhereHas('seksi', function ($subQuery) use ($search) {
                             $subQuery->where('nama_seksi', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('jenisData', function ($subQuery) use ($search) {
+                            $subQuery->where('judul_data', 'like', "%{$search}%");
                         });
                 });
             })
@@ -53,5 +57,10 @@ class KategoriData extends Model
     public function isiStatistik()
     {
         return $this->hasMany(IsiStatistik::class, 'kategori_data_id');
+    }
+
+    public function jenisData()
+    {
+        return $this->belongsTo(JenisData::class, 'jenis_data_id');
     }
 }
