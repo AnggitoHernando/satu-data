@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreGroupKategoriItemRequest;
 use App\Http\Requests\StoreGroupKategoriRequest;
+use App\Http\Requests\StoreIsiStatistikRequest;
 use App\Http\Requests\StoreKategoriDataRequest;
 use App\Http\Requests\UpdateKategoriDataRequest;
 use App\Models\GroupKategori;
@@ -133,16 +134,72 @@ class StatistikController extends Controller
         return response()->json(['message' => 'Group kategori item berhasil dihapus.']);
     }
 
+    # Isi Statistik
+    function getKategoriData(Request $request)
+    {
+        $search = $request->input('q');
+        $results = KategoriData::query()
+            ->where(function ($q) use ($search) {
+                $q->where('nama_kategori', 'like', "%{$search}%")
+                    ->orWhereHas('seksi', function ($q) use ($search) {
+                        $q->where('nama_seksi', 'like', "%{$search}%");
+                    });
+            })
+            ->select('id', 'nama_kategori')
+            ->get();
+
+        return response()->json($results);
+    }
+
+    function getGroupKategori($kategoriDataId)
+    {
+        $results = GroupKategori::query()
+            ->where('kategori_data_id', $kategoriDataId)
+            ->select('id', 'nama_group')
+            ->get();
+
+        return response()->json($results);
+    }
+
+    function getGroupKategoriItem($groupKategoriId)
+    {
+        $results = GroupKategoriItem::query()
+            ->where('group_kategori_id', $groupKategoriId)
+            ->select('id', 'nama_item')
+            ->get();
+
+        return response()->json($results);
+    }
+
     function IsiStatistik()
     {
         $isiStatistik = IsiStatistik::query()
-            ->with("kategoriData.seksi")
+            ->with(['groupKategoriItem' => function ($q) {
+                $q->select('id', 'nama_item', 'group_kategori_id')
+                    ->with(['groupKategori' => function ($q2) {
+                        $q2->select('id', 'nama_group', 'kategori_data_id')
+                            ->with(['kategoriData' => function ($q3) {
+                                $q3->select('id', 'nama_kategori', 'seksi_id')
+                                    ->with(['seksi' => function ($q4) {
+                                        $q4->select('id', 'nama_seksi');
+                                    }]);
+                            }]);
+                    }]);
+            }])
             ->filter(request()->only(['search', 'from', 'to', 'sortBy', 'sortDir', 'seksi_id']))->paginate(10)->withQueryString();
         $listSeksi = Seksi::select("id", "nama_seksi")->get();
         return inertia('Admin/Statistik/IsiStatistik', [
             "isiStatistik" => $isiStatistik,
             "listSeksi" => $listSeksi
         ]);
+    }
+
+    public function storeIsiStatistik(StoreIsiStatistikRequest $request)
+    {
+        $validated = $request->validated();
+
+        IsiStatistik::create($validated);
+        return redirect()->back()->with('success', 'Isi statistik berhasil ditambahkan.');
     }
 
     public function destroyIsiStatistik(IsiStatistik $isiStatistik)

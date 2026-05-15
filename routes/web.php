@@ -72,8 +72,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/statistik/group-kategori-item/simpan', [StatistikController::class, 'storeGroupKategoriItem'])->name('admin.statistik.group-kategori-items.simpan');
     Route::delete('/statistik/group-kategori-item/{groupKategoriItem}', [StatistikController::class, 'destroyGroupKategoriItem'])->name('admin.statistik.group-kategori-items.destroy');
 
+    Route::get('/statistik/isi-statistik/get-kategori-data', [StatistikController::class, 'getKategoriData'])->name('admin.statistik.isi-statistik.getKategoriData');
+    Route::get('/statistik/isi-statistik/get-group-kategori-group/{kategoriDataId}', [StatistikController::class, 'getGroupKategori'])->name('admin.statistik.isi-statistik.getGroupKategori');
+    Route::get('/statistik/isi-statistik/get-group-kategori-item/{groupKategoriId}', [StatistikController::class, 'getGroupKategoriItem'])->name('admin.statistik.isi-statistik.getGroupKategoriItem');
+
     Route::get('/statistik/isi-statistik', [StatistikController::class, 'IsiStatistik'])->name('admin.statistik.isi-statistik');
-    Route::post('/statistik/isi-statistik/simpan', [StatistikController::class, 'storeIsiStatistik'])->name('admin.statistik.isi-statistik.simpan');
+    Route::post('/statistik/isi-statistik/simpan', [StatistikController::class, 'storeIsiStatistik'])->name('admin.statistik.isi-statistik.store');
     Route::patch('/statistik/isi-statistik/update/{isiStatistik}', [StatistikController::class, 'updateIsiStatistik'])->name('admin.statistik.isi-statistik.update');
     Route::delete('/statistik/isi-statistik/{isiStatistik}', [StatistikController::class, 'destroyIsiStatistik'])->name('admin.statistik.isi-statistik.destroy');
 });

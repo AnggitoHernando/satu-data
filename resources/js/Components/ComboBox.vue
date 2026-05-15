@@ -89,21 +89,26 @@ watch(
             selected.value = null;
             return;
         }
-        const allOptions = isServerMode.value
-            ? serverOptions.value
-            : props.options;
-        const found = allOptions.find((item) => item[props.valueKey] == val);
-        selected.value = found ?? null;
+
+        if (props.emitObject) {
+            selected.value = val;
+        } else {
+            const allOptions = isServerMode.value
+                ? serverOptions.value
+                : props.options;
+            const found = allOptions.find(
+                (item) => item[props.valueKey] == val,
+            );
+            selected.value = found ?? null;
+        }
     },
 );
 
 watch(selected, (val) => {
     if (props.emitObject) {
         emit("update:modelValue", val ?? null);
-        emit("select-object", val ?? null);
     } else {
         emit("update:modelValue", val ? val[props.valueKey] : null);
-        emit("select-object", val ?? null);
     }
 });
 
