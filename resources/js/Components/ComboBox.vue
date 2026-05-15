@@ -56,6 +56,10 @@ const props = defineProps({
         type: String,
         default: null,
     },
+    emitObject: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 const emit = defineEmits(["update:modelValue"]);
@@ -94,7 +98,13 @@ watch(
 );
 
 watch(selected, (val) => {
-    emit("update:modelValue", val ? val[props.valueKey] : null);
+    if (props.emitObject) {
+        emit("update:modelValue", val ?? null);
+        emit("select-object", val ?? null);
+    } else {
+        emit("update:modelValue", val ? val[props.valueKey] : null);
+        emit("select-object", val ?? null);
+    }
 });
 
 const getLabel = (item) => {
