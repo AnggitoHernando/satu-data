@@ -1,1 +1,0 @@
-import{M as e,S as t,Y as n}from"./app-DZxjRWNG.js";var r=`/build/assets/Logo1-D7HDi6ga.png`,i=[`src`],a={__name:`ApplicationLogo`,setup(a){return(a,o)=>(e(),t(`img`,{class:`w-14 mx-auto`,src:n(r)},null,8,i))}};export{a as t};
