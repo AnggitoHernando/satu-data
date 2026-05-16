@@ -3,7 +3,7 @@ import HomeLayout from "@/Layouts/HomeLayout.vue";
 import PrimaryButtonAdmin from "@/Components/PrimaryButtonAdmin.vue";
 import { Head, Link, router, usePage } from "@inertiajs/vue3";
 import { ref, computed, onMounted, onUnmounted, watch, watchEffect } from "vue";
-import { Search, Download, DownloadCloud } from "lucide-vue-next";
+import { Search, Download, DownloadCloud, ArrowLeft } from "lucide-vue-next";
 
 const page = usePage();
 const headerPage = ref(page.props?.data.judul_data ?? "Detail");
@@ -118,11 +118,29 @@ const downloadQR = () => {
 watch([pageTable, perPage, sortBy, sortDir], () => {
     loadDetailData(data.value.id);
 });
+const kembali = () => router.visit(route("PortalData"));
 </script>
 <template>
     <Head :title="capitalizeEachWord(headerPage)" />
     <HomeLayout>
         <div class="min-h-screen">
+            <div class="bg-white border-b border-gray-100">
+                <div
+                    class="max-w-7xl mx-auto py-3 flex items-center gap-2 text-xs text-gray-400"
+                >
+                    <button
+                        @click="kembali"
+                        class="flex items-center gap-1 hover:text-green-700 transition-colors"
+                    >
+                        <ArrowLeft class="w-3.5 h-3.5" />
+                        Portal Data
+                    </button>
+                    <span>›</span>
+                    <span>Data</span>
+                    <span>›</span>
+                    <span class="text-gray-700">{{ data.judul_data }}</span>
+                </div>
+            </div>
             <div className="max-w-7xl mx-auto space-y-8">
                 <section id="header" className="space-y-4">
                     <header

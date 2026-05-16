@@ -59,4 +59,9 @@ class KategoriData extends Model
     {
         return $this->belongsTo(JenisData::class, 'jenis_data_id');
     }
+
+    public function groupKategori()
+    {
+        return $this->hasMany(GroupKategori::class, 'kategori_data_id');
+    }
 }

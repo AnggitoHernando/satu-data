@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\IsiStatistik;
 use App\Models\JenisData;
 use App\Models\JenisDataRecords;
+use App\Models\KategoriData;
 use App\Models\Seksi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -32,11 +34,30 @@ class PortalDataController extends Controller
         $currentParams = $request->except('page');
         $query->withPath($baseUrl);
         $query->appends($currentParams);
+        $list_statistik = KategoriData::with('seksi:id,nama_seksi')
+            ->whereHas('groupKategori.groupKategoriItems.isiStatistik')
+            ->when($request->seksi, function ($q) use ($request) {
+                $q->whereHas('seksi', fn($s) => $s->where('slug', $request->seksi));
+            })
+            ->when($request->q, function ($q) use ($request) {
+                $q->where('nama_kategori', 'like', "%{$request->q}%");
+            })
+            ->withCount(['groupKategori as jumlah_data' => function ($q) {
+                $q->whereHas('groupKategoriItems.isiStatistik');
+            }])
+            ->get(['id', 'nama_kategori', 'seksi_id', 'seksi.nama_seksi'])
+            ->map(fn($k) => [
+                'id'            => $k->id,
+                'nama_kategori' => $k->nama_kategori,
+                'jumlah_data'   => $k->jumlah_data,
+                'nama_seksi'    => $k->seksi->nama_seksi ?? null,
+            ]);
         return Inertia::render(
             'Home/PortalData',
             [
                 'list_seksi' => $seksi,
                 'list_data' => $query,
+                'list_statistik' => $list_statistik,
                 'filters' => [
                     'q' => "",
                     'seksi' => $slugSeksi ?? 'semua',
@@ -84,12 +105,31 @@ class PortalDataController extends Controller
         $data->withPath($baseUrl);
 
         $data->appends($currentParams);
+        $list_statistik = KategoriData::with('seksi:id,nama_seksi')
+            ->whereHas('groupKategori.groupKategoriItems.isiStatistik')
+            ->when($slugSeksi, function ($q) use ($slugSeksi) {
+                $q->whereHas('seksi', fn($s) => $s->where('slug', $slugSeksi));
+            })
+            ->when($request->q, function ($q) use ($request) {
+                $q->where('nama_kategori', 'like', "%{$request->q}%");
+            })
+            ->withCount(['groupKategori as jumlah_data' => function ($q) {
+                $q->whereHas('groupKategoriItems.isiStatistik');
+            }])
+            ->get(['id', 'nama_kategori', 'seksi_id', 'seksi.nama_seksi'])
+            ->map(fn($k) => [
+                'id'            => $k->id,
+                'nama_kategori' => $k->nama_kategori,
+                'jumlah_data'   => $k->jumlah_data,
+                'nama_seksi'    => $k->seksi->nama_seksi ?? null,
+            ]);
 
         return Inertia::render(
             'Home/PortalData',
             [
                 'list_seksi' => $seksi,
                 'list_data' => $data,
+                'list_statistik' => $list_statistik,
                 'filters' => [
                     'q' => $request->q,
                     'seksi' => $slugSeksi ?? 'semua',
@@ -246,9 +286,53 @@ class PortalDataController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function detailStatistik(Request $request, string $slug)
     {
-        //
+        $id = (int) last(explode('-', $slug));
+
+        $kategori = KategoriData::with('seksi')
+            ->findOrFail($id);
+
+        // Ambil semua group beserta items dan statistiknya
+        $groups = $kategori->groupKategori()
+            ->with(['groupKategoriItems.isiStatistik'])
+            ->get()
+            ->map(function ($group) {
+                return [
+                    'id'         => $group->id,
+                    'nama_group' => $group->nama_group,
+                    'items'      => $group->groupKategoriItems->map(function ($item) {
+                        return [
+                            'id'        => $item->id,
+                            'nama_item' => $item->nama_item,
+                            'statistik' => $item->isiStatistik->map(fn($s) => [
+                                'tahun' => $s->tahun,
+                                'value' => $s->value,
+                            ])->values(),
+                        ];
+                    })->values(),
+                ];
+            });
+
+        $tahunList = $kategori->groupKategori()
+            ->join('group_kategori_items', 'group_kategoris.id', '=', 'group_kategori_items.group_kategori_id')
+            ->join('isi_statistiks', 'group_kategori_items.id', '=', 'isi_statistiks.group_kategori_item_id')
+            ->orderBy('isi_statistiks.tahun')
+            ->pluck('isi_statistiks.tahun')
+            ->unique()
+            ->values();
+
+        return Inertia::render('Home/DetailStatistik', [
+            'kategori'   => [
+                'id'            => $kategori->id,
+                'nama_kategori' => $kategori->nama_kategori,
+                'seksi'         => $kategori->seksi ? [
+                    'nama_seksi' => $kategori->seksi->nama_seksi,
+                ] : null,
+            ],
+            'groups'     => $groups,
+            'tahun_list' => $tahunList,
+        ]);
     }
 
     /**

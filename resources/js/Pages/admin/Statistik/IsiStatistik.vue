@@ -26,8 +26,6 @@ const columns = [
     { header: "Aksi", key: "actions" },
 ];
 
-console.log(usePage().props);
-
 const filtersort = [
     {
         label: "Nama Kategori",

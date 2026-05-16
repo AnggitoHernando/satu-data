@@ -19,6 +19,7 @@ Route::get('/', [HomeController::class, 'index'])->name('Beranda');
 Route::get('/portal-data', [PortalDataController::class, 'index'])->name('PortalData');
 Route::get('/portal-data/search', [PortalDataController::class, 'search'])->name('PortalData.search');
 Route::get('/portal-data/{slug}', [PortalDataController::class, 'detail'])->name('PortalData.detail');
+Route::get('/portal-data/statistik/{slug}', [PortalDataController::class, 'detailStatistik'])->name('PortalData.statistik.detail');
 Route::get('/download/{id}', [FileController::class, 'download'])->name('download.file');
 Route::get('/view-file/{id}', [FileController::class, 'viewFile'])->name('view.file');
 Route::get('/download-template-excel', [FileController::class, 'downloadTemplate'])->name('download.template');
