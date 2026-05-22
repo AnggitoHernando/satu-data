@@ -68,11 +68,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/statistik/{kategori}/group-kategori/simpan', [StatistikController::class, 'storeGroupKategori'])->name('admin.statistik.group-kategori.simpan');
     Route::patch('/statistik/group-kategori/update/{groupKategori}', [StatistikController::class, 'updateGroupKategori'])->name('admin.statistik.group-kategori.update');
     Route::delete('/statistik/group-kategori/{groupKategori}', [StatistikController::class, 'destroyGroupKategori'])->name('admin.statistik.group-kategori.destroy');
+    Route::post('/statistik/group-kategori/AutoAddGroupKecamatan/simpan/{kategori}', [StatistikController::class, 'storeAddGroupKecamatan'])->name('admin.statistik.group-kategori.autoAddGroupKecamatan.simpan');
 
     Route::get('/statistik/{groupKategori}/group-kategori-item', [StatistikController::class, 'GroupKategoriItem'])->name('admin.statistik.group-kategori-items');
     Route::post('/statistik/group-kategori-item/simpan', [StatistikController::class, 'storeGroupKategoriItem'])->name('admin.statistik.group-kategori-items.simpan');
     Route::delete('/statistik/group-kategori-item/{groupKategoriItem}', [StatistikController::class, 'destroyGroupKategoriItem'])->name('admin.statistik.group-kategori-items.destroy');
-    Route::post('/statistik/group-kategori/kecamatan/{groupKategori}', [StatistikController::class, 'storeAutoKecamatan'])->name('admin.statistik.group-kategori.kecamatan.auto');
+    Route::post('/statistik/group-kategori-item/kecamatan/{groupKategori}', [StatistikController::class, 'storeAutoKecamatan'])->name('admin.statistik.group-kategori.kecamatan.auto');
 
     Route::get('/statistik/isi-statistik/get-kategori-data', [StatistikController::class, 'getKategoriData'])->name('admin.statistik.isi-statistik.getKategoriData');
     Route::get('/statistik/isi-statistik/get-group-kategori-group/{kategoriDataId}', [StatistikController::class, 'getGroupKategori'])->name('admin.statistik.isi-statistik.getGroupKategori');

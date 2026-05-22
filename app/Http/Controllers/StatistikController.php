@@ -134,11 +134,8 @@ class StatistikController extends Controller
         return response()->json(['message' => 'Group kategori item berhasil dihapus.']);
     }
 
-    public function storeAutoKecamatan(GroupKategori $groupKategori)
+    public function storeAddGroupKecamatan(KategoriData $kategori)
     {
-        if ($groupKategori->groupKategoriItems()->exists()) {
-            return response()->json(['success' => false, 'message' => 'Items sudah ada']);
-        }
 
         $kecamatan = [
             'Kebomas',
@@ -161,17 +158,90 @@ class StatistikController extends Controller
             'Driyorejo',
         ];
 
+        $sudahAda = GroupKategori::where('kategori_data_id', $kategori->id)
+            ->whereIn('nama_group', $kecamatan)
+            ->pluck('nama_group')
+            ->toArray();
+
+        $belumAda = array_filter($kecamatan, fn($nama) => !in_array($nama, $sudahAda));
+
+        if (empty($belumAda)) {
+            return response()->json([
+                'message' => 'Semua kecamatan sudah ada.',
+                'success' => false
+            ]);
+        }
+
+        $now   = now();
+        $items = array_map(fn($nama) => [
+            'kategori_data_id' => $kategori->id,
+            'nama_group'        => $nama,
+            'created_at'        => $now,
+            'updated_at'        => $now,
+        ], array_values($belumAda));
+
+        GroupKategori::insert($items);
+
+        return response()->json([
+            'success' => true,
+            'message' => count($items) . ' kecamatan berhasil ditambahkan.',
+            'added'   => count($items),
+            'skipped' => count($sudahAda),
+        ]);
+    }
+
+    public function storeAutoKecamatan(GroupKategori $groupKategori)
+    {
+
+        $kecamatan = [
+            'Kebomas',
+            'Gresik',
+            'Manyar',
+            'Duduksampeyan',
+            'Bungah',
+            'Sidayu',
+            'Ujungpangkah',
+            'Panceng',
+            'Tambak',
+            'Sangkapura',
+            'Dukun',
+            'Balongpanggang',
+            'Benjeng',
+            'Cerme',
+            'Menganti',
+            'Kedamean',
+            'Wringinanom',
+            'Driyorejo',
+        ];
+        $sudahAda = GroupKategoriItem::where('group_kategori_id', $groupKategori->id)
+            ->whereIn('nama_item', $kecamatan)
+            ->pluck('nama_item')
+            ->toArray();
+
+        $belumAda = array_filter($kecamatan, fn($nama) => !in_array($nama, $sudahAda));
+        if (empty($belumAda)) {
+            return response()->json([
+                'message' => 'Semua kecamatan sudah ada.',
+                'success' => false
+            ]);
+        }
+
         $now   = now();
         $items = array_map(fn($nama) => [
             'group_kategori_id' => $groupKategori->id,
             'nama_item'         => $nama,
             'created_at'        => $now,
             'updated_at'        => $now,
-        ], $kecamatan);
+        ], $belumAda);
 
         GroupKategoriItem::insert($items);
 
-        return response()->json(['success' => true, 'message' => 'Kecamatan berhasil ditambahkan.']);
+        return response()->json([
+            'success' => true,
+            'message' => count($items) . ' kecamatan berhasil ditambahkan.',
+            'added'   => count($items),
+            'skipped' => count($sudahAda),
+        ]);
     }
 
     # Isi Statistik

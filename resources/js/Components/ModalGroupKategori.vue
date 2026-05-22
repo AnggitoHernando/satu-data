@@ -261,7 +261,29 @@ const saveEditGroup = async (group) => {
     }
 };
 
+const autoAddGroupKecamatan = async () => {
+    savingGroup.value = true;
+    try {
+        const res = await axios.post(
+            route(
+                "admin.statistik.group-kategori.autoAddGroupKecamatan.simpan",
+                props.kategori.id,
+            ),
+        );
+        Swal.fire({
+            title: res.data?.message ?? "Kecamatan berhasil ditambahkan",
+            icon: res.data?.success ? "success" : "info",
+        });
+        await fetchGroups();
+    } catch (e) {
+        console.error("[ModalGroupKategori] autoAddKecamatan error:", e);
+        throw e;
+    } finally {
+        savingGroup.value = false;
+    }
+};
 const autoAddKecamatan = async () => {
+    savingItem.value = true;
     try {
         const res = await axios.post(
             route(
@@ -283,6 +305,8 @@ const autoAddKecamatan = async () => {
     } catch (e) {
         console.error("[ModalGroupKategori] autoAddKecamatan error:", e);
         throw e;
+    } finally {
+        savingItem.value = false;
     }
 };
 
@@ -358,6 +382,14 @@ const backToGroups = () => {
                                         : 'hidden',
                                 ]"
                             >
+                                <div>
+                                    <button
+                                        class="text-xs text-emerald-600 hover:text-emerald-800 transition-colors px-4 py-2"
+                                        @click="autoAddGroupKecamatan"
+                                    >
+                                        + Tambah otomatis Group Kecamatan
+                                    </button>
+                                </div>
                                 <div class="flex-1 overflow-y-auto">
                                     <div
                                         v-if="loadingGroups"
@@ -542,7 +574,7 @@ const backToGroups = () => {
                                             class="text-xs text-emerald-600 hover:text-emerald-800 transition-colors px-4 py-2"
                                             @click="autoAddKecamatan"
                                         >
-                                            + Tambah otomatis kecamatan
+                                            + Tambah otomatis Items kecamatan
                                         </button>
                                     </div>
 
