@@ -10,6 +10,8 @@ import ActionButtons from "@/Components/ActionButtons.vue";
 import StepPilihKategori from "@/Components/Statistik/StepPilihKategori.vue";
 import StepPilihKategoriGroup from "@/Components/Statistik/StepPilihKategoriGroup.vue";
 import StepNilaiTahun from "@/Components/Statistik/StepNilaiTahun.vue";
+import SecondaryButton from "@/Components/SecondaryButton.vue";
+import AddBatchStatistik from "@/Components/Statistik/AddBatchStatistik.vue";
 
 const columns = [
     {
@@ -98,11 +100,16 @@ const steps = [
     { num: 3, label: "Nilai & Tahun" },
 ];
 const openModal = (item = null) => {
+    console.log(modalMode.value);
+
     if (item) {
         form.clearErrors();
         modalMode.value = "edit";
         Object.assign(form, item);
         judulModal.value = "Ubah Iisi Statistik";
+    } else if (modalMode.value === "batch") {
+        modalMode.value = "batch";
+        judulModal.value = "Tambah Batch Isi Statistik";
     } else {
         modalMode.value = "create";
         // form.reset();
@@ -209,9 +216,25 @@ watch(
                         class="mb-4 flex flex-col sm:flex-row justify-between gap-3"
                     >
                         <h1 class="text-2xl font-bold mb-4">Isi Statistik</h1>
-                        <PrimaryButtonAdmin @click="() => openModal(null)">
-                            + Tambah Data</PrimaryButtonAdmin
-                        >
+                        <div class="flex">
+                            <PrimaryButtonAdmin
+                                @click="
+                                    modalMode = 'create';
+                                    openModal();
+                                "
+                            >
+                                + Tambah Data</PrimaryButtonAdmin
+                            >
+                            <SecondaryButton
+                                class="ml-2"
+                                @click="
+                                    modalMode = 'batch';
+                                    openModal();
+                                "
+                            >
+                                + Tambah Batch
+                            </SecondaryButton>
+                        </div>
                     </div>
                     <Table
                         :columns="columns"
@@ -282,61 +305,68 @@ watch(
             @close="isOpen = false"
             :judul_modal="judulModal"
         >
-            <div
-                class="flex items-center px-5 py-3 border-b border-gray-100 gap-2"
-            >
-                <template v-for="(s, i) in steps" :key="s.num">
-                    <div class="flex items-center gap-1.5">
-                        <span
-                            class="w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-medium flex-shrink-0"
-                            :class="{
-                                'bg-primary text-white': step > s.num,
-                                'bg-emerald-50 text-emerald-700 ring-1 ring-primary':
-                                    step === s.num,
-                                'bg-gray-100 text-gray-400': step < s.num,
-                            }"
-                        >
-                            <template v-if="step > s.num">✓</template>
-                            <template v-else>{{ s.num }}</template>
-                        </span>
-                        <span
-                            class="text-xs"
-                            :class="{
-                                'text-gray-400': step < s.num,
-                                'text-gray-900 font-medium': step === s.num,
-                                'text-gray-400': step > s.num,
-                            }"
-                            >{{ s.label }}</span
-                        >
-                    </div>
-                    <div
-                        v-if="i < steps.length - 1"
-                        class="flex-1 h-px bg-gray-100"
-                    ></div>
+            <div>
+                <template v-if="modalMode === 'batch'">
+                    <AddBatchStatistik />
                 </template>
-            </div>
-            <div class="px-5 py-4">
-                <StepPilihKategori
-                    v-if="step === 1"
-                    :kategori-id="form.kategori_id"
-                    @next="onKategoriNext"
-                />
-                <StepPilihKategoriGroup
-                    v-else-if="step === 2"
-                    :kategori-id="form.kategori_id"
-                    :kategori-nama="form.kategori_nama"
-                    :group-id="form.kategori_group_id"
-                    :item-id="form.kategori_group_item_id"
-                    @next="onGroupItemNext"
-                    @back="step--"
-                />
-                <StepNilaiTahun
-                    v-else-if="step === 3"
-                    :form="form"
-                    :saving="saving"
-                    @submit="onSubmit"
-                    @back="step--"
-                />
+                <template v-else class="px-5 py-4">
+                    <div
+                        class="flex items-center px-5 py-3 border-b border-gray-100 gap-2"
+                    >
+                        <template v-for="(s, i) in steps" :key="s.num">
+                            <div class="flex items-center gap-1.5">
+                                <span
+                                    class="w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-medium flex-shrink-0"
+                                    :class="{
+                                        'bg-primary text-white': step > s.num,
+                                        'bg-emerald-50 text-emerald-700 ring-1 ring-primary':
+                                            step === s.num,
+                                        'bg-gray-100 text-gray-400':
+                                            step < s.num,
+                                    }"
+                                >
+                                    <template v-if="step > s.num">✓</template>
+                                    <template v-else>{{ s.num }}</template>
+                                </span>
+                                <span
+                                    class="text-xs"
+                                    :class="{
+                                        'text-gray-400': step < s.num,
+                                        'text-gray-900 font-medium':
+                                            step === s.num,
+                                        'text-gray-400': step > s.num,
+                                    }"
+                                    >{{ s.label }}</span
+                                >
+                            </div>
+                            <div
+                                v-if="i < steps.length - 1"
+                                class="flex-1 h-px bg-gray-100"
+                            ></div>
+                        </template>
+                    </div>
+                    <StepPilihKategori
+                        v-if="step === 1"
+                        :kategori-id="form.kategori_id"
+                        @next="onKategoriNext"
+                    />
+                    <StepPilihKategoriGroup
+                        v-else-if="step === 2"
+                        :kategori-id="form.kategori_id"
+                        :kategori-nama="form.kategori_nama"
+                        :group-id="form.kategori_group_id"
+                        :item-id="form.kategori_group_item_id"
+                        @next="onGroupItemNext"
+                        @back="step--"
+                    />
+                    <StepNilaiTahun
+                        v-else-if="step === 3"
+                        :form="form"
+                        :saving="saving"
+                        @submit="onSubmit"
+                        @back="step--"
+                    />
+                </template>
             </div>
         </ModalHeadnessUI>
     </AuthenticatedLayout>

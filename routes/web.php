@@ -76,6 +76,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/statistik/isi-statistik/get-kategori-data', [StatistikController::class, 'getKategoriData'])->name('admin.statistik.isi-statistik.getKategoriData');
     Route::get('/statistik/isi-statistik/get-group-kategori-group/{kategoriDataId}', [StatistikController::class, 'getGroupKategori'])->name('admin.statistik.isi-statistik.getGroupKategori');
     Route::get('/statistik/isi-statistik/get-group-kategori-item/{groupKategoriId}', [StatistikController::class, 'getGroupKategoriItem'])->name('admin.statistik.isi-statistik.getGroupKategoriItem');
+    Route::get('/statistik/isi-statistik/get-group-kategori-item/{groupKategoriId}/{tahun}', [StatistikController::class, 'getGroupKategoriItemBatch'])->name('admin.statistik.isi-statistik.getGroupKategoriItemBatch');
 
     Route::get('/statistik/isi-statistik', [StatistikController::class, 'IsiStatistik'])->name('admin.statistik.isi-statistik');
     Route::post('/statistik/isi-statistik/simpan', [StatistikController::class, 'storeIsiStatistik'])->name('admin.statistik.isi-statistik.store');

@@ -90,9 +90,7 @@ const resetFilters = () => {
         <div
             class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 bg-gray-50 px-4 py-3 border border-gray-200 rounded-md mb-3 shadow-sm"
         >
-            <!-- Left filters -->
             <div class="flex flex-wrap items-center gap-3 w-full">
-                <!-- Search -->
                 <div class="relative w-full sm:w-auto">
                     <LucideSearch
                         class="absolute left-2 top-2.5 text-gray-400"
@@ -107,7 +105,6 @@ const resetFilters = () => {
                     />
                 </div>
 
-                <!-- Filter Seksi -->
                 <div class="relative w-full sm:w-auto">
                     <LucideFilter
                         class="absolute left-2 top-2.5 text-gray-400"
@@ -129,7 +126,6 @@ const resetFilters = () => {
                     </select>
                 </div>
 
-                <!-- Sort By -->
                 <div class="relative w-full sm:w-auto">
                     <LucideArrowUpDown
                         class="absolute left-2 top-2.5 text-gray-400"
@@ -151,7 +147,6 @@ const resetFilters = () => {
                     </select>
                 </div>
 
-                <!-- Sort Direction -->
                 <button
                     @click="sortDir = sortDir === 'asc' ? 'desc' : 'asc'"
                     class="flex items-center gap-1 px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition w-full sm:w-auto"
@@ -169,7 +164,6 @@ const resetFilters = () => {
                 </button>
             </div>
 
-            <!-- Reset -->
             <button
                 @click="resetFilters"
                 class="flex items-center gap-1 px-3 py-2 text-sm border border-gray-300 rounded-md text-gray-600 hover:bg-gray-100 w-full md:w-auto"
@@ -180,7 +174,6 @@ const resetFilters = () => {
         </div>
 
         <div class="w-full">
-            <!-- DESKTOP TABLE -->
             <div class="hidden md:block overflow-x-auto">
                 <table class="table-fixed border border-gray-300 w-full">
                     <thead>
@@ -236,7 +229,6 @@ const resetFilters = () => {
             </div>
         </div>
 
-        <!-- Pagination -->
         <div class="mt-4 mb-3 flex items-center justify-end gap-2">
             <template v-for="(link, i) in links" :key="i">
                 <Link

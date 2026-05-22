@@ -171,6 +171,20 @@ class StatistikController extends Controller
         return response()->json($results);
     }
 
+    function getGroupKategoriItemBatch($groupKategoriId, $tahun)
+    {
+        $results = GroupKategoriItem::query()
+            ->where('group_kategori_id', $groupKategoriId)
+            ->with(['isiStatistik' => function ($q) use ($tahun) {
+                $q->where('tahun', $tahun)
+                    ->select('id', 'group_kategori_item_id', 'tahun', 'value');
+            }])
+            ->select('id', 'nama_item')
+            ->get();
+
+        return response()->json($results);
+    }
+
     function IsiStatistik()
     {
         $isiStatistik = IsiStatistik::query()
@@ -198,7 +212,15 @@ class StatistikController extends Controller
     {
         $validated = $request->validated();
 
-        IsiStatistik::create($validated);
+        IsiStatistik::updateOrCreate(
+            [
+                'group_kategori_item_id' => $validated['group_kategori_item_id'],
+                'tahun'                  => $validated['tahun'],
+            ],
+            [
+                'value' => $validated['value'],
+            ]
+        );
         return redirect()->back()->with('success', 'Isi statistik berhasil ditambahkan.');
     }
 
