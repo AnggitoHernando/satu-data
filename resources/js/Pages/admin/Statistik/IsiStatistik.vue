@@ -302,7 +302,10 @@ watch(
         </div>
         <ModalHeadnessUI
             :open-modal="isOpen"
-            @close="isOpen = false"
+            @close="
+                isOpen = false;
+                router.reload({ only: ['isiStatistik'] });
+            "
             :judul_modal="judulModal"
         >
             <div>
