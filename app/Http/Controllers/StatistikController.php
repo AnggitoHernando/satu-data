@@ -134,6 +134,46 @@ class StatistikController extends Controller
         return response()->json(['message' => 'Group kategori item berhasil dihapus.']);
     }
 
+    public function storeAutoKecamatan(GroupKategori $groupKategori)
+    {
+        if ($groupKategori->groupKategoriItems()->exists()) {
+            return response()->json(['success' => false, 'message' => 'Items sudah ada']);
+        }
+
+        $kecamatan = [
+            'Kebomas',
+            'Gresik',
+            'Manyar',
+            'Duduksampeyan',
+            'Bungah',
+            'Sidayu',
+            'Ujungpangkah',
+            'Panceng',
+            'Tambak',
+            'Sangkapura',
+            'Dukun',
+            'Balongpanggang',
+            'Benjeng',
+            'Cerme',
+            'Menganti',
+            'Kedamean',
+            'Wringinanom',
+            'Driyorejo',
+        ];
+
+        $now   = now();
+        $items = array_map(fn($nama) => [
+            'group_kategori_id' => $groupKategori->id,
+            'nama_item'         => $nama,
+            'created_at'        => $now,
+            'updated_at'        => $now,
+        ], $kecamatan);
+
+        GroupKategoriItem::insert($items);
+
+        return response()->json(['success' => true, 'message' => 'Kecamatan berhasil ditambahkan.']);
+    }
+
     # Isi Statistik
     function getKategoriData(Request $request)
     {

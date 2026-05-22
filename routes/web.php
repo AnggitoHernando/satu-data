@@ -72,6 +72,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/statistik/{groupKategori}/group-kategori-item', [StatistikController::class, 'GroupKategoriItem'])->name('admin.statistik.group-kategori-items');
     Route::post('/statistik/group-kategori-item/simpan', [StatistikController::class, 'storeGroupKategoriItem'])->name('admin.statistik.group-kategori-items.simpan');
     Route::delete('/statistik/group-kategori-item/{groupKategoriItem}', [StatistikController::class, 'destroyGroupKategoriItem'])->name('admin.statistik.group-kategori-items.destroy');
+    Route::post('/statistik/group-kategori/kecamatan/{groupKategori}', [StatistikController::class, 'storeAutoKecamatan'])->name('admin.statistik.group-kategori.kecamatan.auto');
 
     Route::get('/statistik/isi-statistik/get-kategori-data', [StatistikController::class, 'getKategoriData'])->name('admin.statistik.isi-statistik.getKategoriData');
     Route::get('/statistik/isi-statistik/get-group-kategori-group/{kategoriDataId}', [StatistikController::class, 'getGroupKategori'])->name('admin.statistik.isi-statistik.getGroupKategori');

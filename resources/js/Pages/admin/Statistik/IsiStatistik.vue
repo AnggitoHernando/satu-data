@@ -100,8 +100,6 @@ const steps = [
     { num: 3, label: "Nilai & Tahun" },
 ];
 const openModal = (item = null) => {
-    console.log(modalMode.value);
-
     if (item) {
         form.clearErrors();
         modalMode.value = "edit";

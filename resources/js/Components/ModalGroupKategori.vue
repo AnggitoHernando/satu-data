@@ -8,6 +8,7 @@ import {
     LoaderCircleIcon,
     PencilIcon,
 } from "lucide-vue-next";
+import Swal from "sweetalert2";
 
 const props = defineProps({
     kategori: {
@@ -260,6 +261,31 @@ const saveEditGroup = async (group) => {
     }
 };
 
+const autoAddKecamatan = async () => {
+    try {
+        const res = await axios.post(
+            route(
+                "admin.statistik.group-kategori.kecamatan.auto",
+                selectedGroup.value.id,
+            ),
+        );
+        Swal.fire({
+            title: res.data?.message ?? "Kecamatan berhasil ditambahkan",
+            icon: res.data?.success ? "success" : "info",
+        });
+        delete selectedGroup.value.items;
+        const idx = groups.value.findIndex(
+            (g) => g.id === selectedGroup.value.id,
+        );
+        if (idx !== -1) delete groups.value[idx].items;
+
+        await selectGroup(selectedGroup.value);
+    } catch (e) {
+        console.error("[ModalGroupKategori] autoAddKecamatan error:", e);
+        throw e;
+    }
+};
+
 const onEditGroupKeydown = (e, group) => {
     if (e.key === "Enter") saveEditGroup(group);
     if (e.key === "Escape") cancelEditGroup();
@@ -509,6 +535,14 @@ const backToGroups = () => {
                                                 v-else
                                                 class="w-3.5 h-3.5"
                                             />
+                                        </button>
+                                    </div>
+                                    <div>
+                                        <button
+                                            class="text-xs text-emerald-600 hover:text-emerald-800 transition-colors px-4 py-2"
+                                            @click="autoAddKecamatan"
+                                        >
+                                            + Tambah otomatis kecamatan
                                         </button>
                                     </div>
 
