@@ -84,6 +84,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/statistik/isi-statistik/simpan', [StatistikController::class, 'storeIsiStatistik'])->name('admin.statistik.isi-statistik.store');
     Route::patch('/statistik/isi-statistik/update/{isiStatistik}', [StatistikController::class, 'updateIsiStatistik'])->name('admin.statistik.isi-statistik.update');
     Route::delete('/statistik/isi-statistik/{isiStatistik}', [StatistikController::class, 'destroyIsiStatistik'])->name('admin.statistik.isi-statistik.destroy');
+
+    Route::get('/statistik/excel/download-template', [StatistikController::class, 'downloadTemplate'])
+        ->name('admin.statistik.excel.download-template');
 });
 
 require __DIR__ . '/auth.php';

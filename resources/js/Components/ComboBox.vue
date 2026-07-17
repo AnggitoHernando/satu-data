@@ -193,7 +193,7 @@ const onAfterLeave = () => {
                     :placeholder="placeholder"
                     :displayValue="getLabel"
                     @change="onQueryChange($event.target.value)"
-                    @focus="buttonRef?.$el?.click()"
+                    @click="buttonRef?.$el?.click()"
                 />
 
                 <button

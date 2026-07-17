@@ -15,6 +15,10 @@ use App\Models\KategoriData;
 use App\Models\IsiStatistik;
 use App\Models\JenisData;
 use App\Models\Seksi;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\StatistikMultiSheetExport;
+use App\Imports\StatistikMultiSheetImport;
+use Illuminate\Support\Str;
 
 class StatistikController extends Controller
 {
@@ -338,5 +342,28 @@ class StatistikController extends Controller
     {
         $isiStatistik->delete();
         return redirect()->back()->with('success', 'Isi statistik berhasil dihapus.');
+    }
+
+    public function downloadTemplate(Request $request)
+    {
+        $request->validate([
+            'kategori_id' => 'required|exists:kategori_data,id',
+            'group_ids'   => 'required|array|min:1',
+            'group_ids.*' => 'exists:group_kategoris,id',
+        ]);
+
+        $groups = GroupKategori::whereIn('id', $request->group_ids)
+            ->where('kategori_data_id', $request->kategori_id)
+            ->with('groupKategoriItems')
+            ->get();
+
+        if ($groups->isEmpty()) {
+            return response()->json(['message' => 'Group tidak ditemukan.'], 404);
+        }
+
+        $kategori = KategoriData::find($request->kategori_id);
+        $namaFile = 'template-' . Str::slug($kategori->nama_kategori) . '.xlsx';
+
+        return Excel::download(new StatistikMultiSheetExport($groups), $namaFile);
     }
 }

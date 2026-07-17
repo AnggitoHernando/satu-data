@@ -1,6 +1,6 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Head } from "@inertiajs/vue3";
+import { Form, Head } from "@inertiajs/vue3";
 import { ref, onMounted, watch } from "vue";
 import { usePage, useForm, router } from "@inertiajs/vue3";
 import Table from "@/Components/Table.vue";
@@ -12,6 +12,8 @@ import StepPilihKategoriGroup from "@/Components/Statistik/StepPilihKategoriGrou
 import StepNilaiTahun from "@/Components/Statistik/StepNilaiTahun.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import AddBatchStatistik from "@/Components/Statistik/AddBatchStatistik.vue";
+import ThridButton from "@/Components/ThridButton.vue";
+import FormUploadStatistik from "@/Components/Statistik/FormUploadStatistik.vue";
 
 const columns = [
     {
@@ -108,6 +110,9 @@ const openModal = (item = null) => {
     } else if (modalMode.value === "batch") {
         modalMode.value = "batch";
         judulModal.value = "Tambah Batch Isi Statistik";
+    } else if (modalMode.value === "upload") {
+        modalMode.value = "upload";
+        judulModal.value = "Upload Isi Statistik";
     } else {
         modalMode.value = "create";
         // form.reset();
@@ -214,7 +219,7 @@ watch(
                         class="mb-4 flex flex-col sm:flex-row justify-between gap-3"
                     >
                         <h1 class="text-2xl font-bold mb-4">Isi Statistik</h1>
-                        <div class="flex">
+                        <div class="flex ml-2">
                             <PrimaryButtonAdmin
                                 @click="
                                     modalMode = 'create';
@@ -232,6 +237,15 @@ watch(
                             >
                                 + Tambah Batch
                             </SecondaryButton>
+                            <ThridButton
+                                class="ml-2"
+                                @click="
+                                    modalMode = 'upload';
+                                    openModal();
+                                "
+                            >
+                                Upload Data</ThridButton
+                            >
                         </div>
                     </div>
                     <Table
@@ -309,6 +323,9 @@ watch(
             <div>
                 <template v-if="modalMode === 'batch'">
                     <AddBatchStatistik />
+                </template>
+                <template v-else-if="modalMode === 'upload'">
+                    <FormUploadStatistik />
                 </template>
                 <template v-else class="px-5 py-4">
                     <div
