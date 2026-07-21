@@ -8,7 +8,6 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use PhpOffice\PhpSpreadsheet\Style\Fill;
 
 class StatistikSheetExport implements FromArray, WithTitle, WithStyles, WithColumnWidths
 {
@@ -26,20 +25,27 @@ class StatistikSheetExport implements FromArray, WithTitle, WithStyles, WithColu
         $itemIds   = array_keys($this->items);
         $itemNames = array_values($this->items);
 
-        // Row 1: item_id (tersembunyi) — diawali __META__ sebagai penanda
-        $metaRow = ['__META__', ...$itemIds];
+        // Row 1: Item Id
+        $row1 = ['__META__', ...$itemIds];
 
-        // Row 2: header yang user lihat
-        $headerRow = ['Tahun', ...$itemNames];
+        $row2 = ['Nama Data', $this->group->kategoriData->nama_kategori ?? ''];
 
-        // Row 3 dst: contoh baris kosong untuk 3 tahun terakhir
+        $row3 = ['Group By', $this->group->nama_group];
+
+        // Row 4: META (tersembunyi) — penanda item_id
+        $row4 = ['', '', ''];
+
+        // Row 5: Header kolom yang user lihat
+        $row5 = ['Tahun', ...$itemNames];
+
+        // Row 6 dst: baris kosong untuk 3 tahun terakhir
         $tahunSekarang = now()->year;
         $dataRows = array_map(
             fn($tahun) => array_fill(0, count($this->items) + 1, '') + [0 => $tahun],
             range($tahunSekarang, $tahunSekarang - 2)
         );
 
-        return [$metaRow, $headerRow, ...$dataRows];
+        return [$row1, $row2, $row3, $row4, $row5, ...$dataRows];
     }
 
     public function styles(Worksheet $sheet): array
@@ -48,30 +54,30 @@ class StatistikSheetExport implements FromArray, WithTitle, WithStyles, WithColu
             count($this->items) + 1
         );
 
-        // Sembunyikan row 1 (meta row)
         $sheet->getRowDimension(1)->setVisible(false);
 
-        // Style header (row 2) → hijau
-        $sheet->getStyle("A2:{$lastCol}2")->applyFromArray([
-            'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
-            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '166534']],
-        ]);
+        $sheet->getStyle('A2')->getFont()->setBold(true);
+        $sheet->getStyle('A3')->getFont()->setBold(true);
 
-        // Style baris data
-        $totalRows = count($this->array());
-        $sheet->getStyle("A3:{$lastCol}{$totalRows}")->applyFromArray([
-            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => 'F9FAFB']],
-        ]);
+        $sheet->getStyle("A5:{$lastCol}5")->getFont()->setBold(true);
 
-        // Kolom tahun → bold
-        $sheet->getStyle("A3:A{$totalRows}")->getFont()->setBold(true);
+        $sheet->getStyle("A5:{$lastCol}5")->getBorders()->getAllBorders()->setBorderStyle(
+            \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN
+        );
+
+        $sheet->getStyle("A5:{$lastCol}5")->getAlignment()->setHorizontal(
+            \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER
+        );
+        $sheet->getStyle("A5:{$lastCol}5")->getAlignment()->setVertical(
+            \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER
+        );
 
         return [];
     }
 
     public function columnWidths(): array
     {
-        $widths = ['A' => 10];
+        $widths = ['A' => 16];
         foreach (range(2, count($this->items) + 1) as $i) {
             $col = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i);
             $widths[$col] = 16;
@@ -81,7 +87,6 @@ class StatistikSheetExport implements FromArray, WithTitle, WithStyles, WithColu
 
     public function title(): string
     {
-        // Nama sheet = nama group, max 31 karakter (limit Excel)
         return substr($this->group->nama_group, 0, 31);
     }
 }

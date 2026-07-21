@@ -69,7 +69,6 @@ class StatistikSingleSheetImport implements ToCollection
     {
         if ($rows->isEmpty()) return;
 
-        // Row pertama harus berisi __META__
         $metaRow = $rows->first()->toArray();
 
         if (($metaRow[0] ?? '') !== '__META__') {
@@ -80,8 +79,8 @@ class StatistikSingleSheetImport implements ToCollection
         // Ambil item_id dari meta row (kolom 1 dst)
         $itemIds = array_slice($metaRow, 1);
 
-        // Validasi item_id ada di database dan milik group ini
-        $validItemIds = $this->group->items()->pluck('id')->toArray();
+        // Validasi item_id milik group ini
+        $validItemIds = $this->group->groupKategoriItems()->pluck('id')->toArray();
         foreach ($itemIds as $itemId) {
             if ($itemId && !in_array($itemId, $validItemIds)) {
                 $this->errors[] = "Sheet '{$this->group->nama_group}': item ID {$itemId} tidak valid atau bukan milik group ini.";
@@ -89,9 +88,9 @@ class StatistikSingleSheetImport implements ToCollection
             }
         }
 
-        // Row kedua = header (skip)
-        // Row ketiga dst = data
-        $dataRows = $rows->slice(2);
+        // Row 5 = header (index 4) → skip
+        // Row 6 dst = data (index 5 ke atas)
+        $dataRows = $rows->slice(5);
 
         foreach ($dataRows as $rowIndex => $row) {
             $rowArray = $row->toArray();
