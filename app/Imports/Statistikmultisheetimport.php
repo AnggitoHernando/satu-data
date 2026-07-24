@@ -9,6 +9,7 @@ use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Log;
 
 class StatistikMultiSheetImport implements WithMultipleSheets
 {
@@ -23,14 +24,20 @@ class StatistikMultiSheetImport implements WithMultipleSheets
 
     public function sheets(): array
     {
-        // Ambil semua group milik kategori
+        $uploadedFile = request()->file('file');
+        $spreadsheet  = \PhpOffice\PhpSpreadsheet\IOFactory::load($uploadedFile->getPathname());
+        $sheetNamesInFile = $spreadsheet->getSheetNames();
+
         $groups = GroupKategori::where('kategori_data_id', $this->kategoriId)
             ->get(['id', 'nama_group']);
-
         // Map nama_group => sheet import instance
         $sheets = [];
         foreach ($groups as $group) {
             $sheetName = substr($group->nama_group, 0, 31);
+            if (!in_array($sheetName, $sheetNamesInFile)) {
+                Log::info("Skip group [{$sheetName}] — tidak ada di file");
+                continue;
+            }
             $import    = new StatistikSingleSheetImport($group);
             $this->sheetImports[$sheetName] = $import;
             $sheets[$sheetName] = $import;
@@ -53,8 +60,9 @@ class StatistikMultiSheetImport implements WithMultipleSheets
 }
 
 
-class StatistikSingleSheetImport implements ToCollection
+class StatistikSingleSheetImport implements ToCollection, WithTitle
 {
+    protected string $sheetName;
     protected GroupKategori $group;
     public int $inserted  = 0;
     public int $updated   = 0;
@@ -63,16 +71,23 @@ class StatistikSingleSheetImport implements ToCollection
     public function __construct(GroupKategori $group)
     {
         $this->group = $group;
+        $this->sheetName = substr($group->nama_group, 0, 31);
+    }
+    public function title(): string
+    {
+        return $this->sheetName;
     }
 
     public function collection(Collection $rows)
     {
+        Log::info("collection() dipanggil untuk group: {$this->group->nama_group}");
+        Log::info("Jumlah rows: " . $rows->count());
         if ($rows->isEmpty()) return;
 
         $metaRow = $rows->first()->toArray();
 
         if (($metaRow[0] ?? '') !== '__META__') {
-            $this->errors[] = "Sheet '{$this->group->nama_group}': file tidak sesuai template. Baris meta tidak ditemukan.";
+            $this->errors[] = "Sheet '{$this->sheetName}': file tidak sesuai template. Baris meta tidak ditemukan.";
             return;
         }
 
@@ -83,10 +98,11 @@ class StatistikSingleSheetImport implements ToCollection
         $validItemIds = $this->group->groupKategoriItems()->pluck('id')->toArray();
         foreach ($itemIds as $itemId) {
             if ($itemId && !in_array($itemId, $validItemIds)) {
-                $this->errors[] = "Sheet '{$this->group->nama_group}': item ID {$itemId} tidak valid atau bukan milik group ini.";
+                $this->errors[] = "Sheet '{$this->group->nama_group}': tidak valid atau bukan milik group ini.";
                 return;
             }
         }
+
 
         // Row 5 = header (index 4) → skip
         // Row 6 dst = data (index 5 ke atas)
@@ -97,7 +113,7 @@ class StatistikSingleSheetImport implements ToCollection
             $tahun    = $rowArray[0] ?? null;
 
             if (!$tahun || !is_numeric($tahun)) {
-                $this->errors[] = "Sheet '{$this->group->nama_group}' baris " . ($rowIndex + 3) . ": kolom tahun tidak valid.";
+                $this->errors[] = "Sheet '{$this->group->nama_group}' baris " . ($rowIndex + 1) . ": kolom tahun tidak valid.";
                 continue;
             }
 
@@ -105,10 +121,13 @@ class StatistikSingleSheetImport implements ToCollection
                 if (!$itemId) continue;
 
                 $value = $rowArray[$colIndex + 1] ?? null;
-                if ($value === null || $value === '') continue;
+                if ($value === null || $value === '') {
+                    $this->errors[] = "Sheet '{$this->group->nama_group}' baris " . ($rowIndex + 1) . " kolom " . ($colIndex + 2) . ": nilai harus diisi tidak boleh kosong.";
+                    continue;
+                };
 
                 if (!is_numeric($value)) {
-                    $this->errors[] = "Sheet '{$this->group->nama_group}' baris " . ($rowIndex + 3) . " kolom " . ($colIndex + 2) . ": nilai harus angka.";
+                    $this->errors[] = "Sheet '{$this->group->nama_group}' baris " . ($rowIndex + 1) . " kolom " . ($colIndex + 2) . ": nilai harus angka.";
                     continue;
                 }
 

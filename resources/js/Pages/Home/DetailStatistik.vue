@@ -156,9 +156,9 @@ const kembali = () => router.visit(route("PortalData"));
                     >
                         <span>{{ kategori.seksi?.nama_seksi }}</span>
                         <span class="w-1 h-1 rounded-full bg-gray-300"></span>
-                        <span>{{ groups.length }} group</span>
+                        <span>{{ groups.length }} Kategori</span>
                         <span class="w-1 h-1 rounded-full bg-gray-300"></span>
-                        <span>{{ totalItems }} item</span>
+                        <span>{{ totalItems }} Rincian Data</span>
                         <span class="w-1 h-1 rounded-full bg-gray-300"></span>
                         <span>{{ tahunList.join(", ") }}</span>
                     </p>
@@ -166,21 +166,19 @@ const kembali = () => router.visit(route("PortalData"));
 
                 <div class="grid grid-cols-3 gap-3">
                     <div class="bg-white border border-gray-200 rounded-xl p-4">
-                        <p class="text-xs text-gray-400 mb-1">Jumlah group</p>
+                        <p class="text-xs text-gray-400 mb-1">
+                            Jumlah Kategori
+                        </p>
                         <p class="text-2xl font-bold text-green-700">
                             {{ groups.length }}
                         </p>
-                        <p class="text-xs text-gray-400 mt-1">
-                            {{ groups.map((g) => g.nama_group).join(", ") }}
-                        </p>
                     </div>
                     <div class="bg-white border border-gray-200 rounded-xl p-4">
-                        <p class="text-xs text-gray-400 mb-1">Jumlah item</p>
+                        <p class="text-xs text-gray-400 mb-1">
+                            Jumlah Rincian Data
+                        </p>
                         <p class="text-2xl font-bold text-green-700">
                             {{ totalItems }}
-                        </p>
-                        <p class="text-xs text-gray-400 mt-1">
-                            Total seluruh group
                         </p>
                     </div>
                     <div class="bg-white border border-gray-200 rounded-xl p-4">

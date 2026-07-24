@@ -74,6 +74,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/statistik/group-kategori-item/simpan', [StatistikController::class, 'storeGroupKategoriItem'])->name('admin.statistik.group-kategori-items.simpan');
     Route::delete('/statistik/group-kategori-item/{groupKategoriItem}', [StatistikController::class, 'destroyGroupKategoriItem'])->name('admin.statistik.group-kategori-items.destroy');
     Route::post('/statistik/group-kategori-item/kecamatan/{groupKategori}', [StatistikController::class, 'storeAutoKecamatan'])->name('admin.statistik.group-kategori.kecamatan.auto');
+    Route::post('/statistik/group-kategori-item/simpan-bulk', [StatistikController::class, 'storeBulkGroupKategoriItems'])->name('admin.statistik.group-kategori-items.bulk-store');
 
     Route::get('/statistik/isi-statistik/get-kategori-data', [StatistikController::class, 'getKategoriData'])->name('admin.statistik.isi-statistik.getKategoriData');
     Route::get('/statistik/isi-statistik/get-group-kategori-group/{kategoriDataId}', [StatistikController::class, 'getGroupKategori'])->name('admin.statistik.isi-statistik.getGroupKategori');
@@ -87,6 +88,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/statistik/excel/download-template', [StatistikController::class, 'downloadTemplate'])
         ->name('admin.statistik.excel.download-template');
+    Route::post('/statistik/excel/upload', [StatistikController::class, 'uploadIsiStatistik'])
+        ->name('admin.statistik.excel.upload');
 });
 
 require __DIR__ . '/auth.php';

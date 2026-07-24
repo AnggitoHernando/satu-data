@@ -7,6 +7,9 @@ import {
     TrashIcon,
     LoaderCircleIcon,
     PencilIcon,
+    Loader2Icon,
+    SquareIcon,
+    CheckSquareIcon,
 } from "lucide-vue-next";
 import Swal from "sweetalert2";
 
@@ -46,6 +49,13 @@ const deletingItemId = ref(null);
 const editingGroupId = ref(null);
 const editingGroupName = ref("");
 const savingEditGroup = ref(false);
+
+// ─── State Add Multiple Items ─────────────────────────────────────────────────────
+const addMultipleItems = ref(false);
+const selectedGroupIds = ref([]);
+const items = ref([]);
+const savingBulkItems = ref(false);
+const errorMsg = ref("");
 
 const selectedItems = computed(() => {
     if (!selectedGroup.value) return [];
@@ -331,6 +341,85 @@ const selectGroupMobile = async (group) => {
 const backToGroups = () => {
     mobilePanel.value = "groups";
 };
+
+const summary = computed(() => {
+    const totalItems = items.value.length;
+    const totalGroups = selectedGroupIds.value.length;
+    const totalBaru = totalItems * totalGroups;
+    return { totalItems, totalGroups, totalBaru };
+});
+
+const canSave = computed(
+    () => items.value.length > 0 && selectedGroupIds.value.length > 0,
+);
+
+const allSelected = computed(
+    () => selectedGroupIds.value.length === groups.value.length,
+);
+
+const toggleGroup = (id) => {
+    selectedGroupIds.value = selectedGroupIds.value.includes(id)
+        ? selectedGroupIds.value.filter((i) => i !== id)
+        : [...selectedGroupIds.value, id];
+};
+
+const toggleAll = () => {
+    selectedGroupIds.value = allSelected.value
+        ? []
+        : groups.value.map((g) => g.id);
+};
+
+const addItem = () => {
+    const nama = newItemName.value.trim();
+    if (!nama) return;
+    if (items.value.some((i) => i.nama.toLowerCase() === nama.toLowerCase())) {
+        errorMsg.value = `Item "${nama}" sudah ada.`;
+        return;
+    }
+    items.value.push({ nama });
+    newItemName.value = "";
+    errorMsg.value = "";
+};
+
+const removeItem = (index) => {
+    items.value.splice(index, 1);
+};
+
+const onEnter = (e) => {
+    e.preventDefault();
+    addItem();
+};
+
+const saveBulkItems = async () => {
+    if (!canSave.value) return;
+    savingBulkItems.value = true;
+    errorMsg.value = "";
+
+    try {
+        const res = await axios.post(
+            route("admin.statistik.group-kategori-items.bulk-store"),
+            {
+                group_ids: selectedGroupIds.value,
+                items: items.value.map((i) => i.nama),
+            },
+        );
+        Swal.fire({
+            title: res.data?.message ?? "Items berhasil ditambahkan ke group",
+            icon: "success",
+        });
+        // Reset state
+        items.value = [];
+        selectedGroupIds.value = [];
+        addMultipleItems.value = false;
+        // Refresh groups and items
+        await fetchGroups();
+    } catch (e) {
+        errorMsg.value =
+            e.response?.data?.message ?? "Gagal menyimpan, coba lagi.";
+    } finally {
+        savingBulkItems.value = false;
+    }
+};
 </script>
 
 <template>
@@ -339,7 +428,6 @@ const backToGroups = () => {
             <div
                 v-if="modelValue"
                 class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-                @click.self="close"
             >
                 <Transition name="slide-up">
                     <div
@@ -365,7 +453,10 @@ const backToGroups = () => {
                                 </p>
                             </div>
                             <button
-                                @click="close"
+                                @click="
+                                    close();
+                                    addMultipleItems = false;
+                                "
                                 class="text-gray-400 hover:text-gray-600 p-1"
                             >
                                 <XIcon class="w-4 h-4" />
@@ -387,7 +478,7 @@ const backToGroups = () => {
                                         class="text-xs text-emerald-600 hover:text-emerald-800 transition-colors px-4 py-2"
                                         @click="autoAddGroupKecamatan"
                                     >
-                                        + Tambah otomatis Group Kecamatan
+                                        + Tambah otomatis data kecamatan
                                     </button>
                                 </div>
                                 <div class="flex-1 overflow-y-auto">
@@ -544,7 +635,7 @@ const backToGroups = () => {
                                         <p
                                             class="text-xs font-medium text-gray-700"
                                         >
-                                            Items —
+                                            {{ kategori?.nama_kategori }} —
                                             {{ selectedGroup.nama_group }}
                                         </p>
                                         <button
@@ -574,86 +665,341 @@ const backToGroups = () => {
                                             class="text-xs text-emerald-600 hover:text-emerald-800 transition-colors px-4 py-2"
                                             @click="autoAddKecamatan"
                                         >
-                                            + Tambah otomatis Items kecamatan
+                                            + Tambah otomatis kecamatan
+                                        </button>
+                                        <button
+                                            class="text-xs text-emerald-600 hover:text-emerald-800 transition-colors px-4 py-2"
+                                            @click="addMultipleItems = true"
+                                        >
+                                            + Tambah Item ke Beberapa Group
                                         </button>
                                     </div>
 
                                     <div
-                                        v-if="loadingItems"
-                                        class="flex-1 flex items-center justify-center"
+                                        v-if="addMultipleItems"
+                                        class="flex-1 flex flex-col overflow-hidden"
                                     >
-                                        <LoaderCircleIcon
-                                            class="w-4 h-4 animate-spin text-gray-300"
-                                        />
-                                    </div>
-
-                                    <div v-else class="flex-1 overflow-y-auto">
                                         <div
-                                            v-if="selectedItems.length === 0"
-                                            class="px-4 py-6 text-xs text-gray-400 text-center"
+                                            class="overflow-y-auto flex-1 px-5 py-4 space-y-4"
                                         >
-                                            Belum ada item — tambahkan di bawah
+                                            <div class="flex flex-col gap-1.5">
+                                                <label
+                                                    class="text-xs font-medium text-gray-500"
+                                                >
+                                                    Item yang akan ditambahkan
+                                                </label>
+
+                                                <div
+                                                    class="flex flex-wrap gap-1.5 min-h-[36px] p-2 border border-gray-200 rounded-lg bg-gray-50"
+                                                >
+                                                    <span
+                                                        v-for="(
+                                                            item, idx
+                                                        ) in items"
+                                                        :key="idx"
+                                                        class="inline-flex items-center gap-1 bg-green-50 text-green-800 border border-green-200 rounded-full px-2.5 py-0.5 text-xs"
+                                                    >
+                                                        {{ item.nama }}
+                                                        <button
+                                                            class="text-green-600 hover:text-green-800 leading-none ml-1"
+                                                            @click="
+                                                                removeItem(idx)
+                                                            "
+                                                            :aria-label="`Hapus ${item.nama}`"
+                                                        >
+                                                            ×
+                                                        </button>
+                                                    </span>
+                                                    <span
+                                                        v-if="
+                                                            items.length === 0
+                                                        "
+                                                        class="text-xs text-gray-400 self-center"
+                                                    >
+                                                        Belum ada item —
+                                                        tambahkan di bawah
+                                                    </span>
+                                                </div>
+
+                                                <!-- Input tambah item -->
+                                                <div class="flex gap-2">
+                                                    <input
+                                                        v-model="newItemName"
+                                                        type="text"
+                                                        placeholder="Ketik nama item lalu Enter atau klik Tambah..."
+                                                        class="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none focus:border-green-500"
+                                                        @keydown.enter="onEnter"
+                                                    />
+                                                    <button
+                                                        class="flex items-center gap-1 px-3 py-2 text-xs bg-green-700 text-white rounded-lg hover:bg-green-800 disabled:opacity-40"
+                                                        :disabled="
+                                                            !newItemName.trim()
+                                                        "
+                                                        @click="addItem"
+                                                    >
+                                                        <PlusIcon
+                                                            class="w-3.5 h-3.5"
+                                                        />
+                                                        Tambah
+                                                    </button>
+                                                </div>
+
+                                                <p
+                                                    v-if="errorMsg"
+                                                    class="text-xs text-red-500"
+                                                >
+                                                    {{ errorMsg }}
+                                                </p>
+                                            </div>
+
+                                            <!-- Checklist group -->
+                                            <div
+                                                class="flex flex-col gap-1.5 overflow-y-auto"
+                                            >
+                                                <div
+                                                    class="flex items-center justify-between"
+                                                >
+                                                    <label
+                                                        class="text-xs font-medium text-gray-500"
+                                                        >Pilih group
+                                                        tujuan</label
+                                                    >
+                                                    <button
+                                                        v-if="groups.length"
+                                                        class="text-xs text-green-700 hover:underline"
+                                                        @click="toggleAll"
+                                                    >
+                                                        {{
+                                                            allSelected
+                                                                ? "Batal semua"
+                                                                : "Pilih semua"
+                                                        }}
+                                                    </button>
+                                                </div>
+
+                                                <div
+                                                    v-if="loadingGroups"
+                                                    class="flex items-center gap-2 py-3"
+                                                >
+                                                    <Loader2Icon
+                                                        class="w-3.5 h-3.5 animate-spin text-gray-300"
+                                                    />
+                                                    <span
+                                                        class="text-xs text-gray-400"
+                                                        >Memuat group...</span
+                                                    >
+                                                </div>
+
+                                                <div
+                                                    v-else
+                                                    class="border border-gray-100 rounded-lg overflow-hidden overflow-y-auto"
+                                                    style="max-height: 220px"
+                                                >
+                                                    <button
+                                                        v-for="group in groups"
+                                                        :key="group.id"
+                                                        class="w-full flex items-center gap-3 px-3 py-2.5 text-xs hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-0 text-left"
+                                                        @click="
+                                                            toggleGroup(
+                                                                group.id,
+                                                            )
+                                                        "
+                                                    >
+                                                        <component
+                                                            :is="
+                                                                selectedGroupIds.includes(
+                                                                    group.id,
+                                                                )
+                                                                    ? CheckSquareIcon
+                                                                    : SquareIcon
+                                                            "
+                                                            class="w-4 h-4 flex-shrink-0"
+                                                            :class="
+                                                                selectedGroupIds.includes(
+                                                                    group.id,
+                                                                )
+                                                                    ? 'text-green-700'
+                                                                    : 'text-gray-300'
+                                                            "
+                                                        />
+                                                        <span
+                                                            class="flex-1 text-gray-700"
+                                                            >{{
+                                                                group.nama_group
+                                                            }}</span
+                                                        >
+                                                        <span
+                                                            class="text-gray-400 text-[10px]"
+                                                            >{{
+                                                                group.items_count ??
+                                                                0
+                                                            }}
+                                                            item</span
+                                                        >
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <!-- Summary -->
+                                            <div
+                                                v-if="canSave"
+                                                class="text-xs text-gray-500 bg-gray-50 rounded-lg px-3 py-2.5"
+                                            >
+                                                <span
+                                                    class="font-medium text-green-700"
+                                                    >{{
+                                                        summary.totalItems
+                                                    }}
+                                                    item</span
+                                                >
+                                                akan ditambahkan ke
+                                                <span
+                                                    class="font-medium text-green-700"
+                                                    >{{
+                                                        summary.totalGroups
+                                                    }}
+                                                    group</span
+                                                >
+                                                →
+                                                <span
+                                                    class="font-medium text-green-700"
+                                                    >{{
+                                                        summary.totalBaru
+                                                    }}
+                                                    item baru</span
+                                                >
+                                                total
+                                            </div>
                                         </div>
-
+                                        <!-- Footer -->
                                         <div
-                                            v-for="item in selectedItems"
-                                            :key="item.id"
-                                            class="flex items-center gap-2 px-4 py-2.5 border-b border-gray-50 group hover:bg-gray-50"
+                                            class="px-5 py-3 border-t border-gray-100 flex justify-between items-center flex-shrink-1"
                                         >
-                                            <span
-                                                class="w-1 h-1 rounded-full bg-gray-300 flex-shrink-0"
-                                            ></span>
-                                            <span
-                                                class="text-xs text-gray-700 flex-1"
-                                                >{{ item.nama_item }}</span
-                                            >
                                             <button
-                                                class="text-gray-300 hover:text-red-400 transition-all p-0.5 disabled:opacity-50 sm:opacity-0 sm:group-hover:opacity-100"
-                                                :disabled="
-                                                    deletingItemId === item.id
+                                                class="text-xs px-4 py-2 border border-gray-200 rounded-lg text-gray-500 hover:bg-gray-50"
+                                                @click="
+                                                    addMultipleItems = false
                                                 "
-                                                @click="hapusItem(item)"
-                                                aria-label="Hapus item"
                                             >
-                                                <LoaderCircleIcon
-                                                    v-if="
-                                                        deletingItemId ===
-                                                        item.id
-                                                    "
-                                                    class="w-3 h-3 animate-spin"
-                                                />
-                                                <XIcon v-else class="w-3 h-3" />
+                                                Batal
                                             </button>
-                                        </div>
-                                    </div>
-
-                                    <div class="border-t border-gray-100 p-3">
-                                        <div class="flex gap-2">
-                                            <input
-                                                v-model="newItemName"
-                                                type="text"
-                                                placeholder="Tambah item baru..."
-                                                class="flex-1 text-xs border border-gray-200 rounded-md px-3 py-1.5 outline-none focus:border-emerald-400"
-                                                @keydown="onItemKeydown"
-                                            />
                                             <button
-                                                class="flex items-center gap-1 px-3 py-1.5 text-xs bg-primary text-white rounded-md hover:bg-emerald-700 disabled:opacity-50"
+                                                class="flex items-center gap-1.5 text-xs px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 disabled:opacity-40"
                                                 :disabled="
-                                                    savingItem ||
-                                                    !newItemName.trim()
+                                                    !canSave || savingBulkItems
                                                 "
-                                                @click="tambahItem"
+                                                @click="saveBulkItems"
                                             >
-                                                <LoaderCircleIcon
-                                                    v-if="savingItem"
-                                                    class="w-3 h-3 animate-spin"
+                                                <Loader2Icon
+                                                    v-if="savingBulkItems"
+                                                    class="w-3.5 h-3.5 animate-spin"
                                                 />
                                                 <PlusIcon
                                                     v-else
-                                                    class="w-3 h-3"
+                                                    class="w-3.5 h-3.5"
                                                 />
-                                                Tambah
+                                                {{
+                                                    savingBulkItems
+                                                        ? "Menyimpan..."
+                                                        : `Tambah ke ${summary.totalGroups} group`
+                                                }}
                                             </button>
+                                        </div>
+                                    </div>
+                                    <div
+                                        v-else
+                                        class="flex-1 flex flex-col overflow-hidden"
+                                    >
+                                        <div
+                                            v-if="loadingItems"
+                                            class="flex-1 flex items-center justify-center"
+                                        >
+                                            <LoaderCircleIcon
+                                                class="w-4 h-4 animate-spin text-gray-300"
+                                            />
+                                        </div>
+
+                                        <div
+                                            v-else
+                                            class="flex-1 overflow-y-auto"
+                                        >
+                                            <div
+                                                v-if="
+                                                    selectedItems.length ===
+                                                        0 && !addMultipleItems
+                                                "
+                                                class="px-4 py-6 text-xs text-gray-400 text-center"
+                                            >
+                                                Belum ada item — tambahkan di
+                                                bawah
+                                            </div>
+
+                                            <div
+                                                v-for="item in selectedItems"
+                                                :key="item.id"
+                                                class="flex items-center gap-2 px-4 py-2.5 border-b border-gray-50 group hover:bg-gray-50"
+                                            >
+                                                <span
+                                                    class="w-1 h-1 rounded-full bg-gray-300 flex-shrink-0"
+                                                ></span>
+                                                <span
+                                                    class="text-xs text-gray-700 flex-1"
+                                                    >{{ item.nama_item }}</span
+                                                >
+                                                <button
+                                                    class="text-gray-300 hover:text-red-400 transition-all p-0.5 disabled:opacity-50 sm:opacity-0 sm:group-hover:opacity-100"
+                                                    :disabled="
+                                                        deletingItemId ===
+                                                        item.id
+                                                    "
+                                                    @click="hapusItem(item)"
+                                                    aria-label="Hapus item"
+                                                >
+                                                    <LoaderCircleIcon
+                                                        v-if="
+                                                            deletingItemId ===
+                                                            item.id
+                                                        "
+                                                        class="w-3 h-3 animate-spin"
+                                                    />
+                                                    <XIcon
+                                                        v-else
+                                                        class="w-3 h-3"
+                                                    />
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div
+                                            class="border-t border-gray-100 p-3"
+                                        >
+                                            <div class="flex gap-2">
+                                                <input
+                                                    v-model="newItemName"
+                                                    type="text"
+                                                    placeholder="Tambah item baru..."
+                                                    class="flex-1 text-xs border border-gray-200 rounded-md px-3 py-1.5 outline-none focus:border-emerald-400"
+                                                    @keydown="onItemKeydown"
+                                                />
+                                                <button
+                                                    class="flex items-center gap-1 px-3 py-1.5 text-xs bg-primary text-white rounded-md hover:bg-emerald-700 disabled:opacity-50"
+                                                    :disabled="
+                                                        savingItem ||
+                                                        !newItemName.trim()
+                                                    "
+                                                    @click="tambahItem"
+                                                >
+                                                    <LoaderCircleIcon
+                                                        v-if="savingItem"
+                                                        class="w-3 h-3 animate-spin"
+                                                    />
+                                                    <PlusIcon
+                                                        v-else
+                                                        class="w-3 h-3"
+                                                    />
+                                                    Tambah
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </template>

@@ -7,6 +7,7 @@ use App\Http\Requests\StoreGroupKategoriRequest;
 use App\Http\Requests\StoreIsiStatistikRequest;
 use App\Http\Requests\StoreKategoriDataRequest;
 use App\Http\Requests\UpdateKategoriDataRequest;
+use App\Http\Requests\UploadIsiStatistikRequest;
 use App\Models\GroupKategori;
 use App\Models\GroupKategoriItem;
 use App\Models\Statistik;
@@ -19,6 +20,10 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\StatistikMultiSheetExport;
 use App\Imports\StatistikMultiSheetImport;
 use Illuminate\Support\Str;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
+use App\Http\Requests\StoreBulkItemsRequest;
 
 class StatistikController extends Controller
 {
@@ -365,5 +370,87 @@ class StatistikController extends Controller
         $namaFile = 'template-' . Str::slug($kategori->nama_kategori) . '.xlsx';
 
         return Excel::download(new StatistikMultiSheetExport($groups), $namaFile);
+    }
+
+    public function uploadIsiStatistik(UploadIsiStatistikRequest $request)
+    {
+        $validated = $request->validated();
+
+        $import = new StatistikMultiSheetImport($request->kategori_id);
+
+        try {
+            Excel::import($import, $request->file('file'));
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'File tidak dapat dibaca. Pastikan file sesuai template.',
+                'error'   => $e->getMessage(),
+            ], 422);
+        }
+
+        $results   = $import->getResults();
+        $totalIn   = array_sum(array_column($results, 'inserted'));
+        $totalUp   = array_sum(array_column($results, 'updated'));
+        $allErrors = array_merge(...array_column($results, 'errors'));
+
+        if (!empty($allErrors)) {
+            return response()->json([
+                'message'  => 'Upload selesai dengan beberapa error.',
+                'inserted' => $totalIn,
+                'updated'  => $totalUp,
+                'results'  => $results,
+                'errors'   => $allErrors,
+            ], 422);
+        }
+
+        return response()->json([
+            'message'  => 'Upload berhasil.',
+            'inserted' => $totalIn,
+            'updated'  => $totalUp,
+            'results'  => $results,
+        ]);
+    }
+
+    public function storeBulkGroupKategoriItems(StoreBulkItemsRequest $request)
+    {
+        $now      = now();
+        $inserted = 0;
+        $skipped  = 0;
+
+        DB::transaction(function () use ($request, $now, &$inserted, &$skipped) {
+            foreach ($request->group_ids as $groupId) {
+                // Ambil item yang sudah ada di group ini
+                $existing = GroupKategoriItem::where('group_kategori_id', $groupId)
+                    ->pluck('nama_item')
+                    ->map(fn($n) => strtolower($n))
+                    ->toArray();
+
+                $toInsert = [];
+                foreach ($request->items as $namaItem) {
+                    // Skip jika sudah ada (case-insensitive)
+                    if (in_array(strtolower($namaItem), $existing)) {
+                        $skipped++;
+                        continue;
+                    }
+
+                    $toInsert[] = [
+                        'group_kategori_id' => $groupId,
+                        'nama_item'         => $namaItem,
+                        'created_at'        => $now,
+                        'updated_at'        => $now,
+                    ];
+                }
+
+                if (!empty($toInsert)) {
+                    GroupKategoriItem::insert($toInsert);
+                    $inserted += count($toInsert);
+                }
+            }
+        });
+
+        return response()->json([
+            'message'  => "{$inserted} item berhasil ditambahkan." . ($skipped > 0 ? " {$skipped} item dilewati karena sudah ada." : ""),
+            'inserted' => $inserted,
+            'skipped'  => $skipped,
+        ]);
     }
 }

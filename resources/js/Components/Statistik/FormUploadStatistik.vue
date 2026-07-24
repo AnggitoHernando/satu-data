@@ -307,7 +307,7 @@ const doUpload = async () => {
                 </div>
 
                 <div
-                    class="flex gap-2 bg-blue-50 border border-blue-100 rounded-lg px-3 py-2.5 text-xs text-blue-700"
+                    class="flex gap-2 bg-red-50 border border-red-100 rounded-lg px-3 py-2.5 text-xs text-red-600"
                 >
                     <AlertCircleIcon class="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
                     <span
@@ -422,7 +422,7 @@ const doUpload = async () => {
                 </div>
 
                 <button
-                    class="w-full flex items-center justify-center gap-2 py-2.5 text-xs font-medium text-white bg-green-700 rounded-lg disabled:opacity-40 hover:bg-green-800 transition-colors"
+                    class="w-full flex items-center justify-center gap-2 py-2.5 text-xs font-medium text-white bg-green-800 rounded-lg disabled:opacity-40 hover:bg-green-800 transition-colors"
                     :disabled="!uploadFile || !uploadKategori || uploading"
                     @click="doUpload"
                 >
