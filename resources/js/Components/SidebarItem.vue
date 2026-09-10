@@ -9,6 +9,10 @@ const props = defineProps({
     },
     items: Array,
     active: Boolean,
+    depth: {
+        type: Number,
+        default: 0,
+    },
 });
 
 const isOpen = ref(props.active);
@@ -16,6 +20,9 @@ const isOpen = ref(props.active);
 const toggle = () => {
     isOpen.value = !isOpen.value;
 };
+const isGroup = (item) => Array.isArray(item.items);
+const buttonPaddingLeft = computed(() => `${8 + props.depth * 16}px`);
+const linkPaddingLeft = computed(() => `${44 + props.depth * 16}px`);
 
 const isSubMenuActive = (routePath) => {
     return usePage().url.startsWith(routePath);
@@ -26,8 +33,9 @@ const isSubMenuActive = (routePath) => {
     <div class="w-full">
         <button
             @click="toggle"
+            :style="{ paddingLeft: buttonPaddingLeft }"
             :class="[
-                'w-full flex items-center justify-between px-2 py-3 transition-colors duration-200 group hover:bg-green-700 dark:hover:bg-green-800 hover:rounded-lg',
+                'w-full flex items-center justify-between pr-2 py-3 transition-colors duration-200 group hover:bg-green-700 dark:hover:bg-green-800 hover:rounded-lg',
                 isOpen || active
                     ? 'text-white bg-primary/20 border-l-4 border-primary'
                     : 'text-white hover:text-white hover:bg-green-700 dark:hover:bg-green-800',
@@ -64,10 +72,19 @@ const isSubMenuActive = (routePath) => {
             class="bg-green-900 overflow-hidden transition-all"
         >
             <template v-for="item in items" :key="item.label">
+                <SidebarItem
+                    v-if="isGroup(item)"
+                    :title="item.label"
+                    :icon="item.icon ?? icon"
+                    :items="item.items"
+                    :depth="depth + 1"
+                />
                 <Link
+                    v-else
                     :href="route(item.route)"
+                    :style="{ paddingLeft: linkPaddingLeft }"
                     :class="[
-                        'block pl-11 pr-4 py-2 transition-colors duration-200',
+                        'block pr-4 py-2 transition-colors duration-200',
                         isSubMenuActive(route(item.route))
                             ? 'text-white font-semibold'
                             : 'text-white hover:text-yellow-400',

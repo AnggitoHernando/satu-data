@@ -13,9 +13,30 @@ import SidebarItem from "@/Components/SidebarItem.vue";
 const page = usePage();
 const roleUser = page.props.auth.user.role ?? null;
 const allowedUser = ["super-admin", "admin"];
-const menuStatistik = [
-    { label: "Kategori Data", route: "admin.statistik.kategori-data" },
-    { label: "Isi Statistik", route: "admin.statistik.isi-statistik" },
+const menuMandat = [
+    { label: "Jenis Data", route: "jenis_data.show", logo: Database },
+    {
+        label: "Kritik dan Saran",
+        route: "admin.kritik.index",
+        logo: MessageSquare,
+    },
+    { label: "Users", route: "users.show", logo: Users },
+    {
+        label: "Data Statistik",
+        items: [
+            { label: "Kategori Data", route: "admin.statistik.kategori-data" },
+            { label: "Isi Statistik", route: "admin.statistik.isi-statistik" },
+        ],
+    },
+];
+const menuPPID = [
+    {
+        label: "Data Statistik",
+        items: [
+            { label: "Kategori Data", route: "admin.statistik.kategori-data" },
+            { label: "Isi Statistik", route: "admin.statistik.isi-statistik" },
+        ],
+    },
 ];
 </script>
 <template>
@@ -38,6 +59,20 @@ const menuStatistik = [
                     </SidebarLink>
                 </li>
                 <li>
+                    <SidebarItem
+                        title="MANDAT"
+                        :icon="ChartArea"
+                        :items="menuMandat"
+                    />
+                </li>
+                <li>
+                    <SidebarItem
+                        title="PPID"
+                        :icon="ChartArea"
+                        :items="menuPPID"
+                    />
+                </li>
+                <!-- <li>
                     <SidebarLink
                         :href="route('jenis_data.show')"
                         :logo="Database"
@@ -60,14 +95,7 @@ const menuStatistik = [
                         value="Users"
                         :active="$page.url === '/users'"
                     ></SidebarLink>
-                </li>
-                <li>
-                    <SidebarItem
-                        title="Data Statistik"
-                        :icon="ChartArea"
-                        :items="menuStatistik"
-                    />
-                </li>
+                </li> -->
             </ul>
         </div>
     </aside>

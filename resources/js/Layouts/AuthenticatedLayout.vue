@@ -35,7 +35,7 @@ const allowedUser = ["super-admin", "admin"];
                                 <span
                                     class="text-black dark:text-white ml-2 sm:text-xs"
                                 >
-                                    Manajemen Data Terpadu Kemenag Gresik
+                                    Kementerian Agama Kabupaten Gresik
                                 </span>
                             </div>
 
