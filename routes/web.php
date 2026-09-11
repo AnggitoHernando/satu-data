@@ -8,6 +8,7 @@ use App\Http\Controllers\KritikSaranController;
 use App\Http\Controllers\PortalDataController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StatistikController;
+use App\Http\Controllers\PpidInformasiController;
 use App\Http\Controllers\UserController;
 use App\Models\JenisData;
 use Illuminate\Foundation\Application;
@@ -90,6 +91,8 @@ Route::middleware('auth')->group(function () {
         ->name('admin.statistik.excel.download-template');
     Route::post('/statistik/excel/upload', [StatistikController::class, 'uploadIsiStatistik'])
         ->name('admin.statistik.excel.upload');
+    //PPID
+    Route::get('/ppid-informasi/tambah-informasi', [PpidInformasiController::class, 'index'])->name('admin.ppid.informasi.tambah-informasi');
 });
 
 require __DIR__ . '/auth.php';

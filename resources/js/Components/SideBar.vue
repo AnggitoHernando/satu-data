@@ -33,7 +33,11 @@ const menuMandat = [
     },
 ];
 const menuPPID = [
-    { label: "Tambah Informasi", route: "users.show", icon: BookText },
+    {
+        label: "Tambah Informasi",
+        route: "admin.ppid.informasi.tambah-informasi",
+        icon: BookText,
+    },
     {
         label: "Permohonan Informasi",
         route: "users.show",

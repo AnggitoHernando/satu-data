@@ -33,13 +33,11 @@ class PpidInformasi extends Model
         return $this->belongsTo(JenisData::class, 'jenis_data_id');
     }
 
-    // ─── Relasi ke seksi ─────────────────────────────────────────
     public function seksi()
     {
         return $this->belongsTo(Seksi::class, 'seksi_id');
     }
 
-    // ─── Scope filter ─────────────────────────────────────────────
     public function scopeKategori($query, string $kategori)
     {
         return $query->where('kategori', $kategori);

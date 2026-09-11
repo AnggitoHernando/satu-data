@@ -13,14 +13,13 @@ return new class extends Migration
     {
         Schema::create('ppid_informasi', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
             $table->foreignId('jenis_data_id')
                 ->nullable()
                 ->constrained('jenis_data')
                 ->nullOnDelete();
             $table->foreignId('seksi_id')
                 ->nullable()
-                ->constrained('seksis')
+                ->constrained('seksi')
                 ->nullOnDelete();
             $table->string('nama_informasi');
             $table->text('ringkasan')->nullable();
