@@ -25,7 +25,7 @@ const buttonPaddingLeft = computed(() => `${8 + props.depth * 16}px`);
 const linkPaddingLeft = computed(() => `${44 + props.depth * 16}px`);
 
 const isSubMenuActive = (routePath) => {
-    return usePage().url.startsWith(routePath);
+    return route().current(routePath);
 };
 </script>
 
@@ -84,13 +84,25 @@ const isSubMenuActive = (routePath) => {
                     :href="route(item.route)"
                     :style="{ paddingLeft: linkPaddingLeft }"
                     :class="[
-                        'block pr-4 py-2 transition-colors duration-200',
-                        isSubMenuActive(route(item.route))
-                            ? 'text-white font-semibold'
+                        'flex items-center p-2 pr-4 py-2 transition-colors duration-200',
+                        isSubMenuActive(item.route)
+                            ? 'text-yellow-400 font-semibold'
                             : 'text-white hover:text-yellow-400',
                     ]"
                 >
-                    {{ item.label }}
+                    <component
+                        :is="item.icon ?? icon"
+                        class="w-5 h-5 text-white transition duration-75 dark:text-white group-hover:text-white dark:group-hover:text-yellow-400"
+                    />
+                    <span
+                        :class="[
+                            'ms-3 group-hover:text-white dark:group-hover:text-yellow-400',
+                            isSubMenuActive(item.route)
+                                ? 'text-yellow-400 font-semibold'
+                                : 'text-white hover:text-yellow-400',
+                        ]"
+                        >{{ item.label }}</span
+                    >
                 </Link>
             </template>
         </div>

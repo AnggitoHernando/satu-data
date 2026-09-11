@@ -6,6 +6,9 @@ import {
     Users,
     MessageSquare,
     ChartArea,
+    BookText,
+    MailQuestion,
+    Landmark,
 } from "lucide-vue-next";
 import { usePage } from "@inertiajs/vue3";
 import SidebarItem from "@/Components/SidebarItem.vue";
@@ -14,13 +17,13 @@ const page = usePage();
 const roleUser = page.props.auth.user.role ?? null;
 const allowedUser = ["super-admin", "admin"];
 const menuMandat = [
-    { label: "Jenis Data", route: "jenis_data.show", logo: Database },
+    { label: "Jenis Data", route: "jenis_data.show", icon: Database },
     {
         label: "Kritik dan Saran",
         route: "admin.kritik.index",
-        logo: MessageSquare,
+        icon: MessageSquare,
     },
-    { label: "Users", route: "users.show", logo: Users },
+    { label: "Users", route: "users.show", icon: Users },
     {
         label: "Data Statistik",
         items: [
@@ -30,19 +33,18 @@ const menuMandat = [
     },
 ];
 const menuPPID = [
+    { label: "Tambah Informasi", route: "users.show", icon: BookText },
     {
-        label: "Data Statistik",
-        items: [
-            { label: "Kategori Data", route: "admin.statistik.kategori-data" },
-            { label: "Isi Statistik", route: "admin.statistik.isi-statistik" },
-        ],
+        label: "Permohonan Informasi",
+        route: "users.show",
+        icon: MailQuestion,
     },
 ];
 </script>
 <template>
     <aside
         id="sidebar-multi-level-sidebar"
-        class="fixed top-0 dark:top-0 left-0 z-40 w-64 h-screen mt-16 transition-transform -translate-x-full sm:translate-x-0"
+        class="fixed top-0 dark:top-0 left-0 z-40 w-72 h-screen mt-16 transition-transform -translate-x-full sm:translate-x-0"
         aria-label="Sidebar"
     >
         <div
@@ -68,7 +70,7 @@ const menuPPID = [
                 <li>
                     <SidebarItem
                         title="PPID"
-                        :icon="ChartArea"
+                        :icon="Landmark"
                         :items="menuPPID"
                     />
                 </li>
