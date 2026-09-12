@@ -92,7 +92,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/statistik/excel/upload', [StatistikController::class, 'uploadIsiStatistik'])
         ->name('admin.statistik.excel.upload');
     //PPID
-    Route::get('/ppid-informasi/tambah-informasi', [PpidInformasiController::class, 'index'])->name('admin.ppid.informasi.tambah-informasi');
+    Route::get('/ppid-informasi/tambah-informasi', [PpidInformasiController::class, 'tambahInformasi'])->name('admin.ppid.informasi.tambah-informasi');
 });
 
 require __DIR__ . '/auth.php';

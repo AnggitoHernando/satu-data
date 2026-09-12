@@ -8,7 +8,6 @@ const props = defineProps({
     items: Object,
 });
 
-console.log(props.items);
 const formatDate = (dateStr) => {
     if (!dateStr) return "-";
     const date = new Date(dateStr);

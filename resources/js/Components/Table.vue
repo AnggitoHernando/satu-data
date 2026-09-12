@@ -217,6 +217,7 @@ const resetFilters = () => {
                             <td
                                 v-for="col in columns"
                                 :key="col.key"
+                                :class="col.classTd"
                                 class="px-4 py-3 whitespace-normal break-words border p-2 capitalize"
                             >
                                 <slot :name="`cell-${col.key}`" :row="row">
