@@ -35,7 +35,7 @@ const menuMandat = [
 const menuPPID = [
     {
         label: "Tambah Informasi",
-        route: "admin.ppid.informasi.tambah-informasi",
+        route: "admin.ppid.tambah-informasi",
         icon: BookText,
     },
     {

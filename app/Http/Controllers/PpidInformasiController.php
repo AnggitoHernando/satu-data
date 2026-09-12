@@ -26,4 +26,12 @@ class PpidInformasiController extends Controller
             'listSeksi' => $listSeksi,
         ]);
     }
+
+    public function tambahDataInformasi()
+    {
+        $listSeksi = Seksi::select("id", "nama_seksi")->get();
+        return Inertia::render('Admin/Ppid/FormTambahInformasi', [
+            'listSeksi' => $listSeksi,
+        ]);
+    }
 }

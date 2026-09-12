@@ -22,6 +22,7 @@ return new class extends Migration
                 ->constrained('seksi')
                 ->nullOnDelete();
             $table->string('nama_informasi');
+            $table->integer("tahun");
             $table->text('ringkasan')->nullable();
             $table->string('pejabat_penguasa')->nullable();
             $table->string('unit_kerja')->nullable();
@@ -43,6 +44,7 @@ return new class extends Migration
                 'dikecualikan',
             ])->default('dapat_diakses');
             $table->text('keterangan')->nullable();
+            $table->string("file_path")->nullable();
             $table->timestamps();
         });
     }

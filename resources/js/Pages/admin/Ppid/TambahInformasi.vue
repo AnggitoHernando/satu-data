@@ -5,12 +5,7 @@ import Table from "@/Components/Table.vue";
 import ActionButtons from "@/Components/ActionButtons.vue";
 import PrimaryButtonAdmin from "@/Components/PrimaryButtonAdmin.vue";
 import ModalHeadnessUI from "@/Components/ModalHeadnessUI.vue";
-import InputLabel from "@/Components/InputLabel.vue";
-import TextInput from "@/Components/TextInput.vue";
-import SelectButton from "@/Components/SelectButton.vue";
-import InputError from "@/Components/InputError.vue";
-import ComboBox from "@/Components/ComboBox.vue";
-import ModalGroupKategori from "@/Components/ModalGroupKategori.vue";
+import { Link } from "lucide-vue-next";
 const columns = [
     { header: "Nama Informasi", key: "nama_informasi", width: "25%" },
     {
@@ -19,7 +14,7 @@ const columns = [
         width: "15%",
         classTd: "text-center",
     },
-    { header: "Waktu Informasi", key: "waktu_pembuatan", width: "25%" },
+    { header: "Detail Informasi", key: "detail_informasi", width: "25%" },
     {
         header: "Status Informasi",
         key: "status",
@@ -33,7 +28,6 @@ const columns = [
 const filtersort = [
     { label: "Nama Informasi", value: "nama_informasi" },
     { label: "Kategori Informasi", value: "kategori" },
-    { label: "Waktu Informasi", value: "waktu_pembuatan" },
     { label: "Status Informasi", value: "status" },
 ];
 
@@ -42,7 +36,7 @@ const formatDate = (dateStr) => {
     const date = new Date(dateStr);
     return date.toLocaleDateString("id-ID", {
         day: "2-digit",
-        month: "long",
+        month: "2-digit", //long format: "long", short format: "short"
         year: "numeric",
         timeZone: "Asia/Jakarta",
     });
@@ -59,7 +53,11 @@ console.log(usePage().props);
                         class="mb-4 flex flex-col sm:flex-row justify-between gap-3"
                     >
                         <h1 class="text-2xl font-bold mb-4">List Informasi</h1>
-                        <PrimaryButtonAdmin> + Tambah Data</PrimaryButtonAdmin>
+                        <a :href="route('admin.ppid.tambah-informasi.tambah-data')">
+                            <PrimaryButtonAdmin>
+                            + Tambah Data
+                            </PrimaryButtonAdmin>
+                        </a>
                     </div>
                     <Table
                         :columns="columns"
@@ -70,12 +68,19 @@ console.log(usePage().props);
                         :meta="usePage().props.listInformasi"
                     >
                         <template #cell-nama_informasi="{ row }">
-                            <span class="font-medium">{{
-                                row.nama_informasi
-                            }}</span>
+                            <span class="font-medium"
+                                >{{ row.nama_informasi }} Tahun
+                                {{ row.tahun }}</span
+                            >
                             <span class="block text-gray-500 text-xs">
-                                {{ row.seksi?.nama_seksi ?? "-" }}
-                            </span>
+                                {{ row.seksi?.nama_seksi ?? "" }}
+                                {{
+                                    row.unit_kerja !== null &&
+                                    row.unit_kerja !== undefined
+                                        ? "Unit Kerja: " + row.unit_kerja
+                                        : ""
+                                }}</span
+                            >
                         </template>
                         <template #cell-kategori="{ row }">
                             <span class="font-medium">{{
@@ -107,7 +112,7 @@ console.log(usePage().props);
                                 }}
                             </span>
                         </template>
-                        <template #cell-waktu_pembuatan="{ row }">
+                        <template #cell-detail_informasi="{ row }">
                             <span class="block text-gray-500 text-xs">
                                 Waktu Pembuatan:
                                 {{
@@ -115,8 +120,8 @@ console.log(usePage().props);
                                 }}</span
                             >
                             <span class="block text-gray-500 text-xs">
-                                Waktu Penguasaan:
-                                {{ formatDate(row.waktu_penguasaan) ?? "-" }}
+                                Bentuk Dokumen:
+                                {{ row.bentuk_dokumen === "soft_copy" ? "Soft Copy" : row.bentuk_dokumen === "hard_copy" ? "Hard Copy" : row.bentuk_dokumen === "keduanya" ? "Keduanya" : "-" }}</span
                             </span>
                         </template>
                         <template #cell-actions="{ row }">
