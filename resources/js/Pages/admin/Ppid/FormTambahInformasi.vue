@@ -11,9 +11,14 @@ import InputError from "@/Components/InputError.vue";
 import ComboBox from "@/Components/ComboBox.vue";
 import ModalGroupKategori from "@/Components/ModalGroupKategori.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
-import { RadioGroup, RadioGroupLabel, RadioGroupOption } from "@headlessui/vue";
 import FileUpload from "@/Components/FileUpload.vue";
 import TextArea from "@/Components/TextArea.vue";
+import Card from "@/Components/Card.vue";
+import Tab from "@/Components/Tab.vue";
+import ComboboxSearch from "@/Components/ComboBox.vue";
+import CustomRadioButton from "@/Components/CustomRadioButton.vue";
+import RadioPilGroup from "@/Components/RadioPilGroup.vue";
+import { Laptop, FileText, Copy } from "lucide-vue-next";
 
 const formatDate = (dateStr) => {
     if (!dateStr) return "-";
@@ -25,33 +30,71 @@ const formatDate = (dateStr) => {
         timeZone: "Asia/Jakarta",
     });
 };
+
+const kategoriInformasiOptions = [
+    {
+        label: "Berkala",
+        value: "berkala",
+        description:
+            "Informasi yang diterbitkan secara berkala sesuai jadwal tertentu.",
+    },
+    {
+        label: "Serta Merta",
+        value: "serta_merta",
+        description:
+            "Informasi yang diterbitkan secara serta merta ketika terjadi perubahan atau kejadian penting.",
+    },
+    {
+        label: "Setiap Saat",
+        value: "setiap_saat",
+        description:
+            "Informasi yang dapat diakses setiap saat tanpa batasan waktu.",
+    },
+    {
+        label: "Dikecualikan",
+        value: "dikecualikan",
+        description:
+            "Informasi yang dikecualikan dari publikasi karena alasan tertentu.",
+    },
+];
+
+const bentukDokumenOptions = [
+    {
+        label: "Soft copy",
+        value: "soft_copy",
+        icon: Laptop,
+    },
+    {
+        label: "Hard copy",
+        value: "hard_copy",
+        icon: FileText,
+    },
+    {
+        label: "Keduanya",
+        value: "keduanya",
+        icon: Copy,
+    },
+];
+
 const form = useForm({
     nama_informasi: "",
     tahun: "",
     unit_kerja: "",
+    jenis_data_id: "",
     seksi_id: "",
     bentuk_dokumen: "",
     detail_informasi: "",
     status: "",
     ringkasan: "",
     file: null,
+    kategori: "",
 });
 
-const kategoriOptions = [
-    { label: "Berkala", value: "berkala" },
-    {
-        label: "Serta Merta",
-        value: "serta_merta",
-    },
-    {
-        label: "Setiap Saat",
-        value: "setiap_saat",
-    },
-    {
-        label: "Dikecualikan",
-        value: "dikecualikan",
-    },
+const sourceDocument = [
+    { name: "Upload File", selected: true, key: "upload_file" },
+    { name: "Ambil Dari Portal Data", selected: false, key: "portal_data" },
 ];
+
 console.log(usePage().props);
 </script>
 <template>
@@ -84,109 +127,158 @@ console.log(usePage().props);
                     </div>
                     <div>
                         <form @submit.prevent="submit">
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div>
-                                    <InputLabel value="Nama Informasi" />
-                                    <TextInput
-                                        id="nama_informasi"
-                                        type="text"
-                                        placeholder="Masukkan Nama Informasi"
-                                        class="mt-1 block w-full"
-                                        v-model="form.nama_informasi"
-                                        required
-                                        autocomplete="nama_informasi"
-                                    />
-                                </div>
-                                <div>
-                                    <InputLabel value="Pilih Seksi" />
-                                    <SelectButton
-                                        id="seksi_id"
-                                        name="seksi_id"
-                                        v-model="form.seksi_id"
-                                        class="mt-1 block w-full"
+                            <Card class="mb-4" header="Informasi Dasar">
+                                <template #body>
+                                    <div
+                                        class="grid grid-cols-1 sm:grid-cols-2 gap-4"
                                     >
-                                        <option disabled value="">
-                                            -- Pilih Seksi --
-                                        </option>
-                                        <option
-                                            v-for="seksi in usePage().props
-                                                .listSeksi"
-                                            :key="seksi.id"
-                                            :value="String(seksi.id)"
+                                        <div>
+                                            <InputLabel
+                                                value="Nama Informasi"
+                                            />
+                                            <TextInput
+                                                id="nama_informasi"
+                                                type="text"
+                                                placeholder="Masukkan Nama Informasi"
+                                                class="mt-1 block w-full"
+                                                v-model="form.nama_informasi"
+                                                required
+                                                autocomplete="nama_informasi"
+                                            />
+                                        </div>
+                                        <div>
+                                            <InputLabel value="Pilih Seksi" />
+                                            <SelectButton
+                                                id="seksi_id"
+                                                name="seksi_id"
+                                                v-model="form.seksi_id"
+                                                class="mt-1 block w-full"
+                                            >
+                                                <option disabled value="">
+                                                    -- Pilih Seksi --
+                                                </option>
+                                                <option
+                                                    v-for="seksi in usePage()
+                                                        .props.listSeksi"
+                                                    :key="seksi.id"
+                                                    :value="String(seksi.id)"
+                                                >
+                                                    {{ seksi.nama_seksi }}
+                                                </option>
+                                            </SelectButton>
+                                        </div>
+                                    </div>
+                                    <div class="mt-2">
+                                        <InputLabel
+                                            value="Ringkasan Informasi"
+                                        />
+                                        <TextArea
+                                            id="ringkasan"
+                                            name="ringkasan"
+                                            placeholder="Masukkan Ringkasan Informasi"
+                                            v-model="form.ringkasan"
+                                            class="mt-1 block w-full"
+                                        />
+                                    </div>
+                                    <div class="mt-2">
+                                        <div
+                                            class="grid grid-cols-1 sm:grid-cols-2 gap-4"
                                         >
-                                            {{ seksi.nama_seksi }}
-                                        </option>
-                                    </SelectButton>
-                                </div>
-                            </div>
-                            <div class="mt-4">
-                                <div
-                                    class="grid grid-cols-1 sm:grid-cols-2 gap-4"
-                                >
-                                    <div>
-                                        <InputLabel value="Tahun" />
-                                        <TextInput
-                                            id="tahun"
-                                            type="text"
-                                            placeholder="Masukkan Tahun"
-                                            class="mt-1 block w-full"
-                                            v-model="form.tahun"
-                                            @keypress="
-                                                $event.key.match(/^[0-9]$/) ||
-                                                $event.preventDefault()
-                                            "
-                                            maxlength="4"
-                                            required
-                                            autocomplete="tahun"
+                                            <div>
+                                                <InputLabel value="Tahun" />
+                                                <TextInput
+                                                    id="tahun"
+                                                    type="text"
+                                                    placeholder="Masukkan Tahun"
+                                                    class="mt-1 block w-full"
+                                                    v-model="form.tahun"
+                                                    @keypress="
+                                                        $event.key.match(
+                                                            /^[0-9]$/,
+                                                        ) ||
+                                                        $event.preventDefault()
+                                                    "
+                                                    maxlength="4"
+                                                    required
+                                                    autocomplete="tahun"
+                                                />
+                                            </div>
+                                            <div>
+                                                <InputLabel
+                                                    value="Unit Kerja"
+                                                />
+                                                <TextInput
+                                                    id="unit_kerja"
+                                                    type="text"
+                                                    placeholder="Masukkan Unit Kerja"
+                                                    class="mt-1 block w-full"
+                                                    v-model="form.unit_kerja"
+                                                    required
+                                                    autocomplete="unit_kerja"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                            </Card>
+                            <Card
+                                class="mb-4"
+                                header="Dokumen / File Informasi"
+                            >
+                                <template #body>
+                                    <Tab
+                                        class="mt-2"
+                                        :categories="sourceDocument"
+                                    >
+                                        <template #tab-panel-upload_file>
+                                            <FileUpload
+                                                v-model="form.file"
+                                                accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
+                                                :maxSize="5"
+                                                class="mt-4 block w-full"
+                                            />
+                                        </template>
+                                        <template #tab-panel-portal_data>
+                                            <ComboboxSearch
+                                                v-model="selectedKategori"
+                                                :emit-object="true"
+                                                class="mt-4 block w-full"
+                                                search-url="admin.statistik.isi-statistik.getKategoriData"
+                                                label-key="nama_kategori"
+                                                value-key="id"
+                                                placeholder="Cari Data Pada Portal Data..."
+                                                @update:model-value="
+                                                    onKategoriSelected
+                                                "
+                                            />
+                                        </template>
+                                    </Tab>
+                                </template>
+                            </Card>
+                            <Card class="mb-4" header="Kategori Informasi">
+                                <template #body>
+                                    <div class="mb-4">
+                                        <InputLabel value="Bentuk Dokumen" />
+                                        <RadioPilGroup
+                                            v-model="form.bentuk_dokumen"
+                                            class="mt-4"
+                                            :options="bentukDokumenOptions"
+                                            :cols="3"
                                         />
                                     </div>
-                                    <div>
-                                        <InputLabel value="Unit Kerja" />
-                                        <TextInput
-                                            id="unit_kerja"
-                                            type="text"
-                                            placeholder="Masukkan Unit Kerja"
-                                            class="mt-1 block w-full"
-                                            v-model="form.unit_kerja"
-                                            required
-                                            autocomplete="unit_kerja"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="mt-4">
-                                <div
-                                    class="grid grid-cols-1 sm:grid-cols-2 gap-4"
-                                >
                                     <div>
                                         <InputLabel
                                             value="Kategori Informasi"
                                         />
+                                        <CustomRadioButton
+                                            v-model="form.kategori"
+                                            class="mt-4"
+                                            :options="kategoriInformasiOptions"
+                                            :cols="2"
+                                        />
                                     </div>
-                                    <div>
-                                        <InputLabel value="Bentuk Dokumen" />
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="mt-4">
-                                <InputLabel value="Ringkasan Informasi" />
-                                <TextArea
-                                    id="ringkasan"
-                                    name="ringkasan"
-                                    placeholder="Masukkan Ringkasan Informasi"
-                                    v-model="form.ringkasan"
-                                    class="mt-1 block w-full"
-                                />
-                            </div>
-                            <div class="mt-4">
-                                <InputLabel value="Upload File" />
-                                <FileUpload
-                                    v-model="form.file"
-                                    accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
-                                    :maxSize="5"
-                                    class="mt-1 block w-full"
-                                />
-                            </div>
+                                </template>
+                            </Card>
                         </form>
                     </div>
                 </div>
