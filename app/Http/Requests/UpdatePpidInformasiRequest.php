@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class StorePpidInformasiRequest extends FormRequest
+class UpdatePpidInformasiRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -30,8 +30,8 @@ class StorePpidInformasiRequest extends FormRequest
             'seksi_id' => 'required|exists:seksi,id',
             'unit_kerja' => 'required|string|max:255',
             'ringkasan' => 'nullable|string',
-            'file_path' => ['nullable', 'required_without:jenis_data_id', 'file', 'mimes:pdf,doc,docx,xls,xlsx,ppt,pptx', 'max:5120'],
-            'jenis_data_id' => ['nullable', 'required_without:file_path', 'exists:jenis_data,id'],
+            'file_path' => ['nullable', 'required_without_all:jenis_data_id,id', 'file', 'mimes:pdf,doc,docx,xls,xlsx,ppt,pptx', 'max:5120'],
+            'jenis_data_id' => ['nullable', 'required_without_all:file_path,id', 'exists:jenis_data,id'],
             'tahun' => 'nullable|integer',
             'kategori' => 'required|string|' . Rule::in($allowedKategori),
             'bentuk_dokumen' => 'required|string|' . Rule::in($allowedBentukDokumen),

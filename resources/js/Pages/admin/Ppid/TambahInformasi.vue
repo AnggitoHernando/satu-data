@@ -56,8 +56,6 @@ const handleDelete = async (item) => {
     });
     if (result.isConfirmed) {
         pageLoading.value = true;
-        console.log(item);
-
         await router.delete(route("admin.ppid.tambah-informasi.delete", item), {
             onError: () => {
                 pageLoading.value = false;
@@ -97,7 +95,7 @@ watch(
     },
     { immediate: true },
 );
-console.log(usePage().props);
+// console.log(usePage().props);
 </script>
 <template>
     <AuthenticatedLayout>
@@ -198,7 +196,15 @@ console.log(usePage().props);
                                 <ActionButtons
                                     :visibleButtons="['edit', 'delete']"
                                     :item="row"
-                                    @edit="() => openModal(row)"
+                                    @edit="
+                                        () =>
+                                            router.get(
+                                                route(
+                                                    'admin.ppid.tambah-informasi.edit',
+                                                    row,
+                                                ),
+                                            )
+                                    "
                                     @delete="() => handleDelete(row)"
                                 />
                             </div>

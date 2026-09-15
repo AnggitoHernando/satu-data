@@ -79,15 +79,16 @@ const bentukDokumenOptions = [
 ];
 
 const form = useForm({
-    nama_informasi: "",
-    tahun: "",
-    unit_kerja: "",
-    jenis_data_id: "",
-    seksi_id: "",
-    bentuk_dokumen: "",
-    ringkasan: "",
-    file_path: null,
-    kategori: "",
+    id: usePage().props.ppidInformasi.id ?? null,
+    nama_informasi: usePage().props.ppidInformasi.nama_informasi ?? "",
+    tahun: String(usePage().props.ppidInformasi.tahun) ?? "",
+    unit_kerja: usePage().props.ppidInformasi.unit_kerja ?? "",
+    jenis_data_id: usePage().props.ppidInformasi.jenis_data_id ?? "",
+    seksi_id: usePage().props.ppidInformasi.seksi_id ?? "",
+    bentuk_dokumen: usePage().props.ppidInformasi.bentuk_dokumen ?? "",
+    ringkasan: usePage().props.ppidInformasi.ringkasan ?? "",
+    file_path: usePage().props.ppidInformasi.file_path ?? null,
+    kategori: usePage().props.ppidInformasi.kategori ?? "",
 });
 
 const sourceDocument = [
@@ -103,19 +104,40 @@ onMounted(() => {
 const submit = () => {
     selectedJenisData.value = form.jenis_data_id ?? null;
     form.jenis_data_id = form.jenis_data_id ? form.jenis_data_id.id : null;
-    form.post(route("admin.ppid.tambah-informasi.simpan"), {
-        onLoading: () => {
-            pageLoading.value = true;
-        },
-        onSuccess: () => {},
-        onError: (errors) => {
-            // console.error("Form submission errors:", errors);
-            form.jenis_data_id = selectedJenisData;
-        },
-        onFinish: () => {
-            pageLoading.value = false;
-        },
-    });
+    if (form.id === null) {
+        form.post(route("admin.ppid.tambah-informasi.simpan"), {
+            onLoading: () => {
+                pageLoading.value = true;
+            },
+            onSuccess: () => {},
+            onError: (errors) => {
+                // console.error("Form submission errors:", errors);
+                form.jenis_data_id = selectedJenisData;
+            },
+            onFinish: () => {
+                pageLoading.value = false;
+            },
+        });
+    } else {
+        if (!(form.file_path instanceof File)) {
+            form.file_path = null;
+        }
+        form.transform((data) => ({
+            ...data,
+            _method: "put",
+        })).post(route("admin.ppid.tambah-informasi.update", form.id), {
+            onLoading: () => {
+                pageLoading.value = true;
+            },
+            onSuccess: () => {},
+            onError: (errors) => {
+                form.jenis_data_id = selectedJenisData;
+            },
+            onFinish: () => {
+                pageLoading.value = false;
+            },
+        });
+    }
 };
 </script>
 <template>
