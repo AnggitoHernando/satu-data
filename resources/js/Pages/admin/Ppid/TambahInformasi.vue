@@ -1,11 +1,13 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Head, usePage } from "@inertiajs/vue3";
+import { Head, usePage, router } from "@inertiajs/vue3";
+import { ref, onMounted, watch } from "vue";
 import Table from "@/Components/Table.vue";
 import ActionButtons from "@/Components/ActionButtons.vue";
 import PrimaryButtonAdmin from "@/Components/PrimaryButtonAdmin.vue";
 import ModalHeadnessUI from "@/Components/ModalHeadnessUI.vue";
 import { Link } from "lucide-vue-next";
+import Loading from "@/Components/Loading.vue";
 const columns = [
     { header: "Nama Informasi", key: "nama_informasi", width: "25%" },
     {
@@ -41,11 +43,66 @@ const formatDate = (dateStr) => {
         timeZone: "Asia/Jakarta",
     });
 };
+
+const handleDelete = async (item) => {
+    const result = await Swal.fire({
+        title: "Apakah Anda Yakin Ingin Menghapus?",
+        text: "Data yang dihapus tidak dapat dikembalikan!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#166534",
+        confirmButtonText: "Ya, hapus!",
+    });
+    if (result.isConfirmed) {
+        pageLoading.value = true;
+        console.log(item);
+
+        await router.delete(route("admin.ppid.tambah-informasi.delete", item), {
+            onError: () => {
+                pageLoading.value = false;
+            },
+            onSuccess: () => {
+                pageLoading.value = false;
+            },
+            onFinish: () => {
+                pageLoading.value = false;
+            },
+        });
+    }
+};
+
+const pageLoading = ref(true);
+onMounted(() => {
+    pageLoading.value = false;
+});
+watch(
+    () => usePage().props.flash,
+    (flash) => {
+        if (flash?.success) {
+            Swal.fire({
+                icon: "success",
+                title: "Sukses",
+                text: flash.success,
+            });
+        } else if (flash?.error) {
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: flash.error,
+            });
+        }
+        usePage().props.flash.success = null;
+        usePage().props.flash.error = null;
+    },
+    { immediate: true },
+);
 console.log(usePage().props);
 </script>
 <template>
     <AuthenticatedLayout>
         <Head title="Tambah Informasi" />
+        <Loading v-if="pageLoading" />
         <div class="py-16 relative z-40">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div class="bg-white rounded-xl shadow p-5">
@@ -53,9 +110,13 @@ console.log(usePage().props);
                         class="mb-4 flex flex-col sm:flex-row justify-between gap-3"
                     >
                         <h1 class="text-2xl font-bold mb-4">List Informasi</h1>
-                        <a :href="route('admin.ppid.tambah-informasi.tambah-data')">
+                        <a
+                            :href="
+                                route('admin.ppid.tambah-informasi.tambah-data')
+                            "
+                        >
                             <PrimaryButtonAdmin>
-                            + Tambah Data
+                                + Tambah Data
                             </PrimaryButtonAdmin>
                         </a>
                     </div>
@@ -121,8 +182,16 @@ console.log(usePage().props);
                             >
                             <span class="block text-gray-500 text-xs">
                                 Bentuk Dokumen:
-                                {{ row.bentuk_dokumen === "soft_copy" ? "Soft Copy" : row.bentuk_dokumen === "hard_copy" ? "Hard Copy" : row.bentuk_dokumen === "keduanya" ? "Keduanya" : "-" }}</span
-                            </span>
+                                {{
+                                    row.bentuk_dokumen === "soft_copy"
+                                        ? "Soft Copy"
+                                        : row.bentuk_dokumen === "hard_copy"
+                                          ? "Hard Copy"
+                                          : row.bentuk_dokumen === "keduanya"
+                                            ? "Keduanya"
+                                            : "-"
+                                }}</span
+                            >
                         </template>
                         <template #cell-actions="{ row }">
                             <div class="flex gap-2 justify-center">

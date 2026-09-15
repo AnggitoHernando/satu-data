@@ -1,6 +1,7 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, usePage, useForm } from "@inertiajs/vue3";
+import { ref, onMounted } from "vue";
 import ActionButtons from "@/Components/ActionButtons.vue";
 import PrimaryButtonAdmin from "@/Components/PrimaryButtonAdmin.vue";
 import ModalHeadnessUI from "@/Components/ModalHeadnessUI.vue";
@@ -19,6 +20,7 @@ import ComboboxSearch from "@/Components/ComboBox.vue";
 import CustomRadioButton from "@/Components/CustomRadioButton.vue";
 import RadioPilGroup from "@/Components/RadioPilGroup.vue";
 import { Laptop, FileText, Copy } from "lucide-vue-next";
+import Loading from "@/Components/Loading.vue";
 
 const formatDate = (dateStr) => {
     if (!dateStr) return "-";
@@ -83,10 +85,8 @@ const form = useForm({
     jenis_data_id: "",
     seksi_id: "",
     bentuk_dokumen: "",
-    detail_informasi: "",
-    status: "",
     ringkasan: "",
-    file: null,
+    file_path: null,
     kategori: "",
 });
 
@@ -95,11 +95,33 @@ const sourceDocument = [
     { name: "Ambil Dari Portal Data", selected: false, key: "portal_data" },
 ];
 
-console.log(usePage().props);
+const selectedJenisData = ref(null);
+const pageLoading = ref(true);
+onMounted(() => {
+    pageLoading.value = false;
+});
+const submit = () => {
+    selectedJenisData.value = form.jenis_data_id ?? null;
+    form.jenis_data_id = form.jenis_data_id ? form.jenis_data_id.id : null;
+    form.post(route("admin.ppid.tambah-informasi.simpan"), {
+        onLoading: () => {
+            pageLoading.value = true;
+        },
+        onSuccess: () => {},
+        onError: (errors) => {
+            // console.error("Form submission errors:", errors);
+            form.jenis_data_id = selectedJenisData;
+        },
+        onFinish: () => {
+            pageLoading.value = false;
+        },
+    });
+};
 </script>
 <template>
     <AuthenticatedLayout>
         <Head title="Tambah Informasi" />
+        <Loading v-if="pageLoading" />
         <div class="py-16 relative z-40">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div class="bg-white rounded-xl shadow p-5">
@@ -109,21 +131,6 @@ console.log(usePage().props);
                         <h1 class="text-2xl font-bold mb-4">
                             Tambah Informasi
                         </h1>
-                        <div class="flex gap-2">
-                            <SecondaryButton
-                                @click="
-                                    () =>
-                                        $inertia.get(
-                                            route(
-                                                'admin.ppid.tambah-informasi',
-                                            ),
-                                        )
-                                "
-                            >
-                                Kembali
-                            </SecondaryButton>
-                            <PrimaryButtonAdmin>Simpan</PrimaryButtonAdmin>
-                        </div>
                     </div>
                     <div>
                         <form @submit.prevent="submit">
@@ -144,6 +151,12 @@ console.log(usePage().props);
                                                 v-model="form.nama_informasi"
                                                 required
                                                 autocomplete="nama_informasi"
+                                            />
+                                            <InputError
+                                                :message="
+                                                    form.errors.nama_informasi
+                                                "
+                                                class="mt-2"
                                             />
                                         </div>
                                         <div>
@@ -166,6 +179,10 @@ console.log(usePage().props);
                                                     {{ seksi.nama_seksi }}
                                                 </option>
                                             </SelectButton>
+                                            <InputError
+                                                :message="form.errors.seksi_id"
+                                                class="mt-2"
+                                            />
                                         </div>
                                     </div>
                                     <div class="mt-2">
@@ -178,6 +195,10 @@ console.log(usePage().props);
                                             placeholder="Masukkan Ringkasan Informasi"
                                             v-model="form.ringkasan"
                                             class="mt-1 block w-full"
+                                        />
+                                        <InputError
+                                            :message="form.errors.ringkasan"
+                                            class="mt-2"
                                         />
                                     </div>
                                     <div class="mt-2">
@@ -202,6 +223,10 @@ console.log(usePage().props);
                                                     required
                                                     autocomplete="tahun"
                                                 />
+                                                <InputError
+                                                    :message="form.errors.tahun"
+                                                    class="mt-2"
+                                                />
                                             </div>
                                             <div>
                                                 <InputLabel
@@ -215,6 +240,12 @@ console.log(usePage().props);
                                                     v-model="form.unit_kerja"
                                                     required
                                                     autocomplete="unit_kerja"
+                                                />
+                                                <InputError
+                                                    :message="
+                                                        form.errors.unit_kerja
+                                                    "
+                                                    class="mt-2"
                                                 />
                                             </div>
                                         </div>
@@ -232,24 +263,31 @@ console.log(usePage().props);
                                     >
                                         <template #tab-panel-upload_file>
                                             <FileUpload
-                                                v-model="form.file"
+                                                v-model="form.file_path"
                                                 accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
                                                 :maxSize="5"
                                                 class="mt-4 block w-full"
                                             />
+                                            <InputError
+                                                :message="form.errors.file_path"
+                                                class="mt-2"
+                                            />
                                         </template>
                                         <template #tab-panel-portal_data>
                                             <ComboboxSearch
-                                                v-model="selectedKategori"
+                                                v-model="form.jenis_data_id"
                                                 :emit-object="true"
                                                 class="mt-4 block w-full"
-                                                search-url="admin.statistik.isi-statistik.getKategoriData"
-                                                label-key="nama_kategori"
+                                                search-url="admin.ppid.get-jenis-data"
+                                                label-key="judul_data"
                                                 value-key="id"
                                                 placeholder="Cari Data Pada Portal Data..."
-                                                @update:model-value="
-                                                    onKategoriSelected
+                                            />
+                                            <InputError
+                                                :message="
+                                                    form.errors.jenis_data_id
                                                 "
+                                                class="mt-2"
                                             />
                                         </template>
                                     </Tab>
@@ -265,6 +303,12 @@ console.log(usePage().props);
                                             :options="bentukDokumenOptions"
                                             :cols="3"
                                         />
+                                        <InputError
+                                            :message="
+                                                form.errors.bentuk_dokumen
+                                            "
+                                            class="mt-2"
+                                        />
                                     </div>
                                     <div>
                                         <InputLabel
@@ -276,9 +320,28 @@ console.log(usePage().props);
                                             :options="kategoriInformasiOptions"
                                             :cols="2"
                                         />
+                                        <InputError
+                                            :message="form.errors.kategori"
+                                            class="mt-2"
+                                        />
                                     </div>
                                 </template>
                             </Card>
+                            <div class="flex justify-end gap-2">
+                                <SecondaryButton
+                                    @click="
+                                        () =>
+                                            $inertia.get(
+                                                route(
+                                                    'admin.ppid.tambah-informasi',
+                                                ),
+                                            )
+                                    "
+                                >
+                                    Kembali
+                                </SecondaryButton>
+                                <PrimaryButtonAdmin>Simpan</PrimaryButtonAdmin>
+                            </div>
                         </form>
                     </div>
                 </div>

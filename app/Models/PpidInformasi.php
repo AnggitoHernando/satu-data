@@ -22,6 +22,8 @@ class PpidInformasi extends Model
         'bahasa',
         'status',
         'keterangan',
+        'tahun',
+        'file_path',
     ];
 
     protected $casts = [
@@ -60,7 +62,8 @@ class PpidInformasi extends Model
             ->when($filters['search'] ?? null, function ($q, $search) {
                 $q->where(function ($queryUtama) use ($search) {
                     $queryUtama
-                        ->whereAny(['nama_informasi'], 'like', "%{$search}%");
+                        ->whereAny(['nama_informasi'], 'like', "%{$search}%")
+                        ->orWhereAny(['unit_kerja'], 'like', "%{$search}");
                     // ->orWhereHas('groupKategoriItem.groupKategori', function ($subQuery) use ($search) {
                     //     $subQuery->where('nama_group', 'like', "%{$search}%");
                     // })
@@ -76,13 +79,13 @@ class PpidInformasi extends Model
 
             ->when($filters['sortBy'] ?? null, function ($q, $sortBy) use ($filters) {
                 $direction = ($filters['sortDir'] ?? 'desc') === 'asc' ? 'asc' : 'desc';
-                if ($sortBy === 'groupKategoriItem.nama_item') {
-                    return $q->join('group_kategori_items', 'isi_statistiks.group_kategori_item_id', '=', 'group_kategori_items.id')
-                        ->orderBy('group_kategori_items.nama_item', $direction)
-                        ->select('isi_statistiks.*');
-                }
+                // if ($sortBy === 'groupKategoriItem.nama_item') {
+                //     return $q->join('group_kategori_items', 'isi_statistiks.group_kategori_item_id', '=', 'group_kategori_items.id')
+                //         ->orderBy('group_kategori_items.nama_item', $direction)
+                //         ->select('isi_statistiks.*');
+                // }
 
-                $allowedSorts = ['nama_informasi', 'value', 'created_at', 'id'];
+                $allowedSorts = ['nama_informasi', 'kategori', 'value', 'created_at', 'id'];
                 $sort = in_array($sortBy, $allowedSorts) ? $sortBy : 'id';
 
                 $q->orderBy($sort, $direction);

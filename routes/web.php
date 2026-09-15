@@ -94,6 +94,9 @@ Route::middleware('auth')->group(function () {
     //PPID
     Route::get('/ppid-informasi/tambah-informasi', [PpidInformasiController::class, 'tambahInformasi'])->name('admin.ppid.tambah-informasi');
     Route::get('/ppid-informasi/tambah-informasi/tambah-data', [PpidInformasiController::class, 'tambahDataInformasi'])->name('admin.ppid.tambah-informasi.tambah-data');
+    Route::get('/ppid-informasi/get-jenis-data', [PpidInformasiController::class, 'getJenisData'])->name('admin.ppid.get-jenis-data');
+    Route::post('/ppid-informasi/tambah-informasi/simpan', [PpidInformasiController::class, 'storeInformasi'])->name('admin.ppid.tambah-informasi.simpan');
+    Route::delete('/ppid-informasi/tambah-informasi/delete/{informasi}', [PpidInformasiController::class, 'destroyInformasi'])->name('admin.ppid.tambah-informasi.delete');
 });
 
 require __DIR__ . '/auth.php';

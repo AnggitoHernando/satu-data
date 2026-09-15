@@ -6,10 +6,14 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\PpidInformasi;
 use App\Models\Seksi;
+use App\Models\JenisData;
+use App\Http\Requests\StorePpidInformasiRequest;
+use App\UploadsFile;
 
 class PpidInformasiController extends Controller
 {
-    public function tambahInformasi()
+    use UploadsFile;
+    public function tambahInformasi(Request $request)
     {
         $listInformasi = PpidInformasi::query()
             ->with(['seksi' => function ($query) {
@@ -18,6 +22,7 @@ class PpidInformasiController extends Controller
             ->with(['jenisData' => function ($query) {
                 $query->select('id', 'judul_data');
             }])
+            ->filter($request->only(['search', 'from', 'to', 'sortBy', 'sortDir', 'seksi_id']))
             ->paginate(10)
             ->withQueryString();
         $listSeksi = Seksi::select("id", "nama_seksi")->get();
@@ -33,5 +38,43 @@ class PpidInformasiController extends Controller
         return Inertia::render('Admin/Ppid/FormTambahInformasi', [
             'listSeksi' => $listSeksi,
         ]);
+    }
+
+    public function getJenisData(Request $request)
+    {
+        $search = $request->input('q');
+        $jenisData = JenisData::query()
+            ->where('judul_data', 'like', '%' . $search . '%')
+            ->select('id', 'judul_data')
+            ->get();
+        return response()->json($jenisData);
+    }
+
+    public function storeInformasi(StorePpidInformasiRequest $request)
+    {
+        $validatedData = $request->validated();
+        if ($request->hasFile('file_path')) {
+            $folderTujuan = 'uploads/' . $request->kategori;
+            $uploadedData = $this->uploadFile(
+                $request->file('file_path'),
+                $folderTujuan
+            );
+
+            $validatedData = array_merge($validatedData, $uploadedData);
+        }
+        $validatedData['status'] = 'dapat_diakses';
+        $validatedData['waktu_pembuatan'] = now();
+        $validatedData['waktu_penguasaan'] = now();
+
+        PpidInformasi::create($validatedData);
+        return redirect()
+            ->route('admin.ppid.tambah-informasi')
+            ->with('success', 'Informasi berhasil ditambahkan.');
+    }
+
+
+    public function destroyInformasi(PpidInformasi $ppidInformasi)
+    {
+        dd($ppidInformasi);
     }
 }
