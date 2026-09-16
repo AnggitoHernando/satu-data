@@ -41,4 +41,9 @@ class HomeController extends Controller
             'statistik' => $statistik
         ]);
     }
+
+    public function ppid()
+    {
+        return Inertia::render('Home/PpidHome');
+    }
 }

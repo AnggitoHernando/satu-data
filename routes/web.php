@@ -31,6 +31,8 @@ Route::post('/kritik-saran', [KritikSaranController::class, 'store'])
 
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
+//PPID HALAMAN UTAMA
+Route::get('/ppid-informasi', [HomeController::class, 'ppid'])->name('home.ppid');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -91,7 +93,7 @@ Route::middleware('auth')->group(function () {
         ->name('admin.statistik.excel.download-template');
     Route::post('/statistik/excel/upload', [StatistikController::class, 'uploadIsiStatistik'])
         ->name('admin.statistik.excel.upload');
-    //PPID
+    //PPID ADMIN
     Route::get('/ppid-informasi/tambah-informasi', [PpidInformasiController::class, 'tambahInformasi'])->name('admin.ppid.tambah-informasi');
     Route::get('/ppid-informasi/tambah-informasi/tambah-data', [PpidInformasiController::class, 'tambahDataInformasi'])->name('admin.ppid.tambah-informasi.tambah-data');
     Route::get('/ppid-informasi/get-jenis-data', [PpidInformasiController::class, 'getJenisData'])->name('admin.ppid.get-jenis-data');
