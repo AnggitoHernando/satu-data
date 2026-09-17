@@ -79,16 +79,16 @@ const bentukDokumenOptions = [
 ];
 
 const form = useForm({
-    id: usePage().props.ppidInformasi.id ?? null,
-    nama_informasi: usePage().props.ppidInformasi.nama_informasi ?? "",
-    tahun: String(usePage().props.ppidInformasi.tahun) ?? "",
-    unit_kerja: usePage().props.ppidInformasi.unit_kerja ?? "",
-    jenis_data_id: usePage().props.ppidInformasi.jenis_data_id ?? "",
-    seksi_id: usePage().props.ppidInformasi.seksi_id ?? "",
-    bentuk_dokumen: usePage().props.ppidInformasi.bentuk_dokumen ?? "",
-    ringkasan: usePage().props.ppidInformasi.ringkasan ?? "",
-    file_path: usePage().props.ppidInformasi.file_path ?? null,
-    kategori: usePage().props.ppidInformasi.kategori ?? "",
+    id: usePage().props.ppidInformasi?.id ?? "",
+    nama_informasi: usePage().props.ppidInformasi?.nama_informasi ?? "",
+    tahun: String(usePage().props.ppidInformasi?.tahun) ?? "",
+    unit_kerja: usePage().props.ppidInformasi?.unit_kerja ?? "",
+    jenis_data_id: usePage().props.ppidInformasi?.jenis_data_id ?? "",
+    seksi_id: usePage().props.ppidInformasi?.seksi_id ?? "",
+    bentuk_dokumen: usePage().props.ppidInformasi?.bentuk_dokumen ?? "",
+    ringkasan: usePage().props.ppidInformasi?.ringkasan ?? "",
+    file_path: usePage().props.ppidInformasi?.file_path ?? null,
+    kategori: usePage().props.ppidInformasi?.kategori ?? "",
 });
 
 const sourceDocument = [
@@ -156,7 +156,11 @@ const submit = () => {
                     </div>
                     <div>
                         <form @submit.prevent="submit">
-                            <Card class="mb-4" header="Informasi Dasar">
+                            <Card
+                                number="1"
+                                class="mb-4"
+                                header="Informasi Dasar"
+                            >
                                 <template #body>
                                     <div
                                         class="grid grid-cols-1 sm:grid-cols-2 gap-4"
@@ -275,6 +279,7 @@ const submit = () => {
                                 </template>
                             </Card>
                             <Card
+                                number="2"
                                 class="mb-4"
                                 header="Dokumen / File Informasi"
                             >
@@ -315,7 +320,11 @@ const submit = () => {
                                     </Tab>
                                 </template>
                             </Card>
-                            <Card class="mb-4" header="Kategori Informasi">
+                            <Card
+                                number="3"
+                                class="mb-4"
+                                header="Kategori Informasi"
+                            >
                                 <template #body>
                                     <div class="mb-4">
                                         <InputLabel value="Bentuk Dokumen" />

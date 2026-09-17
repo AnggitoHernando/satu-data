@@ -1,5 +1,6 @@
 <script setup>
 import { Link } from "@inertiajs/vue3";
+import dropdownHover from "@/Components/DropdownHover.vue";
 
 defineProps({
     isContrastMode: {
@@ -7,6 +8,18 @@ defineProps({
         default: false,
     },
 });
+
+const tentangkami = [
+    { name: "Profil Kantor", link: "#" },
+    { name: "Profil PPID", link: "#" },
+];
+
+const informasiPublik = [
+    { name: "Informasi Berkala", link: "#" },
+    { name: "Informasi Serta-Merta", link: "#" },
+    { name: "Informasi Setiap Saat", link: "#" },
+    { name: "Informasi Dikecualikan", link: "#" },
+];
 </script>
 
 <template>
@@ -28,7 +41,7 @@ defineProps({
                     </span>
                     <span class="flex flex-col">
                         <span class="font-bold text-sm leading-tight"
-                            >PPID Kemenag Gresik</span
+                            >Pejabat Pengelola Informasi dan Dokumentasi</span
                         >
                         <span
                             :class="
@@ -37,7 +50,7 @@ defineProps({
                                     : 'text-[#6b7a72]'
                             "
                             class="text-[0.68rem]"
-                            >Informasi Publik yang Ramah &amp; Terbuka</span
+                            >Kantor Kementerian Agama Kabupaten Gresik</span
                         >
                     </span>
                 </Link>
@@ -53,28 +66,13 @@ defineProps({
                                 : 'hover:bg-[#E4F5EC] hover:text-[#085239]'
                         "
                         class="px-3.5 py-1.5 rounded-full transition-colors"
-                        >Tentang</a
+                        >Beranda</a
                     >
-                    <a
-                        href="#layanan"
-                        :class="
-                            isContrastMode
-                                ? 'hover:bg-zinc-800'
-                                : 'hover:bg-[#E4F5EC] hover:text-[#085239]'
-                        "
-                        class="px-3.5 py-1.5 rounded-full transition-colors"
-                        >Layanan</a
-                    >
-                    <a
-                        href="#kategori"
-                        :class="
-                            isContrastMode
-                                ? 'hover:bg-zinc-800'
-                                : 'hover:bg-[#E4F5EC] hover:text-[#085239]'
-                        "
-                        class="px-3.5 py-1.5 rounded-full transition-colors"
-                        >Informasi Publik</a
-                    >
+                    <dropdownHover :items="tentangkami" label="Tentang Kami" />
+                    <dropdownHover
+                        :items="informasiPublik"
+                        label="Informasi Publik"
+                    />
                     <a
                         href="#berita"
                         :class="
@@ -89,9 +87,9 @@ defineProps({
 
                 <a
                     href="#layanan"
-                    class="inline-flex items-center gap-1 font-bold text-xs px-4 py-2.5 rounded-full bg-[#0B6E4F] hover:bg-[#085239] text-white shadow-md shadow-[#0B6E4F]/25 transition-transform hover:-translate-y-0.5 whitespace-nowrap"
+                    class="inline-flex items-center gap-1 font-bold text-xs px-4 py-2.5 rounded-full bg-green-800 hover:bg-[#085239] text-white shadow-md shadow-[#0B6E4F]/25 transition-transform hover:-translate-y-0.5 whitespace-nowrap"
                 >
-                    Ajukan ✦
+                    Layanan E-form ✦
                 </a>
             </div>
         </header>

@@ -21,15 +21,11 @@ import {
     Twitter,
 } from "lucide-vue-next";
 import PpidLayout from "@/Layouts/PpidLayout.vue";
+const isContrastMode = ref(false);
 
 // State Form
 const searchQuery = ref("");
 const trackNumber = ref("");
-
-const changeFontSize = (delta) => {
-    if (delta > 0 && fontScale.value < 1.25) fontScale.value += 0.125;
-    if (delta < 0 && fontScale.value > 1) fontScale.value -= 0.125;
-};
 
 const handleSearch = () => {
     if (!searchQuery.value) return;
@@ -37,6 +33,10 @@ const handleSearch = () => {
 
 const handleTrack = () => {
     if (!trackNumber.value) return;
+};
+
+const toggleContrast = () => {
+    isContrastMode.value = !isContrastMode.value;
 };
 
 // Data Kategori Informasi
@@ -102,9 +102,8 @@ const newsList = [
 
 <template>
     <Head title="PPID Kemenag Gresik — Informasi Publik" />
-    <PpidLayout>
+    <PpidLayout :is-contrast-mode="isContrastMode">
         <main>
-            <!-- ============ HERO ============ -->
             <section class="relative py-12 lg:py-16 overflow-hidden">
                 <div
                     class="absolute w-[340px] h-[340px] rounded-full bg-[#B8E986] -top-32 -right-20 blur-[2px] opacity-55 pointer-events-none"
@@ -145,7 +144,6 @@ const newsList = [
                                 transparan, dan nggak ribet.
                             </p>
 
-                            <!-- Search Bar -->
                             <form
                                 @submit.prevent="handleSearch"
                                 class="mt-6 flex items-center justify-between gap-2 max-w-md bg-white border border-[#E6EFE9] rounded-full p-1.5 pl-4 shadow-lg shadow-[#0B6E4F]/8"
@@ -250,7 +248,7 @@ const newsList = [
                                 <span
                                     class="inline-flex items-center gap-1.5 bg-white/20 text-[0.72rem] font-bold px-3 py-1 rounded-full backdrop-blur-sm"
                                 >
-                                    🚀 Layanan E-Form
+                                    Layanan E-Form
                                 </span>
 
                                 <h3
@@ -307,131 +305,142 @@ const newsList = [
                 </div>
             </section>
 
-            <!-- ============ LAYANAN E-FORM ============ -->
-            <section id="layanan" class="py-12 max-w-[1180px] mx-auto px-5">
-                <div class="mb-8 max-w-xl">
-                    <p
-                        class="text-[#0B6E4F] font-bold text-xs uppercase tracking-wider mb-1"
-                    >
-                        LAYANAN MANDIRI
-                    </p>
-                    <h2 class="text-2xl font-bold font-serif">
-                        Ajukan sendiri, tanpa antre
-                    </h2>
-                    <p
-                        :class="
-                            isContrastMode ? 'text-zinc-300' : 'text-[#6b7a72]'
-                        "
-                        class="mt-2 text-sm leading-relaxed"
-                    >
-                        Pilih layanan yang kamu perlukan, isi formulirnya
-                        online, terus tinggal pantau progresnya.
-                    </p>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    <!-- Card 1 -->
-                    <div
-                        class="group bg-white border border-[#E6EFE9] rounded-[28px] p-6 transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#0B6E4F]/10 flex flex-col justify-between"
-                    >
-                        <div>
-                            <div
-                                class="w-[52px] h-[52px] rounded-xl bg-[#B8E986] flex items-center justify-center text-[#085239] mb-4 shrink-0"
-                            >
-                                <FileText class="w-6 h-6" />
-                            </div>
-                            <h3
-                                class="text-base sm:text-lg font-bold mb-2 font-serif"
-                            >
-                                Permohonan Informasi Publik
-                            </h3>
-                            <p
-                                :class="
-                                    isContrastMode
-                                        ? 'text-zinc-300'
-                                        : 'text-[#6b7a72]'
-                                "
-                                class="text-xs leading-relaxed mb-5"
-                            >
-                                Ajukan permintaan akses dokumen atau data resmi
-                                secara mandiri dan online, kapan saja.
-                            </p>
-                        </div>
-                        <a
-                            href="#"
-                            class="font-bold text-xs text-[#085239] inline-flex items-center gap-1.5 group-hover:translate-x-1 transition-transform"
-                        >
-                            Buka Formulir <ArrowRight class="w-3.5 h-3.5" />
-                        </a>
-                    </div>
-
-                    <!-- Card 2 -->
-                    <div
-                        class="group bg-white border border-[#E6EFE9] rounded-[28px] p-6 transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#0B6E4F]/10 flex flex-col justify-between"
-                    >
-                        <div>
-                            <div
-                                class="w-[52px] h-[52px] rounded-xl bg-[#FFD3A6] flex items-center justify-center text-[#085239] mb-4 shrink-0"
-                            >
-                                <Scale class="w-6 h-6" />
-                            </div>
-                            <h3
-                                class="text-base sm:text-lg font-bold mb-2 font-serif"
-                            >
-                                Pengajuan Keberatan Informasi
-                            </h3>
-                            <p
-                                :class="
-                                    isContrastMode
-                                        ? 'text-zinc-300'
-                                        : 'text-[#6b7a72]'
-                                "
-                                class="text-xs leading-relaxed mb-5"
-                            >
-                                Nggak puas dengan jawaban permohonanmu? Ajukan
-                                keberatan resmi lewat form ini.
-                            </p>
-                        </div>
-                        <a
-                            href="#"
-                            class="font-bold text-xs text-[#085239] inline-flex items-center gap-1.5 group-hover:translate-x-1 transition-transform"
-                        >
-                            Buka Formulir <ArrowRight class="w-3.5 h-3.5" />
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Track Bar -->
+            <section
+                id="layanan"
+                class="py-10 max-w-[1180px] mx-auto px-4 sm:px-5"
+            >
                 <div
-                    class="mt-5 flex flex-wrap items-center gap-3 bg-[#E4F5EC] rounded-[20px] p-4 sm:p-5"
+                    class="bg-gradient-to-br from-[#E4F5EC] via-white to-white border border-[#E6EFE9] rounded-[28px] p-7 sm:p-10 relative overflow-hidden"
                 >
-                    <p
-                        class="text-xs font-semibold text-[#085239] flex-1 min-w-[240px]"
-                    >
-                        📍 Sudah punya nomor permohonan/keberatan? Lacak
-                        progresnya di sini.
-                    </p>
-                    <form
-                        @submit.prevent="handleTrack"
-                        class="flex gap-2 flex-1 min-w-[280px]"
-                    >
-                        <input
-                            v-model="trackNumber"
-                            type="text"
-                            placeholder="Contoh: PPID-2026-0231"
-                            class="flex-1 border border-[#CDEEDD] rounded-full px-4 py-2 text-xs outline-none bg-white focus:ring-1 focus:ring-[#0B6E4F]"
-                        />
-                        <button
-                            type="submit"
-                            class="shrink-0 bg-[#0B6E4F] hover:bg-[#085239] text-white font-bold text-xs px-5 py-2 rounded-full transition-transform hover:-translate-y-0.5"
+                    <div
+                        class="absolute w-[220px] h-[220px] rounded-full bg-[#FFD3A6] opacity-40 -right-16 -bottom-20 pointer-events-none"
+                    ></div>
+
+                    <div class="relative z-10">
+                        <h2
+                            class="text-xl sm:text-2xl font-bold font-serif mb-3 flex items-center gap-2"
                         >
-                            Lacak
-                        </button>
-                    </form>
+                            Semua layanan PPID, dalam satu genggaman
+                        </h2>
+                        <p
+                            :class="
+                                isContrastMode
+                                    ? 'text-zinc-300'
+                                    : 'text-[#6b7a72]'
+                            "
+                            class="text-xs sm:text-sm leading-relaxed mb-6"
+                        >
+                            Nggak perlu datang ke kantor kalau nggak sempat —
+                            ajukan permohonan, sampaikan keberatan, atau cek
+                            status permohonanmu langsung dari sini.
+                        </p>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <!-- Card 1 -->
+                            <div
+                                class="group bg-white border border-[#E6EFE9] rounded-[28px] p-6 transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#0B6E4F]/10 flex flex-col justify-between"
+                            >
+                                <div>
+                                    <div
+                                        class="w-[52px] h-[52px] rounded-xl bg-[#B8E986] flex items-center justify-center text-[#085239] mb-4 shrink-0"
+                                    >
+                                        <FileText class="w-6 h-6" />
+                                    </div>
+                                    <h3
+                                        class="text-base sm:text-lg font-bold mb-2 font-serif"
+                                    >
+                                        Permohonan Informasi Publik
+                                    </h3>
+                                    <p
+                                        :class="
+                                            isContrastMode
+                                                ? 'text-zinc-300'
+                                                : 'text-[#6b7a72]'
+                                        "
+                                        class="text-xs leading-relaxed mb-5"
+                                    >
+                                        Ajukan permintaan akses dokumen atau
+                                        data resmi secara mandiri dan online,
+                                        kapan saja.
+                                    </p>
+                                </div>
+                                <a
+                                    href="#"
+                                    class="font-bold text-xs text-[#085239] inline-flex items-center gap-1.5 group-hover:translate-x-1 transition-transform"
+                                >
+                                    Buka Formulir
+                                    <ArrowRight class="w-3.5 h-3.5" />
+                                </a>
+                            </div>
+
+                            <!-- Card 2 -->
+                            <div
+                                class="group bg-white border border-[#E6EFE9] rounded-[28px] p-6 transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#0B6E4F]/10 flex flex-col justify-between"
+                            >
+                                <div>
+                                    <div
+                                        class="w-[52px] h-[52px] rounded-xl bg-[#FFD3A6] flex items-center justify-center text-[#085239] mb-4 shrink-0"
+                                    >
+                                        <Scale class="w-6 h-6" />
+                                    </div>
+                                    <h3
+                                        class="text-base sm:text-lg font-bold mb-2 font-serif"
+                                    >
+                                        Pengajuan Keberatan Informasi
+                                    </h3>
+                                    <p
+                                        :class="
+                                            isContrastMode
+                                                ? 'text-zinc-300'
+                                                : 'text-[#6b7a72]'
+                                        "
+                                        class="text-xs leading-relaxed mb-5"
+                                    >
+                                        Nggak puas dengan jawaban permohonanmu?
+                                        Ajukan keberatan resmi lewat form ini.
+                                    </p>
+                                </div>
+                                <a
+                                    href="#"
+                                    class="font-bold text-xs text-[#085239] inline-flex items-center gap-1.5 group-hover:translate-x-1 transition-transform"
+                                >
+                                    Buka Formulir
+                                    <ArrowRight class="w-3.5 h-3.5" />
+                                </a>
+                            </div>
+                        </div>
+
+                        <div
+                            class="mt-5 flex flex-wrap items-center gap-3 bg-[#E4F5EC] rounded-[20px] p-4 sm:p-5"
+                        >
+                            <p
+                                class="text-xs font-semibold text-[#085239] flex-1 min-w-[240px]"
+                            >
+                                Sudah punya nomor permohonan/keberatan? Lacak
+                                progresnya di sini.
+                            </p>
+                            <form
+                                @submit.prevent="handleTrack"
+                                class="flex gap-2 flex-1 min-w-[280px]"
+                            >
+                                <input
+                                    v-model="trackNumber"
+                                    type="text"
+                                    placeholder="Contoh: PPID-2026-0231"
+                                    class="flex-1 border border-[#CDEEDD] rounded-full px-4 py-2 text-xs outline-none bg-white focus:ring-1 focus:ring-[#0B6E4F]"
+                                />
+                                <button
+                                    type="submit"
+                                    class="shrink-0 bg-[#0B6E4F] hover:bg-[#085239] text-white font-bold text-xs px-5 py-2 rounded-full transition-transform hover:-translate-y-0.5"
+                                >
+                                    Lacak
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </section>
 
-            <!-- ============ KATEGORI INFORMASI ============ -->
             <section id="kategori" class="py-12 max-w-[1180px] mx-auto px-5">
                 <div class="mb-8 max-w-xl">
                     <p
@@ -493,60 +502,6 @@ const newsList = [
                     </div>
                 </div>
             </section>
-
-            <!-- ============ MANDIRI BANNER ============ -->
-            <section class="py-12 max-w-[1180px] mx-auto px-5">
-                <div
-                    class="bg-gradient-to-br from-[#E4F5EC] via-white to-white border border-[#E6EFE9] rounded-[28px] p-7 sm:p-10 relative overflow-hidden"
-                >
-                    <div
-                        class="absolute w-[220px] h-[220px] rounded-full bg-[#FFD3A6] opacity-40 -right-16 -bottom-20 pointer-events-none"
-                    ></div>
-
-                    <div class="relative z-10 max-w-2xl">
-                        <h2
-                            class="text-xl sm:text-2xl font-bold font-serif mb-3 flex items-center gap-2"
-                        >
-                            Semua layanan PPID, dalam satu genggaman
-                            <Smartphone class="w-6 h-6 text-[#0B6E4F]" />
-                        </h2>
-                        <p
-                            :class="
-                                isContrastMode
-                                    ? 'text-zinc-300'
-                                    : 'text-[#6b7a72]'
-                            "
-                            class="text-xs sm:text-sm leading-relaxed mb-6"
-                        >
-                            Nggak perlu datang ke kantor kalau nggak sempat —
-                            ajukan permohonan, sampaikan keberatan, atau cek
-                            status permohonanmu langsung dari sini.
-                        </p>
-
-                        <div class="flex flex-wrap items-center gap-3">
-                            <a
-                                href="#"
-                                class="inline-flex items-center justify-center font-bold text-xs px-5 py-2.5 rounded-full bg-[#0B6E4F] hover:bg-[#085239] text-white transition-all hover:-translate-y-0.5 shadow-md shadow-[#0B6E4F]/20 whitespace-nowrap"
-                            >
-                                Buat Permohonan →
-                            </a>
-                            <a
-                                href="#"
-                                class="inline-flex items-center justify-center font-bold text-xs px-5 py-2.5 rounded-full bg-white text-[#085239] border border-[#CDEEDD] hover:bg-[#E4F5EC] transition-all hover:-translate-y-0.5 whitespace-nowrap"
-                            >
-                                Ajukan Keberatan
-                            </a>
-                            <a
-                                href="#"
-                                class="inline-flex items-center justify-center font-bold text-xs px-5 py-2.5 rounded-full bg-[#E4F5EC] text-[#085239] hover:bg-[#CDEEDD] transition-all hover:-translate-y-0.5 whitespace-nowrap"
-                            >
-                                Lacak Status
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
             <!-- ============ BERITA ============ -->
             <section id="berita" class="py-12 max-w-[1180px] mx-auto px-5">
                 <div class="mb-8 flex items-end justify-between gap-4">
