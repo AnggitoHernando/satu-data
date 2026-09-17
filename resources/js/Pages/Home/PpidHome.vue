@@ -20,10 +20,7 @@ import {
     Facebook,
     Twitter,
 } from "lucide-vue-next";
-
-// State Fitur Aksesibilitas
-const fontScale = ref(1);
-const isContrastMode = ref(false);
+import PpidLayout from "@/Layouts/PpidLayout.vue";
 
 // State Form
 const searchQuery = ref("");
@@ -32,14 +29,6 @@ const trackNumber = ref("");
 const changeFontSize = (delta) => {
     if (delta > 0 && fontScale.value < 1.25) fontScale.value += 0.125;
     if (delta < 0 && fontScale.value > 1) fontScale.value -= 0.125;
-};
-
-const resetFontSize = () => {
-    fontScale.value = 1;
-};
-
-const toggleContrast = () => {
-    isContrastMode.value = !isContrastMode.value;
 };
 
 const handleSearch = () => {
@@ -113,164 +102,7 @@ const newsList = [
 
 <template>
     <Head title="PPID Kemenag Gresik — Informasi Publik" />
-
-    <div
-        :class="[
-            'min-h-screen font-sans transition-colors duration-200 selection:bg-[#0B6E4F] selection:text-white',
-            isContrastMode
-                ? 'bg-black text-yellow-300'
-                : 'bg-[#FBFDFC] text-[#1B2420]',
-        ]"
-        :style="{ fontSize: `${fontScale * 16}px` }"
-    >
-        <!-- ============ UTIL BAR ============ -->
-        <div
-            :class="
-                isContrastMode
-                    ? 'bg-zinc-900 border-b border-yellow-300'
-                    : 'bg-[#E4F5EC]'
-            "
-            class="text-xs"
-        >
-            <div
-                class="max-w-[1180px] mx-auto px-5 py-1.5 flex flex-wrap items-center justify-between gap-2"
-            >
-                <p
-                    :class="
-                        isContrastMode ? 'text-yellow-300' : 'text-[#085239]'
-                    "
-                    class="font-semibold flex items-center gap-1.5"
-                >
-                    🌿 Situs Resmi PPID Kemenag Gresik
-                </p>
-                <div class="flex items-center gap-2">
-                    <div
-                        class="flex items-center bg-white rounded-full p-0.5 shadow-sm"
-                    >
-                        <button
-                            type="button"
-                            @click="changeFontSize(-1)"
-                            class="border-0 bg-transparent font-bold text-xs text-[#085239] hover:bg-[#CDEEDD] px-2 py-0.5 rounded-full"
-                            aria-label="Perkecil huruf"
-                        >
-                            A-
-                        </button>
-                        <button
-                            type="button"
-                            @click="resetFontSize"
-                            class="border-0 bg-transparent font-bold text-xs text-[#085239] hover:bg-[#CDEEDD] px-2 py-0.5 rounded-full"
-                            aria-label="Huruf normal"
-                        >
-                            A
-                        </button>
-                        <button
-                            type="button"
-                            @click="changeFontSize(1)"
-                            class="border-0 bg-transparent font-bold text-xs text-[#085239] hover:bg-[#CDEEDD] px-2 py-0.5 rounded-full"
-                            aria-label="Perbesar huruf"
-                        >
-                            A+
-                        </button>
-                    </div>
-                    <button
-                        type="button"
-                        @click="toggleContrast"
-                        class="flex items-center gap-1 bg-white font-bold text-xs text-[#085239] hover:bg-[#CDEEDD] px-3 py-1 rounded-full shadow-sm"
-                    >
-                        <Sun class="w-3.5 h-3.5" /> Kontras
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- ============ NAVBAR ============ -->
-        <div class="sticky top-3 z-40 px-4">
-            <header
-                :class="
-                    isContrastMode
-                        ? 'bg-black border-yellow-300'
-                        : 'bg-white/85 backdrop-blur-md border-[#E6EFE9]'
-                "
-                class="max-w-[1180px] mx-auto border rounded-full shadow-lg shadow-[#0B6E4F]/10"
-            >
-                <div class="flex items-center justify-between gap-3 px-4 py-2">
-                    <Link href="/" class="flex items-center gap-2.5">
-                        <span
-                            class="w-10 h-10 rounded-full bg-[#0B6E4F] text-white flex items-center justify-center font-bold text-sm shrink-0"
-                        >
-                            KG
-                        </span>
-                        <span class="flex flex-col">
-                            <span class="font-bold text-sm leading-tight"
-                                >PPID Kemenag Gresik</span
-                            >
-                            <span
-                                :class="
-                                    isContrastMode
-                                        ? 'text-yellow-200'
-                                        : 'text-[#6b7a72]'
-                                "
-                                class="text-[0.68rem]"
-                                >Informasi Publik yang Ramah &amp; Terbuka</span
-                            >
-                        </span>
-                    </Link>
-
-                    <nav
-                        class="hidden md:flex items-center gap-1 text-sm font-semibold"
-                    >
-                        <a
-                            href="#tentang"
-                            :class="
-                                isContrastMode
-                                    ? 'hover:bg-zinc-800'
-                                    : 'hover:bg-[#E4F5EC] hover:text-[#085239]'
-                            "
-                            class="px-3.5 py-1.5 rounded-full transition-colors"
-                            >Tentang</a
-                        >
-                        <a
-                            href="#layanan"
-                            :class="
-                                isContrastMode
-                                    ? 'hover:bg-zinc-800'
-                                    : 'hover:bg-[#E4F5EC] hover:text-[#085239]'
-                            "
-                            class="px-3.5 py-1.5 rounded-full transition-colors"
-                            >Layanan</a
-                        >
-                        <a
-                            href="#kategori"
-                            :class="
-                                isContrastMode
-                                    ? 'hover:bg-zinc-800'
-                                    : 'hover:bg-[#E4F5EC] hover:text-[#085239]'
-                            "
-                            class="px-3.5 py-1.5 rounded-full transition-colors"
-                            >Informasi Publik</a
-                        >
-                        <a
-                            href="#berita"
-                            :class="
-                                isContrastMode
-                                    ? 'hover:bg-zinc-800'
-                                    : 'hover:bg-[#E4F5EC] hover:text-[#085239]'
-                            "
-                            class="px-3.5 py-1.5 rounded-full transition-colors"
-                            >Berita</a
-                        >
-                    </nav>
-
-                    <a
-                        href="#layanan"
-                        class="inline-flex items-center gap-1 font-bold text-xs px-4 py-2.5 rounded-full bg-[#0B6E4F] hover:bg-[#085239] text-white shadow-md shadow-[#0B6E4F]/25 transition-transform hover:-translate-y-0.5 whitespace-nowrap"
-                    >
-                        Ajukan ✦
-                    </a>
-                </div>
-            </header>
-        </div>
-
+    <PpidLayout>
         <main>
             <!-- ============ HERO ============ -->
             <section class="relative py-12 lg:py-16 overflow-hidden">
@@ -774,91 +606,5 @@ const newsList = [
                 </div>
             </section>
         </main>
-
-        <!-- ============ FOOTER ============ -->
-        <div class="max-w-[1180px] mx-auto px-5">
-            <footer
-                class="bg-[#085239] text-white rounded-t-[28px] p-8 sm:p-12 pb-7 mt-5"
-            >
-                <div
-                    class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-[2fr_1fr_1fr] gap-8"
-                >
-                    <div>
-                        <div class="flex items-center gap-2.5 mb-3.5">
-                            <span
-                                class="w-10 h-10 rounded-full bg-white/15 flex items-center justify-center font-bold text-sm"
-                                >KG</span
-                            >
-                            <span class="font-bold text-base text-white"
-                                >PPID Kemenag Gresik</span
-                            >
-                        </div>
-                        <p
-                            class="text-xs leading-relaxed text-white/75 max-w-sm"
-                        >
-                            Menyediakan akses informasi publik yang transparan,
-                            akurat, dan ramah untuk semua kalangan masyarakat
-                            Gresik.
-                        </p>
-                    </div>
-
-                    <div>
-                        <h4 class="text-sm font-bold mb-3.5">Kontak</h4>
-                        <p class="text-xs leading-relaxed text-white/75 mb-2">
-                            Jl. Dr. Wahidin Sudirohusodo No. 1<br />Gresik, Jawa
-                            Timur 61111
-                        </p>
-                        <p class="text-xs leading-relaxed text-white/75">
-                            (031) 398-xxxx<br />ppid.gresik@kemenag.go.id
-                        </p>
-                    </div>
-
-                    <div>
-                        <h4 class="text-sm font-bold mb-3.5">Ikuti Kami</h4>
-                        <p class="text-xs leading-relaxed text-white/75 mb-3">
-                            Update layanan &amp; kegiatan terbaru dari PPID
-                            Kemenag Gresik.
-                        </p>
-                        <div class="flex gap-2">
-                            <a
-                                href="#"
-                                class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
-                                aria-label="Instagram"
-                            >
-                                <Instagram class="w-4 h-4" />
-                            </a>
-                            <a
-                                href="#"
-                                class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
-                                aria-label="YouTube"
-                            >
-                                <Youtube class="w-4 h-4" />
-                            </a>
-                            <a
-                                href="#"
-                                class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
-                                aria-label="Facebook"
-                            >
-                                <Facebook class="w-4 h-4" />
-                            </a>
-                            <a
-                                href="#"
-                                class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
-                                aria-label="Twitter"
-                            >
-                                <Twitter class="w-4 h-4" />
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <div
-                    class="border-t border-white/15 mt-8 pt-5 text-xs text-white/55 flex flex-wrap justify-between gap-2"
-                >
-                    <span>© 2026 PPID Kementerian Agama Kabupaten Gresik.</span>
-                    <span>Dibuat ramah, dibuat terbuka 🌿</span>
-                </div>
-            </footer>
-        </div>
-    </div>
+    </PpidLayout>
 </template>
