@@ -8,6 +8,8 @@ import {
     PhoneCall,
     Mail,
 } from "lucide-vue-next";
+import { Link } from "@inertiajs/vue3";
+import PpidLogo from "@/Components/PpidLogo.vue";
 </script>
 
 <template>
@@ -16,14 +18,11 @@ import {
             class="bg-[#085239] text-white rounded-t-[28px] p-8 sm:p-12 pb-7 mt-5"
         >
             <div
-                class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-[2fr_1fr_1fr] gap-8"
+                class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-[1fr_1fr_1fr] gap-8"
             >
                 <div>
                     <div class="flex items-center gap-2.5 mb-3.5">
-                        <span
-                            class="w-10 h-10 rounded-full bg-white/15 flex items-center justify-center font-bold text-sm"
-                            >KG</span
-                        >
+                        <PpidLogo class="mx-2" />
                         <div class="grid">
                             <span class="font-bold text-base text-white"
                                 >PPID
@@ -42,15 +41,17 @@ import {
                 </div>
 
                 <div>
-                    <h4 class="text-sm font-bold mb-3.5">Informasi Kontak</h4>
-                    <div class="flex flex-wrap gap-2">
+                    <div class="grid grid-cols-1 gap-3.5">
+                        <h4 class="text-sm font-bold mb-3.5">
+                            Informasi Kontak
+                        </h4>
                         <div class="flex gap-2">
                             <MapPin class="w-5 h-5 text-white" />
                             <span
                                 class="text-xs leading-relaxed text-white/75 mb-2"
                             >
-                                Jl. Dr. Wahidin Sudirohusodo No. 1<br />Gresik,
-                                Jawa Timur 61111
+                                Jl. Dr. Wahidin Sudirohusodo No. 1 Gresik, Jawa
+                                Timur 61111
                             </span>
                         </div>
                         <div class="flex gap-2">

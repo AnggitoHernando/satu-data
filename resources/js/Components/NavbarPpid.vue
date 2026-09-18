@@ -1,6 +1,7 @@
 <script setup>
 import { Link } from "@inertiajs/vue3";
 import dropdownHover from "@/Components/DropdownHover.vue";
+import PpidLogo from "@/Components/PpidLogo.vue";
 
 defineProps({
     isContrastMode: {
@@ -8,11 +9,6 @@ defineProps({
         default: false,
     },
 });
-
-const tentangkami = [
-    { name: "Profil Kantor", link: "#" },
-    { name: "Profil PPID", link: "#" },
-];
 
 const informasiPublik = [
     { name: "Informasi Berkala", link: "#" },
@@ -33,12 +29,11 @@ const informasiPublik = [
             class="max-w-[1180px] mx-auto border rounded-full shadow-lg shadow-[#0B6E4F]/10"
         >
             <div class="flex items-center justify-between gap-3 px-4 py-2">
-                <Link href="/" class="flex items-center gap-2.5">
-                    <span
-                        class="w-10 h-10 rounded-full bg-[#0B6E4F] text-white flex items-center justify-center font-bold text-sm shrink-0"
-                    >
-                        KG
-                    </span>
+                <Link
+                    :href="route('Beranda')"
+                    class="flex items-center gap-2.5"
+                >
+                    <PpidLogo />
                     <span class="flex flex-col">
                         <span class="font-bold text-sm leading-tight"
                             >Pejabat Pengelola Informasi dan Dokumentasi</span
@@ -59,7 +54,7 @@ const informasiPublik = [
                     class="hidden md:flex items-center gap-1 text-sm font-semibold"
                 >
                     <a
-                        href="#tentang"
+                        :href="route('Beranda')"
                         :class="
                             isContrastMode
                                 ? 'hover:bg-zinc-800'
@@ -68,7 +63,16 @@ const informasiPublik = [
                         class="px-3.5 py-1.5 rounded-full transition-colors"
                         >Beranda</a
                     >
-                    <dropdownHover :items="tentangkami" label="Tentang Kami" />
+                    <a
+                        :href="route('PortalData.search')"
+                        :class="
+                            isContrastMode
+                                ? 'hover:bg-zinc-800'
+                                : 'hover:bg-[#E4F5EC] hover:text-[#085239]'
+                        "
+                        class="px-3.5 py-1.5 rounded-full transition-colors"
+                        >Mandat</a
+                    >
                     <dropdownHover
                         :items="informasiPublik"
                         label="Informasi Publik"

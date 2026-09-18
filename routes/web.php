@@ -17,7 +17,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', [HomeController::class, 'index'])->name('Beranda');
+Route::get('/', [HomeController::class, 'ppid'])->name('Beranda');
 
 Route::get('/portal-data', [PortalDataController::class, 'index'])->name('PortalData');
 Route::get('/portal-data/search', [PortalDataController::class, 'search'])->name('PortalData.search');
@@ -37,7 +37,7 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['au
 Route::get('/ppid-informasi', [HomeController::class, 'ppid'])->name('home.ppid');
 Route::get('/ppid-informasi/permohonan-informasi', [HomeController::class, 'permohonan_informasi'])->name('home.ppid.permohonan_informasi');
 Route::get('/ppid-informasi/lacak-permohonan-informasi', [HomeController::class, 'lacak_permohonan_informasi'])->name('home.ppid.lacak_permohonan_informasi');
-Route::get('/ppid-informasi/permohonan-keberatan', [HomeController::class, 'lacak_permohonan_keberatan'])->name('home.ppid.lacak_permohonan_keberatan');
+Route::get('/ppid-informasi/permohonan-keberatan', [HomeController::class, 'lacak_permohonan_keberatan'])->name('home.ppid.permohonan_keberatan');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from "vue";
 import { Head, Link } from "@inertiajs/vue3";
+
 import {
     Search,
     FileText,
@@ -365,7 +366,9 @@ const newsList = [
                                     </p>
                                 </div>
                                 <a
-                                    href="#"
+                                    :href="
+                                        route('home.ppid.permohonan_informasi')
+                                    "
                                     class="font-bold text-xs text-[#085239] inline-flex items-center gap-1.5 group-hover:translate-x-1 transition-transform"
                                 >
                                     Buka Formulir
@@ -401,7 +404,9 @@ const newsList = [
                                     </p>
                                 </div>
                                 <a
-                                    href="#"
+                                    :href="
+                                        route('home.ppid.permohonan_keberatan')
+                                    "
                                     class="font-bold text-xs text-[#085239] inline-flex items-center gap-1.5 group-hover:translate-x-1 transition-transform"
                                 >
                                     Buka Formulir
