@@ -41,6 +41,22 @@ const props = defineProps({
             per_page: 0,
         }),
     },
+    showSearch: {
+        type: Boolean,
+        default: true,
+    },
+    showSeksiFilter: {
+        type: Boolean,
+        default: true,
+    },
+    showSort: {
+        type: Boolean,
+        default: true,
+    },
+    showReset: {
+        type: Boolean,
+        default: true,
+    },
 });
 
 const search = ref(
@@ -91,7 +107,7 @@ const resetFilters = () => {
             class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 bg-gray-50 px-4 py-3 border border-gray-200 rounded-md mb-3 shadow-sm"
         >
             <div class="flex flex-wrap items-center gap-3 w-full">
-                <div class="relative w-full sm:w-auto">
+                <div v-if="showSearch" class="relative w-full sm:w-auto">
                     <LucideSearch
                         class="absolute left-2 top-2.5 text-gray-400"
                         :size="18"
@@ -105,7 +121,7 @@ const resetFilters = () => {
                     />
                 </div>
 
-                <div class="relative w-full sm:w-auto">
+                <div v-if="showSeksiFilter" class="relative w-full sm:w-auto">
                     <LucideFilter
                         class="absolute left-2 top-2.5 text-gray-400"
                         :size="18"
@@ -126,7 +142,7 @@ const resetFilters = () => {
                     </select>
                 </div>
 
-                <div class="relative w-full sm:w-auto">
+                <div v-if="showSort" class="relative w-full sm:w-auto">
                     <LucideArrowUpDown
                         class="absolute left-2 top-2.5 text-gray-400"
                         :size="18"
@@ -148,6 +164,7 @@ const resetFilters = () => {
                 </div>
 
                 <button
+                    v-if="showSort"
                     @click="sortDir = sortDir === 'asc' ? 'desc' : 'asc'"
                     class="flex items-center gap-1 px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition w-full sm:w-auto"
                     :title="`Urutan: ${sortDir.toUpperCase()}`"
@@ -165,6 +182,7 @@ const resetFilters = () => {
             </div>
 
             <button
+                v-if="showReset"
                 @click="resetFilters"
                 class="flex items-center gap-1 px-3 py-2 text-sm border border-gray-300 rounded-md text-gray-600 hover:bg-gray-100 w-full md:w-auto"
             >

@@ -8,28 +8,15 @@ import PrimaryButtonAdmin from "@/Components/PrimaryButtonAdmin.vue";
 import { Link } from "lucide-vue-next";
 import Loading from "@/Components/Loading.vue";
 const columns = [
-    { header: "Nama Informasi", key: "nama_informasi", width: "25%" },
+    { header: "Nama Menu", key: "nama_menu", width: "25%" },
     {
-        header: "Kategori Informasi",
-        key: "kategori",
-        width: "15%",
+        header: "Halaman",
+        key: "halaman",
+        width: "10%",
         classTd: "text-center",
     },
-    { header: "Detail Informasi", key: "detail_informasi", width: "25%" },
-    {
-        header: "Status Informasi",
-        key: "status",
-        class: "text-center",
-        width: "15%",
-        classTd: "text-center",
-    },
+    { header: "Status", key: "status", width: "10%", classTd: "text-center" },
     { header: "Aksi", key: "actions", width: "20%", class: "text-center" },
-];
-
-const filtersort = [
-    { label: "Nama Informasi", value: "nama_informasi" },
-    { label: "Kategori Informasi", value: "kategori" },
-    { label: "Status Informasi", value: "status" },
 ];
 
 const formatDate = (dateStr) => {
@@ -45,7 +32,7 @@ const formatDate = (dateStr) => {
 
 const handleDelete = async (item) => {
     const result = await Swal.fire({
-        title: "Apakah Anda Yakin Ingin Menghapus?",
+        title: "Apakah Anda Yakin Ingin Menghapus Halaman Statis?",
         text: "Data yang dihapus tidak dapat dikembalikan!",
         icon: "warning",
         showCancelButton: true,
@@ -55,17 +42,20 @@ const handleDelete = async (item) => {
     });
     if (result.isConfirmed) {
         pageLoading.value = true;
-        await router.delete(route("admin.ppid.tambah-informasi.delete", item), {
-            onError: () => {
-                pageLoading.value = false;
+        await router.delete(
+            route("admin.ppid.halaman-statis.destroy", item.halaman_statis),
+            {
+                onError: () => {
+                    pageLoading.value = false;
+                },
+                onSuccess: () => {
+                    pageLoading.value = false;
+                },
+                onFinish: () => {
+                    pageLoading.value = false;
+                },
             },
-            onSuccess: () => {
-                pageLoading.value = false;
-            },
-            onFinish: () => {
-                pageLoading.value = false;
-            },
-        });
+        );
     }
 };
 
@@ -108,112 +98,54 @@ watch(
                         <h1 class="text-2xl font-bold mb-4">
                             List Halaman Statis
                         </h1>
-                        <a
-                            :href="
-                                route('admin.ppid.tambah-informasi.tambah-data')
-                            "
-                        >
-                            <PrimaryButtonAdmin>
-                                + Tambah Data
-                            </PrimaryButtonAdmin>
-                        </a>
                     </div>
                     <Table
                         :columns="columns"
-                        :rows="usePage().props.listInformasi?.data || []"
-                        :list_seksi="usePage().props.listSeksi || []"
-                        :filterSortOptions="filtersort"
-                        :links="usePage().props.listInformasi?.links"
-                        :meta="usePage().props.listInformasi"
+                        :rows="usePage().props.listMenuStatis?.data || []"
+                        :show-seksi-filter="false"
+                        :show-sort="false"
+                        :links="usePage().props.listMenuStatis?.links"
+                        :meta="usePage().props.listMenuStatis"
                     >
-                        <template #cell-nama_informasi="{ row }">
-                            <span class="font-medium"
-                                >{{ row.nama_informasi }} Tahun
-                                {{ row.tahun }}</span
+                        <template #cell-halaman="{ row }">
+                            <span
+                                :class="{
+                                    'bg-green-100 text-green-800':
+                                        row.halaman_statis !== null,
+                                    'bg-red-100 text-red-800':
+                                        row.halaman_statis === null,
+                                }"
+                                class="px-2 py-1 rounded-full text-center text-xs font-semibold"
                             >
-                            <span class="block text-gray-500 text-xs">
-                                {{ row.seksi?.nama_seksi ?? "" }}
                                 {{
-                                    row.unit_kerja !== null &&
-                                    row.unit_kerja !== undefined
-                                        ? "Unit Kerja: " + row.unit_kerja
-                                        : ""
-                                }}</span
-                            >
-                        </template>
-                        <template #cell-kategori="{ row }">
-                            <span class="font-medium">{{
-                                row.kategori === "serta_merta"
-                                    ? "Serta Merta"
-                                    : row.kategori === "setiap_saat"
-                                      ? "Setiap Saat"
-                                      : row.kategori === "dikecualikan"
-                                        ? "Dikecualikan"
-                                        : row.kategori === "berkala"
-                                          ? "Berkala"
-                                          : "-"
-                            }}</span>
+                                    row.halaman_statis !== null
+                                        ? "Tersedia"
+                                        : ("Belum Tersedia!" ?? "-")
+                                }}
+                            </span>
                         </template>
                         <template #cell-status="{ row }">
                             <span
                                 :class="{
                                     'bg-green-100 text-green-800':
-                                        row.status === 'dapat_diakses',
+                                        row.is_active,
                                     'bg-red-100 text-red-800':
-                                        row.status === 'dikecualikan',
+                                        row.is_active === false,
                                 }"
                                 class="px-2 py-1 rounded-full text-center text-xs font-semibold"
                             >
                                 {{
-                                    row.status === "dapat_diakses"
-                                        ? "Dapat Diakses"
-                                        : ("Dikecualikan" ?? "-")
+                                    row.is_active === true
+                                        ? "Aktif"
+                                        : ("Tidak Aktif" ?? "-")
                                 }}
                             </span>
                         </template>
-                        <template #cell-detail_informasi="{ row }">
-                            <span class="block text-gray-500 text-xs">
-                                Waktu Pembuatan:
-                                {{
-                                    formatDate(row.waktu_pembuatan) ?? "-"
-                                }}</span
-                            >
-                            <span class="block text-gray-500 text-xs">
-                                Bentuk Dokumen:
-                                {{
-                                    row.bentuk_dokumen === "soft_copy"
-                                        ? "Soft Copy"
-                                        : row.bentuk_dokumen === "hard_copy"
-                                          ? "Hard Copy"
-                                          : row.bentuk_dokumen === "keduanya"
-                                            ? "Keduanya"
-                                            : "-"
-                                }}</span
-                            >
-                            <span
-                                v-if="row.lampiran.length > 0"
-                                class="block text-gray-500 text-xs"
-                            >
-                                <a
-                                    :href="`/storage/${row.lampiran[0]?.file_path}`"
-                                    target="_blank"
-                                    class="text-blue-600 hover:underline"
-                                >
-                                    Lihat File
-                                </a>
-                            </span>
-                            <span v-else class="block text-gray-500 text-xs">
-                                <a
-                                    :href="`/storage/${row.jenis_data.file_path}`"
-                                    target="_blank"
-                                    class="text-blue-600 hover:underline"
-                                >
-                                    Lihat File
-                                </a>
-                            </span>
-                        </template>
                         <template #cell-actions="{ row }">
-                            <div class="flex gap-2 justify-center">
+                            <div
+                                v-if="row.halaman_statis !== null"
+                                class="flex gap-2 justify-center"
+                            >
                                 <ActionButtons
                                     :visibleButtons="['edit', 'delete']"
                                     :item="row"
@@ -221,13 +153,25 @@ watch(
                                         () =>
                                             router.get(
                                                 route(
-                                                    'admin.ppid.tambah-informasi.edit',
+                                                    'admin.ppid.halaman-statis.edit',
                                                     row,
                                                 ),
                                             )
                                     "
                                     @delete="() => handleDelete(row)"
                                 />
+                            </div>
+                            <div v-else class="flex gap-2 justify-center">
+                                <a
+                                    :href="
+                                        route(
+                                            'admin.ppid.halaman-statis.create',
+                                            row,
+                                        )
+                                    "
+                                >
+                                    <PrimaryButtonAdmin> + </PrimaryButtonAdmin>
+                                </a>
                             </div>
                         </template>
                     </Table>

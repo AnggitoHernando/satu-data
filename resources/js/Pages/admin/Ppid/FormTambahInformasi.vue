@@ -176,18 +176,8 @@ const submit = () => {
 };
 watch(selectedDocumentIndex, (newIndex) => {
     if (newIndex === 0) {
-        // Pengguna berpindah ke Tab A (Upload) -> Hapus data Form B
-        // formB.value = {
-        //   portalUrl: "",
-        //   category: "",
-        // };
         selectedDocumentIndex.value = 0;
     } else if (newIndex === 1) {
-        // Pengguna berpindah ke Tab B (Portal) -> Hapus data Form A
-        // formA.value = {
-        //   fileName: "",
-        //   fileDescription: "",
-        // };
         selectedDocumentIndex.value = 1;
     }
 });

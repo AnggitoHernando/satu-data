@@ -121,6 +121,12 @@ Route::middleware('auth')->group(function () {
 
     //PPID ADMIN HALAMAN STATIS
     Route::get('/ppid-informasi/halaman-statis', [HalamanStatisController::class, 'index'])->name('admin.ppid.halaman-statis');
+    Route::get('/ppid-informasi/halaman-statis/tambah-data/{menu}', [HalamanStatisController::class, 'create'])->name('admin.ppid.halaman-statis.create');
+    Route::get('/ppid-informasi/halaman-statis/edit/{menu}', [HalamanStatisController::class, 'edit'])->name('admin.ppid.halaman-statis.edit');
+    Route::get('/ppid-informasi/get-menu-statis', [HalamanStatisController::class, 'getMenuStatis'])->name('admin.ppid.get-menu-statis');
+    Route::post('/ppid-informasi/halaman-statis/simpan', [HalamanStatisController::class, 'store'])->name('admin.ppid.halaman-statis.simpan');
+    Route::delete('/ppid-informasi/halaman-statis/delete/{halamanStatis}', [HalamanStatisController::class, 'destroy'])->name('admin.ppid.halaman-statis.destroy');
+    Route::match(['put', 'patch'], '/ppid-informasi/halaman-statis/update/{halamanStatis}', [HalamanStatisController::class, 'update'])->name('admin.ppid.halaman-statis.update');
 });
 
 require __DIR__ . '/auth.php';
