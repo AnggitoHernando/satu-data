@@ -6,11 +6,19 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    selectedIndex: {
+        type: Number,
+        default: 0,
+    },
 });
+const emit = defineEmits(["change"]);
 </script>
 <template>
     <div class="w-full px-2 sm:px-0">
-        <TabGroup>
+        <TabGroup
+            :selectedIndex="selectedIndex"
+            @change="(index) => emit('change', index)"
+        >
             <TabList class="flex space-x-1 rounded-xl bg-green-900 p-1">
                 <Tab
                     v-for="category in categories"

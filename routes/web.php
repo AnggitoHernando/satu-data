@@ -11,6 +11,7 @@ use App\Http\Controllers\StatistikController;
 use App\Http\Controllers\PpidInformasiController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\MenuInformasiController;
+use App\Http\Controllers\HalamanStatisController;
 use App\Models\JenisData;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -117,6 +118,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/ppid-informasi/tambah-informasi/edit/{ppidInformasi}', [PpidInformasiController::class, 'editInformasi'])->name('admin.ppid.tambah-informasi.edit');
     Route::delete('/ppid-informasi/tambah-informasi/delete/{ppidInformasi}', [PpidInformasiController::class, 'destroyInformasi'])->name('admin.ppid.tambah-informasi.delete');
     Route::match(['put', 'patch'], 'ppid-informasi/tambah-informasi/update/{ppidInformasi}', [PpidInformasiController::class, 'updateInformasi'])->name('admin.ppid.tambah-informasi.update');
+
+    //PPID ADMIN HALAMAN STATIS
+    Route::get('/ppid-informasi/halaman-statis', [HalamanStatisController::class, 'index'])->name('admin.ppid.halaman-statis');
 });
 
 require __DIR__ . '/auth.php';

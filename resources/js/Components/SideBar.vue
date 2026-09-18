@@ -10,6 +10,7 @@ import {
     MailQuestion,
     Landmark,
     Menu,
+    Globe,
 } from "lucide-vue-next";
 import { usePage } from "@inertiajs/vue3";
 import SidebarItem from "@/Components/SidebarItem.vue";
@@ -43,6 +44,11 @@ const menuPPID = [
         label: "Tambah Informasi",
         route: "admin.ppid.tambah-informasi",
         icon: BookText,
+    },
+    {
+        label: "Halaman Statis",
+        route: "admin.ppid.halaman-statis",
+        icon: Globe,
     },
     {
         label: "Permohonan Informasi",

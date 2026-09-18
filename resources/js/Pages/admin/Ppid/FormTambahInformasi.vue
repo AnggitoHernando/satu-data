@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, usePage, useForm } from "@inertiajs/vue3";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 import ActionButtons from "@/Components/ActionButtons.vue";
 import PrimaryButtonAdmin from "@/Components/PrimaryButtonAdmin.vue";
 import ModalHeadnessUI from "@/Components/ModalHeadnessUI.vue";
@@ -82,9 +82,9 @@ const form = useForm({
     id: usePage().props.ppidInformasi?.id ?? "",
     menu_id: usePage().props.ppidInformasi?.menu ?? "",
     nama_informasi: usePage().props.ppidInformasi?.nama_informasi ?? "",
-    tahun: usePage().props.ppidInformasi?.tahun ?? "",
+    tahun: String(usePage().props.ppidInformasi?.tahun ?? ""),
     unit_kerja: usePage().props.ppidInformasi?.unit_kerja ?? "",
-    jenis_data_id: usePage().props.ppidInformasi?.jenis_data_id ?? "",
+    jenis_data_id: usePage().props.ppidInformasi?.jenis_data ?? "",
     seksi_id: usePage().props.ppidInformasi?.seksi_id ?? "",
     bentuk_dokumen: usePage().props.ppidInformasi?.bentuk_dokumen ?? "",
     ringkasan: usePage().props.ppidInformasi?.ringkasan ?? "",
@@ -93,9 +93,39 @@ const form = useForm({
 });
 
 const sourceDocument = [
-    { name: "Upload File", selected: true, key: "upload_file" },
-    { name: "Ambil Dari Portal Data", selected: false, key: "portal_data" },
+    {
+        name: "Upload File",
+        key: "upload_file",
+    },
+    {
+        name: "Ambil Dari Portal Data",
+        key: "portal_data",
+    },
 ];
+
+const isUploadFile = computed(() => {
+    return (
+        (usePage().props.ppidInformasi?.lampiran?.length > 0 &&
+            usePage().props.ppidInformasi?.lampiran[0]?.file_path !== null) ||
+        usePage().props.ppidInformasi?.id === undefined ||
+        usePage().props.ppidInformasi?.id === ""
+    );
+});
+
+const selectedDocumentIndex = ref(isUploadFile.value ? 0 : 1);
+const onTabChange = (newIndex) => {
+    selectedDocumentIndex.value = newIndex;
+
+    resetForm(newIndex);
+};
+
+const resetForm = (activeTab) => {
+    if (activeTab === 0) {
+        form.jenis_data_id = "";
+    } else {
+        form.file_path = null;
+    }
+};
 
 const selectedJenisData = ref(null);
 const selectedMenu = ref(null);
@@ -144,6 +174,23 @@ const submit = () => {
         });
     }
 };
+watch(selectedDocumentIndex, (newIndex) => {
+    if (newIndex === 0) {
+        // Pengguna berpindah ke Tab A (Upload) -> Hapus data Form B
+        // formB.value = {
+        //   portalUrl: "",
+        //   category: "",
+        // };
+        selectedDocumentIndex.value = 0;
+    } else if (newIndex === 1) {
+        // Pengguna berpindah ke Tab B (Portal) -> Hapus data Form A
+        // formA.value = {
+        //   fileName: "",
+        //   fileDescription: "",
+        // };
+        selectedDocumentIndex.value = 1;
+    }
+});
 </script>
 <template>
     <AuthenticatedLayout>
@@ -309,6 +356,8 @@ const submit = () => {
                                     <Tab
                                         class="mt-2"
                                         :categories="sourceDocument"
+                                        :selectedIndex="selectedDocumentIndex"
+                                        @change="onTabChange"
                                     >
                                         <template #tab-panel-upload_file>
                                             <FileUpload

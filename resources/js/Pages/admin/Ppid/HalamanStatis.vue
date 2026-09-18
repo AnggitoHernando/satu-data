@@ -97,7 +97,7 @@ watch(
 </script>
 <template>
     <AuthenticatedLayout>
-        <Head title="Tambah Informasi" />
+        <Head title="Halaman Statis" />
         <Loading v-if="pageLoading" />
         <div class="py-16 relative z-40">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
@@ -105,7 +105,9 @@ watch(
                     <div
                         class="mb-4 flex flex-col sm:flex-row justify-between gap-3"
                     >
-                        <h1 class="text-2xl font-bold mb-4">List Informasi</h1>
+                        <h1 class="text-2xl font-bold mb-4">
+                            List Halaman Statis
+                        </h1>
                         <a
                             :href="
                                 route('admin.ppid.tambah-informasi.tambah-data')
@@ -118,10 +120,10 @@ watch(
                     </div>
                     <Table
                         :columns="columns"
-                        :rows="usePage().props.listInformasi.data || []"
+                        :rows="usePage().props.listInformasi?.data || []"
                         :list_seksi="usePage().props.listSeksi || []"
                         :filterSortOptions="filtersort"
-                        :links="usePage().props.listInformasi.links"
+                        :links="usePage().props.listInformasi?.links"
                         :meta="usePage().props.listInformasi"
                     >
                         <template #cell-nama_informasi="{ row }">

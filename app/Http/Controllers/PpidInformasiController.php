@@ -23,7 +23,10 @@ class PpidInformasiController extends Controller
                 $query->select('id', 'nama_seksi');
             }])
             ->with(['jenisData' => function ($query) {
-                $query->select('id', 'judul_data');
+                $query->select('id', 'judul_data', 'file_path');
+            }])
+            ->with(['lampiran' => function ($query) {
+                $query->select('ppid_informasi_id', 'id', 'nama_file', 'file_path', 'tipe_file', 'ukuran_file');
             }])
             ->filter($request->only(['search', 'from', 'to', 'sortBy', 'sortDir', 'seksi_id']))
             ->paginate(10)
@@ -99,6 +102,12 @@ class PpidInformasiController extends Controller
     public function updateInformasi(UpdatePpidInformasiRequest $request, PpidInformasi  $ppidInformasi)
     {
         $validatedData = $request->validated();
+        if ($validatedData['jenis_data_id'] === null && $validatedData['file_path'] === null) {
+            return redirect()->back()->withErrors([
+                'jenis_data_id' => 'Jenis data wajib diisi.',
+                'file_path' => 'File wajib diunggah jika tidak memiliki dari portal data.',
+            ]);
+        }
         $ppidInformasi->load('lampiran');
 
         if ($request->hasFile('file_path')) {
@@ -156,6 +165,7 @@ class PpidInformasiController extends Controller
         $listSeksi = Seksi::select("id", "nama_seksi")->get();
         $ppidInformasi->load('menu');
         $ppidInformasi->load('lampiran');
+        $ppidInformasi->load('jenisData');
         return Inertia::render('Admin/Ppid/FormTambahInformasi', [
             'listSeksi' => $listSeksi,
             'ppidInformasi' => $ppidInformasi
