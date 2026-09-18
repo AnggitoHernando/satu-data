@@ -33,8 +33,6 @@ const formatDate = (dateStr) => {
     });
 };
 
-console.log(usePage().props);
-
 const kategoriInformasiOptions = [
     {
         label: "Berkala",
