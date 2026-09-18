@@ -9,6 +9,7 @@ import {
     BookText,
     MailQuestion,
     Landmark,
+    Menu,
 } from "lucide-vue-next";
 import { usePage } from "@inertiajs/vue3";
 import SidebarItem from "@/Components/SidebarItem.vue";
@@ -33,6 +34,11 @@ const menuMandat = [
     },
 ];
 const menuPPID = [
+    {
+        label: "Daftar Menu",
+        route: "admin.ppid.menu-informasi",
+        icon: Menu,
+    },
     {
         label: "Tambah Informasi",
         route: "admin.ppid.tambah-informasi",

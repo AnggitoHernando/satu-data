@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('ppid_informasi', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('menu_id')
+                ->nullable()
+                ->constrained('menu_informasi')
+                ->nullOnDelete();
             $table->foreignId('jenis_data_id')
                 ->nullable()
                 ->constrained('jenis_data')
@@ -22,7 +26,7 @@ return new class extends Migration
                 ->constrained('seksi')
                 ->nullOnDelete();
             $table->string('nama_informasi');
-            $table->integer("tahun");
+            $table->integer("tahun")->nullable();
             $table->text('ringkasan')->nullable();
             $table->string('pejabat_penguasa')->nullable();
             $table->string('unit_kerja')->nullable();
@@ -44,8 +48,8 @@ return new class extends Migration
                 'dikecualikan',
             ])->default('dapat_diakses');
             $table->text('keterangan')->nullable();
-            $table->string("file_path")->nullable();
             $table->timestamps();
+            $table->index(['menu_id', 'tahun']);
         });
     }
 

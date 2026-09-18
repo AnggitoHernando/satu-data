@@ -10,6 +10,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StatistikController;
 use App\Http\Controllers\PpidInformasiController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\MenuInformasiController;
 use App\Models\JenisData;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -96,7 +97,18 @@ Route::middleware('auth')->group(function () {
         ->name('admin.statistik.excel.download-template');
     Route::post('/statistik/excel/upload', [StatistikController::class, 'uploadIsiStatistik'])
         ->name('admin.statistik.excel.upload');
-    //PPID ADMIN
+
+    //PPID ADMIN TAMBAH MENU INFORMASI
+    Route::get('/ppid-informasi/menu-informasi', [MenuInformasiController::class, 'index'])->name('admin.ppid.menu-informasi');
+    Route::get('/ppid-informasi/menu-informasi/tambah', [MenuInformasiController::class, 'create'])->name('admin.ppid.menu-informasi.create');
+    Route::get('/ppid-informasi/menu-informasi/create-sub-menu/{id}', [MenuInformasiController::class, 'createSubMenu'])->name('admin.ppid.menu-informasi.create-sub-menu');
+    Route::get('/ppid-informasi/menu-informasi/edit/{menuInformasi}', [MenuInformasiController::class, 'edit'])->name('admin.ppid.menu-informasi.edit');
+    Route::get('/ppid-informasi/menu-informasi/get-menu-informasi', [MenuInformasiController::class, 'getMenuInformasi'])->name('admin.ppid.get-menu-informasi');
+    Route::put('/ppid-informasi/menu-informasi/update/{menuInformasi}', [MenuInformasiController::class, 'update'])->name('admin.ppid.menu-informasi.update');
+    Route::post('/ppid-informasi/menu-informasi/simpan', [MenuInformasiController::class, 'store'])->name('admin.ppid.menu-informasi.simpan');
+    Route::delete('/ppid-informasi/menu-informasi/{menuInformasi}', [MenuInformasiController::class, 'destroy'])->name('admin.ppid.menu-informasi.destroy');
+
+    //PPID ADMIN TAMBAH INFORMASI
     Route::get('/ppid-informasi/tambah-informasi', [PpidInformasiController::class, 'tambahInformasi'])->name('admin.ppid.tambah-informasi');
     Route::get('/ppid-informasi/tambah-informasi/tambah-data', [PpidInformasiController::class, 'tambahDataInformasi'])->name('admin.ppid.tambah-informasi.tambah-data');
     Route::get('/ppid-informasi/get-jenis-data', [PpidInformasiController::class, 'getJenisData'])->name('admin.ppid.get-jenis-data');

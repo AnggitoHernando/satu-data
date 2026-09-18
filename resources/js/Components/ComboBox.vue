@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, useAttrs } from "vue";
 import {
     Combobox,
     ComboboxInput,
@@ -61,6 +61,7 @@ const props = defineProps({
         default: false,
     },
 });
+const attrs = useAttrs();
 
 const emit = defineEmits(["update:modelValue"]);
 const buttonRef = ref(null);
@@ -142,7 +143,7 @@ const fetchFromServer = async (q) => {
 
     try {
         const response = await axios.get(route(props.searchUrl), {
-            params: { q },
+            params: { q, ...attrs },
         });
 
         const result = Array.isArray(response.data)
@@ -194,6 +195,7 @@ const onAfterLeave = () => {
                     :displayValue="getLabel"
                     @change="onQueryChange($event.target.value)"
                     @click="buttonRef?.$el?.click()"
+                    @focus="onQueryChange($event.target.value)"
                 />
 
                 <button
