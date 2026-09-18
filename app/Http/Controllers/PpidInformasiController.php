@@ -11,6 +11,7 @@ use App\Http\Requests\StorePpidInformasiRequest;
 use App\Http\Requests\UpdatePpidInformasiRequest;
 use App\UploadsFile;
 use Illuminate\Support\Facades\Storage;
+use App\Models\MenuInformasi;
 
 class PpidInformasiController extends Controller
 {
@@ -39,6 +40,7 @@ class PpidInformasiController extends Controller
         $listSeksi = Seksi::select("id", "nama_seksi")->get();
         return Inertia::render('Admin/Ppid/FormTambahInformasi', [
             'listSeksi' => $listSeksi,
+
         ]);
     }
 
@@ -52,9 +54,27 @@ class PpidInformasiController extends Controller
         return response()->json($jenisData);
     }
 
+    public function getMenu(Request $request)
+    {
+        $search = $request->input('q');
+        $menu =  MenuInformasi::query()
+            ->where('is_active', 1)
+            ->where('tipe', 'daftar_informasi')
+            ->whereDoesntHave('children')
+            ->where('nama_menu', 'like', '%' . $search . '%')
+            ->orderBy('urutan', 'asc')
+            ->get();
+        return response()->json($menu);
+    }
+
     public function storeInformasi(StorePpidInformasiRequest $request)
     {
         $validatedData = $request->validated();
+        $validatedData['status'] = 'dapat_diakses';
+        $validatedData['waktu_pembuatan'] = now();
+        $validatedData['waktu_penguasaan'] = now();
+
+        $ppidInformasi = PpidInformasi::create(collect($validatedData)->except('file_path')->toArray());
         if ($request->hasFile('file_path')) {
             $folderTujuan = 'uploads/' . $request->kategori;
             $uploadedData = $this->uploadFile(
@@ -63,12 +83,14 @@ class PpidInformasiController extends Controller
             );
 
             $validatedData = array_merge($validatedData, $uploadedData);
+            $ppidInformasi->lampiran()->create([
+                'nama_file'   => $validatedData['nama_original_file'],
+                'file_path'   => $validatedData['file_path'],
+                'tipe_file'   => $validatedData['tipe_file'],
+                'ukuran_file' => $validatedData['ukuran_file'],
+                'urutan'      => 1,
+            ]);
         }
-        $validatedData['status'] = 'dapat_diakses';
-        $validatedData['waktu_pembuatan'] = now();
-        $validatedData['waktu_penguasaan'] = now();
-
-        PpidInformasi::create($validatedData);
         return redirect()
             ->route('admin.ppid.tambah-informasi')
             ->with('success', 'Informasi berhasil ditambahkan.');
@@ -77,8 +99,10 @@ class PpidInformasiController extends Controller
     public function updateInformasi(UpdatePpidInformasiRequest $request, PpidInformasi  $ppidInformasi)
     {
         $validatedData = $request->validated();
+        $ppidInformasi->load('lampiran');
+
         if ($request->hasFile('file_path')) {
-            $this->deleteOldFile($ppidInformasi->file_path);
+            $this->deleteOldFile($ppidInformasi->lampiran[0]->file_path);
 
             $folderTujuan = 'uploads/' . $request->kategori;
             $uploadedData = $this->uploadFile(
@@ -87,6 +111,13 @@ class PpidInformasiController extends Controller
             );
             $validatedData = array_merge($validatedData, $uploadedData);
             $validatedData['jenis_data_id'] = null;
+            $ppidInformasi->lampiran()->update([
+                'nama_file'   => $validatedData['nama_original_file'],
+                'file_path'   => $validatedData['file_path'],
+                'tipe_file'   => $validatedData['tipe_file'],
+                'ukuran_file' => $validatedData['ukuran_file'],
+                'urutan'      => 1,
+            ]);
         } elseif (!empty($validatedData['jenis_data_id'])) {
             $this->deleteOldFile($ppidInformasi->file_path);
 
@@ -96,7 +127,7 @@ class PpidInformasiController extends Controller
         } else {
             unset($validatedData['file_path']);
         }
-        $ppidInformasi->update($validatedData);
+        $ppidInformasi->update(collect($validatedData)->except('file_path')->toArray());
         return redirect()
             ->route('admin.ppid.tambah-informasi')
             ->with('success', 'Informasi berhasil diupdate.');
@@ -123,6 +154,8 @@ class PpidInformasiController extends Controller
     public function editInformasi(PpidInformasi $ppidInformasi)
     {
         $listSeksi = Seksi::select("id", "nama_seksi")->get();
+        $ppidInformasi->load('menu');
+        $ppidInformasi->load('lampiran');
         return Inertia::render('Admin/Ppid/FormTambahInformasi', [
             'listSeksi' => $listSeksi,
             'ppidInformasi' => $ppidInformasi

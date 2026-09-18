@@ -112,6 +112,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/ppid-informasi/tambah-informasi', [PpidInformasiController::class, 'tambahInformasi'])->name('admin.ppid.tambah-informasi');
     Route::get('/ppid-informasi/tambah-informasi/tambah-data', [PpidInformasiController::class, 'tambahDataInformasi'])->name('admin.ppid.tambah-informasi.tambah-data');
     Route::get('/ppid-informasi/get-jenis-data', [PpidInformasiController::class, 'getJenisData'])->name('admin.ppid.get-jenis-data');
+    Route::get('/ppid-informasi/get-menu', [PpidInformasiController::class, 'getMenu'])->name('admin.ppid.get-menu');
     Route::post('/ppid-informasi/tambah-informasi/simpan', [PpidInformasiController::class, 'storeInformasi'])->name('admin.ppid.tambah-informasi.simpan');
     Route::get('/ppid-informasi/tambah-informasi/edit/{ppidInformasi}', [PpidInformasiController::class, 'editInformasi'])->name('admin.ppid.tambah-informasi.edit');
     Route::delete('/ppid-informasi/tambah-informasi/delete/{ppidInformasi}', [PpidInformasiController::class, 'destroyInformasi'])->name('admin.ppid.tambah-informasi.delete');

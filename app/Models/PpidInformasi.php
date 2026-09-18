@@ -9,6 +9,7 @@ class PpidInformasi extends Model
 {
     protected $table = 'ppid_informasi';
     protected $fillable = [
+        'menu_id',
         'jenis_data_id',
         'seksi_id',
         'nama_informasi',
@@ -23,7 +24,6 @@ class PpidInformasi extends Model
         'status',
         'keterangan',
         'tahun',
-        'file_path',
     ];
 
     protected $casts = [
@@ -90,5 +90,15 @@ class PpidInformasi extends Model
 
                 $q->orderBy($sort, $direction);
             }, fn($q) => $q->latest());
+    }
+
+    public function lampiran()
+    {
+        return $this->hasMany(PpidInformasiLampiran::class, 'ppid_informasi_id');
+    }
+
+    public function menu()
+    {
+        return $this->belongsTo(MenuInformasi::class, 'menu_id');
     }
 }

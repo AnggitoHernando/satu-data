@@ -33,6 +33,8 @@ const formatDate = (dateStr) => {
     });
 };
 
+console.log(usePage().props);
+
 const kategoriInformasiOptions = [
     {
         label: "Berkala",
@@ -80,14 +82,15 @@ const bentukDokumenOptions = [
 
 const form = useForm({
     id: usePage().props.ppidInformasi?.id ?? "",
+    menu_id: usePage().props.ppidInformasi?.menu ?? "",
     nama_informasi: usePage().props.ppidInformasi?.nama_informasi ?? "",
-    tahun: String(usePage().props.ppidInformasi?.tahun) ?? "",
+    tahun: usePage().props.ppidInformasi?.tahun ?? "",
     unit_kerja: usePage().props.ppidInformasi?.unit_kerja ?? "",
     jenis_data_id: usePage().props.ppidInformasi?.jenis_data_id ?? "",
     seksi_id: usePage().props.ppidInformasi?.seksi_id ?? "",
     bentuk_dokumen: usePage().props.ppidInformasi?.bentuk_dokumen ?? "",
     ringkasan: usePage().props.ppidInformasi?.ringkasan ?? "",
-    file_path: usePage().props.ppidInformasi?.file_path ?? null,
+    file_path: usePage().props.ppidInformasi?.lampiran[0]?.file_path ?? null,
     kategori: usePage().props.ppidInformasi?.kategori ?? "",
 });
 
@@ -97,14 +100,17 @@ const sourceDocument = [
 ];
 
 const selectedJenisData = ref(null);
+const selectedMenu = ref(null);
 const pageLoading = ref(true);
 onMounted(() => {
     pageLoading.value = false;
 });
 const submit = () => {
     selectedJenisData.value = form.jenis_data_id ?? null;
+    selectedMenu.value = form.menu_id ?? null;
     form.jenis_data_id = form.jenis_data_id ? form.jenis_data_id.id : null;
-    if (form.id === null) {
+    form.menu_id = form.menu_id ? form.menu_id.id : null;
+    if (form.id === null || form.id === "") {
         form.post(route("admin.ppid.tambah-informasi.simpan"), {
             onLoading: () => {
                 pageLoading.value = true;
@@ -112,7 +118,8 @@ const submit = () => {
             onSuccess: () => {},
             onError: (errors) => {
                 // console.error("Form submission errors:", errors);
-                form.jenis_data_id = selectedJenisData;
+                form.jenis_data_id = selectedJenisData.value;
+                form.menu_id = selectedMenu.value;
             },
             onFinish: () => {
                 pageLoading.value = false;
@@ -162,6 +169,23 @@ const submit = () => {
                                 header="Informasi Dasar"
                             >
                                 <template #body>
+                                    <div class="mb-4">
+                                        <InputLabel value="Menu" />
+                                        <ComboBox
+                                            v-model="form.menu_id"
+                                            :emit-object="true"
+                                            class="mt-2 block w-full"
+                                            search-url="admin.ppid.get-menu"
+                                            label-key="nama_menu"
+                                            value-key="id"
+                                            placeholder="Cari Menu..."
+                                            :minChars="0"
+                                        />
+                                        <InputError
+                                            :message="form.errors.menu_id"
+                                            class="mt-2"
+                                        />
+                                    </div>
                                     <div
                                         class="grid grid-cols-1 sm:grid-cols-2 gap-4"
                                     >

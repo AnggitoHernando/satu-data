@@ -26,6 +26,7 @@ class StorePpidInformasiRequest extends FormRequest
         $allowedBentukDokumen = ['soft_copy', 'hard_copy', 'keduanya'];
         return [
             'id' => 'nullable',
+            'menu_id' => 'required|exists:menu_informasi,id',
             'nama_informasi' => 'required|string|max:255',
             'seksi_id' => 'required|exists:seksi,id',
             'unit_kerja' => 'required|string|max:255',
@@ -42,6 +43,8 @@ class StorePpidInformasiRequest extends FormRequest
     {
         return [
             'nama_informasi.required' => 'Nama informasi wajib diisi.',
+            'menu_id.required' => 'Menu wajib diisi.',
+            'menu_id.exists' => 'Menu tidak ditemukan.',
             'seksi_id.required' => 'Pilih seksi terlebih dahulu.',
             'seksi_id.exists' => 'Seksi tidak ditemukan.',
             'unit_kerja.required' => 'Unit kerja wajib diisi.',

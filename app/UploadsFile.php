@@ -21,7 +21,8 @@ trait UploadsFile
         return [
             'file_path'          => $path,
             'nama_original_file' => $originalName,
-            'extension_file'     => $extension,
+            'tipe_file'     => $extension,
+            'ukuran_file'        => $file->getSize(),
         ];
     }
 }
