@@ -10,7 +10,10 @@ import PrimaryButtonAdmin from "@/Components/PrimaryButtonAdmin.vue";
 
 const pageLoading = ref(true);
 const props = defineProps({
-    tree: { type: Array, default: () => [] },
+    tree: {
+        type: Array,
+        default: () => [],
+    },
 });
 const handleLoading = (status) => {
     pageLoading.value = status;

@@ -19,10 +19,10 @@ use Inertia\Inertia;
 
 Route::get('/', [HomeController::class, 'ppid'])->name('Beranda');
 
-Route::get('/portal-data', [PortalDataController::class, 'index'])->name('PortalData');
-Route::get('/portal-data/search', [PortalDataController::class, 'search'])->name('PortalData.search');
-Route::get('/portal-data/{slug}', [PortalDataController::class, 'detail'])->name('PortalData.detail');
-Route::get('/portal-data/statistik/{slug}', [PortalDataController::class, 'detailStatistik'])->name('PortalData.statistik.detail');
+Route::get('/mandat/portal-data', [PortalDataController::class, 'index'])->name('PortalData');
+Route::get('/mandat/portal-data/search', [PortalDataController::class, 'search'])->name('PortalData.search');
+Route::get('/mandat/portal-data/{slug}', [PortalDataController::class, 'detail'])->name('PortalData.detail');
+Route::get('/mandat/portal-data/statistik/{slug}', [PortalDataController::class, 'detailStatistik'])->name('PortalData.statistik.detail');
 Route::get('/download/{id}', [FileController::class, 'download'])->name('download.file');
 Route::get('/view-file/{id}', [FileController::class, 'viewFile'])->name('view.file');
 Route::get('/download-template-excel', [FileController::class, 'downloadTemplate'])->name('download.template');
@@ -34,10 +34,14 @@ Route::post('/kritik-saran', [KritikSaranController::class, 'store'])
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 //PPID HALAMAN UTAMA
-Route::get('/ppid-informasi', [HomeController::class, 'ppid'])->name('home.ppid');
-Route::get('/ppid-informasi/permohonan-informasi', [HomeController::class, 'permohonan_informasi'])->name('home.ppid.permohonan_informasi');
-Route::get('/ppid-informasi/lacak-permohonan-informasi', [HomeController::class, 'lacak_permohonan_informasi'])->name('home.ppid.lacak_permohonan_informasi');
-Route::get('/ppid-informasi/permohonan-keberatan', [HomeController::class, 'lacak_permohonan_keberatan'])->name('home.ppid.permohonan_keberatan');
+Route::get('/ppid', [HomeController::class, 'ppid'])->name('home.ppid');
+Route::get('/ppid/informasi-berkala', [HomeController::class, 'informasi_berkala'])->name('home.ppid.informasi_berkala');
+Route::get('/ppid/informasi-serta-merta', [HomeController::class, 'informasiSertaMerta'])->name('home.ppid.informasiSertaMerta');
+Route::get('/ppid/informasi-setiap-saat', [HomeController::class, 'informasiSetiapSaat'])->name('home.ppid.informasiSetiapSaat');
+Route::get('/ppid/informasi-dikecualikan', [HomeController::class, 'informasiDikecualikan'])->name('home.ppid.informasiDikecualikan');
+Route::get('/ppid/permohonan-informasi', [HomeController::class, 'permohonan_informasi'])->name('home.ppid.permohonan_informasi');
+Route::get('/ppid/lacak-permohonan-informasi', [HomeController::class, 'lacak_permohonan_informasi'])->name('home.ppid.lacak_permohonan_informasi');
+Route::get('/ppid/permohonan-keberatan', [HomeController::class, 'lacak_permohonan_keberatan'])->name('home.ppid.permohonan_keberatan');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

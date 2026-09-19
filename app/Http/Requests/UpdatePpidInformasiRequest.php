@@ -26,6 +26,7 @@ class UpdatePpidInformasiRequest extends FormRequest
         $allowedBentukDokumen = ['soft_copy', 'hard_copy', 'keduanya'];
         return [
             'id' => 'nullable',
+            'menu_id' => 'required|exists:menu_informasi,id',
             'nama_informasi' => 'required|string|max:255',
             'seksi_id' => 'required|exists:seksi,id',
             'unit_kerja' => 'required|string|max:255',

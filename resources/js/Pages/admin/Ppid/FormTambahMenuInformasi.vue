@@ -44,7 +44,8 @@ const form = useForm({
     slug: props.menu?.slug ?? "",
     tipe: props.menu?.tipe ?? "daftar_informasi",
     is_active: props.menu?.is_active ?? true,
-    parent_id: props.menu?.parent ?? selectedParentId.value,
+    parent_id:
+        props.menu?.parent ?? selectedParentId.value ?? props.parentOptions.id,
     urutan:
         String(
             props.menu.urutan?.length > 0
@@ -52,6 +53,7 @@ const form = useForm({
                 : props.defaultUrutan,
         ) ?? "1",
 });
+
 const slugPreview = computed(() => {
     return form.nama_menu.trim()
         ? form.nama_menu
@@ -69,9 +71,10 @@ onMounted(() => {
 
 const submit = () => {
     selectedParentId.value = form.parent_id ?? null;
-
     form.slug = slugPreview.value;
-    form.parent_id = form.parent_id ? form.parent_id.id : null;
+    if (props.mode !== "createSubMenu") {
+        form.parent_id = form.parent_id ? form.parent_id.id : null;
+    }
     if (form.id) {
         form.put(route("admin.ppid.menu-informasi.update", form.id), {
             onLoading: () => {

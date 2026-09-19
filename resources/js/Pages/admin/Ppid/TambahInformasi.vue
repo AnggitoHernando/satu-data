@@ -126,9 +126,8 @@ watch(
                     >
                         <template #cell-nama_informasi="{ row }">
                             <span class="font-medium"
-                                >{{ row.nama_informasi }} Tahun
-                                {{ row.tahun }}</span
-                            >
+                                >{{ row.nama_informasi }}
+                            </span>
                             <span class="block text-gray-500 text-xs">
                                 {{ row.seksi?.nama_seksi ?? "" }}
                                 {{
@@ -188,6 +187,12 @@ watch(
                                             : "-"
                                 }}</span
                             >
+                            <span class="block text-gray-500 text-xs">
+                                Menu:
+                                <span class="font-medium">{{
+                                    row.menu?.nama_menu ?? "-"
+                                }}</span>
+                            </span>
                             <span
                                 v-if="row.lampiran.length > 0"
                                 class="block text-gray-500 text-xs"

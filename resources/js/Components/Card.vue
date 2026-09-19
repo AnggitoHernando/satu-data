@@ -8,6 +8,10 @@ defineProps({
         type: String,
         default: "",
     },
+    useNumber: {
+        type: Boolean,
+        default: true,
+    },
 });
 </script>
 <template>
@@ -16,6 +20,7 @@ defineProps({
             class="flex items-center gap-3 px-5 py-4 border-b border-gray-100 bg-gray-50"
         >
             <span
+                v-if="useNumber"
                 class="w-6 h-6 rounded-full bg-green-800 text-white text-xs font-medium flex items-center justify-center flex-shrink-0"
                 >{{ number }}</span
             >

@@ -44,7 +44,7 @@ class MenuInformasi extends Model
 
     public function informasi(): HasMany
     {
-        return $this->hasMany(PpidInformasi::class, 'menu_id')->orderBy('urutan');
+        return $this->hasMany(PpidInformasi::class, 'menu_id')->orderBy('nama_informasi', 'asc');
     }
 
     public function halamanStatis(): HasOne

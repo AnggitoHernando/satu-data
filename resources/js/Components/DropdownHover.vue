@@ -49,7 +49,7 @@ defineProps({
                 <a
                     v-for="(item, index) in items"
                     :key="index"
-                    :href="item.link"
+                    :href="route(item.link)"
                     :class="
                         isContrastMode
                             ? 'hover:bg-zinc-800 text-white'

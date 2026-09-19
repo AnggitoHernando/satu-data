@@ -22,6 +22,9 @@ class PpidInformasiController extends Controller
             ->with(['seksi' => function ($query) {
                 $query->select('id', 'nama_seksi');
             }])
+            ->with(['menu' => function ($query) {
+                $query->select('id', 'nama_menu');
+            }])
             ->with(['jenisData' => function ($query) {
                 $query->select('id', 'judul_data', 'file_path');
             }])
@@ -102,7 +105,7 @@ class PpidInformasiController extends Controller
     public function updateInformasi(UpdatePpidInformasiRequest $request, PpidInformasi  $ppidInformasi)
     {
         $validatedData = $request->validated();
-        if ($validatedData['jenis_data_id'] === null && $validatedData['file_path'] === null) {
+        if ($validatedData['jenis_data_id'] === null && $validatedData['file_path'] === null && $validatedData['id'] === null) {
             return redirect()->back()->withErrors([
                 'jenis_data_id' => 'Jenis data wajib diisi.',
                 'file_path' => 'File wajib diunggah jika tidak memiliki dari portal data.',

@@ -9,7 +9,8 @@ const props = defineProps({
 const emit = defineEmits(["setLoading"]);
 
 const open = ref(true);
-const isGroup = props.node.children && props.node.children.length > 0;
+const isGroup =
+    props.node.children_recursive && props.node.children_recursive.length > 0;
 
 const handleDelete = async (item) => {
     const result = await Swal.fire({
@@ -64,7 +65,9 @@ const handleDelete = async (item) => {
                 "
             >
                 {{
-                    isGroup ? `grup · ${node.children.length} item` : "dokumen"
+                    isGroup
+                        ? `grup · ${node.children_recursive.length} item`
+                        : "dokumen"
                 }}
             </span>
 
@@ -100,7 +103,7 @@ const handleDelete = async (item) => {
             class="ml-[26px] border-l border-slate-200 pl-1.5"
         >
             <MenuTreeNode
-                v-for="child in node.children"
+                v-for="child in node.children_recursive"
                 :key="child.id"
                 :node="child"
             />

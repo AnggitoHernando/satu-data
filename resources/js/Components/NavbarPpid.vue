@@ -11,10 +11,10 @@ defineProps({
 });
 
 const informasiPublik = [
-    { name: "Informasi Berkala", link: "#" },
-    { name: "Informasi Serta-Merta", link: "#" },
-    { name: "Informasi Setiap Saat", link: "#" },
-    { name: "Informasi Dikecualikan", link: "#" },
+    { name: "Informasi Berkala", link: "home.ppid.informasi_berkala" },
+    { name: "Informasi Serta-Merta", link: "home.ppid.informasiSertaMerta" },
+    { name: "Informasi Setiap Saat", link: "home.ppid.informasiSetiapSaat" },
+    { name: "Informasi Dikecualikan", link: "home.ppid.informasiDikecualikan" },
 ];
 </script>
 

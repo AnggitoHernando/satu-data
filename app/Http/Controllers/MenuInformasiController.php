@@ -13,7 +13,7 @@ class MenuInformasiController extends Controller
     {
         $tree = MenuInformasi::whereNull('parent_id')
             ->orderBy('urutan')
-            ->with('children')
+            ->with('childrenRecursive')
             ->get();
         return Inertia::render('Admin/Ppid/MenuInformasi', [
             'tree' => $tree,

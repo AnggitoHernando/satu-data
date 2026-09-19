@@ -170,7 +170,6 @@ const newsList = [
                                 </button>
                             </form>
 
-                            <!-- Hero Actions -->
                             <div class="flex flex-wrap gap-2.5 mt-5">
                                 <a
                                     href="#layanan"
@@ -188,7 +187,6 @@ const newsList = [
                                 </a>
                             </div>
 
-                            <!-- Stat Chips -->
                             <div class="flex flex-wrap gap-2.5 mt-6">
                                 <div
                                     class="flex items-center gap-2 bg-white border border-[#E6EFE9] rounded-full px-3.5 py-1.5 shadow-sm"
@@ -237,15 +235,10 @@ const newsList = [
                             </div>
                         </div>
 
-                        <!-- Hero Visual Card -->
                         <div class="relative">
                             <div
                                 class="bg-gradient-to-br from-[#0B6E4F] to-[#085239] rounded-[28px] p-7 sm:p-8 text-white relative overflow-hidden shadow-2xl shadow-[#0B6E4F]/25"
                             >
-                                <div
-                                    class="absolute w-40 h-40 rounded-full bg-white/10 -top-12 -right-12 pointer-events-none"
-                                ></div>
-
                                 <span
                                     class="inline-flex items-center gap-1.5 bg-white/20 text-[0.72rem] font-bold px-3 py-1 rounded-full backdrop-blur-sm"
                                 >
