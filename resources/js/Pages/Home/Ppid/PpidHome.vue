@@ -75,28 +75,10 @@ const categories = [
 // Data Berita Terkini
 const newsList = [
     {
-        tag: "Berita Utama",
-        title: "Kemenag Gresik Perkuat Layanan Bimbingan Perkawinan di KUA",
+        tag: "Coba Berita 1",
+        title: "Coba Berita 1",
         date: "16 September 2026",
         gradient: "from-[#B8E986] to-[#E4F5EC]",
-    },
-    {
-        tag: "Pendidikan",
-        title: "Siswa Madrasah Gresik Latihan Tilawah Jelang MTQ Pelajar",
-        date: "16 September 2026",
-        gradient: "from-[#BFE3F2] to-[#E4F5EC]",
-    },
-    {
-        tag: "Layanan Publik",
-        title: "Penyuluh Agama Layani Warga di Mal Pelayanan Publik Gresik",
-        date: "15 September 2026",
-        gradient: "from-[#FFD3A6] to-[#E4F5EC]",
-    },
-    {
-        tag: "Haji & Umrah",
-        title: "Update Daftar Tunggu Jemaah Haji Kabupaten Gresik 2026",
-        date: "14 September 2026",
-        gradient: "from-[#F6C9D8] to-[#E4F5EC]",
     },
 ];
 </script>
