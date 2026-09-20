@@ -42,7 +42,6 @@ Route::get('/informasi-dikecualikan', [HomeController::class, 'informasiDikecual
 Route::get('/permohonan-informasi', [HomeController::class, 'permohonan_informasi'])->name('home.ppid.permohonan_informasi');
 Route::get('/lacak-permohonan-informasi', [HomeController::class, 'lacak_permohonan_informasi'])->name('home.ppid.lacak_permohonan_informasi');
 Route::get('/permohonan-keberatan', [HomeController::class, 'lacak_permohonan_keberatan'])->name('home.ppid.permohonan_keberatan');
-Route::get('/{menu}/{slug}', [HomeController::class, 'detailInformasi'])->name('home.ppid.detailInformasi');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -135,3 +134,6 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__ . '/auth.php';
+Route::get('/{path}', [HomeController::class, 'tampilkanMenu'])
+    ->where('path', '.*')
+    ->name('home.ppid.detailInformasi');

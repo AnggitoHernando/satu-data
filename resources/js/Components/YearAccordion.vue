@@ -9,8 +9,6 @@ const props = defineProps({
     defaultOpen: { type: Boolean, default: true },
 });
 
-console.log(props.documents);
-
 const open = ref(props.defaultOpen);
 
 // id unik per instance supaya aria-controls/aria-labelledby tidak bentrok
@@ -62,6 +60,7 @@ const panelId = `${uid}-panel`;
                 :name="doc.name"
                 :tag="doc.tag"
                 :url="doc.url"
+                :type="doc.type"
             />
         </div>
     </section>

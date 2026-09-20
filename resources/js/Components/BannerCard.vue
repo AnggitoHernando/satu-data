@@ -4,12 +4,21 @@ const props = defineProps({
         type: String,
         default: "max-w-7xl",
     },
+    useCard: {
+        type: Boolean,
+        default: true,
+    },
+    fullHeight: {
+        type: Boolean,
+        default: true,
+    },
 });
 </script>
 
 <template>
     <div
-        class="min-h-screen bg-slate-50 font-sans selection:bg-[#0B6E4F] selection:text-white pb-20"
+        :class="[fullHeight ? 'min-h-screen' : '']"
+        class="bg-slate-50 font-sans selection:bg-[#0B6E4F] selection:text-white pb-20"
     >
         <section
             class="relative bg-gradient-to-br from-[#0B6E4F] to-[#085239] pt-16 pb-28 sm:pt-20 sm:pb-36 px-4 sm:px-6 overflow-hidden"
@@ -33,6 +42,7 @@ const props = defineProps({
         </section>
 
         <section
+            v-if="useCard"
             :class="[ukuranCard]"
             class="mx-auto px-4 sm:px-6 relative z-20 -mt-20 sm:-mt-24"
         >

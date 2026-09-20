@@ -10,19 +10,16 @@ import DropdownHover from "@/Components/DropdownHover.vue";
 const open = ref(true);
 
 const props = defineProps({
-    years: { type: Array, required: true },
+    lampiran: { type: Array, required: true },
 });
 const query = ref("");
 const activeYear = ref("all");
 
-console.log(usePage().props);
-
-const availableYears = computed(() => props.years.map((y) => y.year));
-console.log(open.value);
+const availableYears = computed(() => props.lampiran.map((y) => y.year));
 
 // Filter by year chip, then by search text across document names/tags.
 const filteredYears = computed(() => {
-    return props.years
+    return props.lampiran
         .filter(
             (group) =>
                 activeYear.value === "all" || group.year === activeYear.value,
@@ -75,7 +72,7 @@ const filteredYears = computed(() => {
                         >
                             <a
                                 v-if="menu.children_recursive.length === 0"
-                                href="#"
+                                :href="`/${menu.full_path}`"
                                 :class="
                                     usePage().props.selectedMenu === menu.slug
                                         ? 'flex items-center  gap-2 bg-emerald-700 text-white shadow-md shadow-emerald-900/20'
@@ -117,6 +114,7 @@ const filteredYears = computed(() => {
                                     <a
                                         v-for="child in menu.children_recursive"
                                         :key="child.id"
+                                        :href="`/${child.full_path}`"
                                         :class="
                                             usePage().props.selectedMenu ===
                                             child.slug
@@ -145,11 +143,37 @@ const filteredYears = computed(() => {
                         />
 
                         <p
-                            v-if="filteredYears.length === 0"
+                            v-if="
+                                filteredYears.length === 0 &&
+                                usePage().props.halamanStatis === null
+                            "
                             class="py-10 text-center text-sm text-stone-500"
                         >
                             Tidak ada dokumen yang cocok dengan pencarian.
                         </p>
+
+                        <div
+                            v-if="
+                                filteredYears.length === 0 &&
+                                usePage().props.halamanStatis !== null
+                            "
+                        >
+                            <img
+                                v-if="
+                                    usePage().props.halamanStatis.gambar_utama
+                                "
+                                :src="`/storage/${usePage().props.halamanStatis.gambar_utama}`"
+                                :alt="usePage().props.halamanStatis.judul"
+                                class="mb-6 h-64 w-full rounded-lg object-cover sm:h-80"
+                            />
+
+                            <div
+                                class="rich-text-content"
+                                v-html="
+                                    usePage().props.halamanStatis.isi_konten
+                                "
+                            ></div>
+                        </div>
                     </main>
                 </div>
             </template>

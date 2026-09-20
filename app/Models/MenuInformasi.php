@@ -21,6 +21,7 @@ class MenuInformasi extends Model
         'parent_id',
         'urutan',
     ];
+    protected $appends = ['breadcrumb', 'full_path']; //Untuk menambahkan otomatis fungsi ketika di get()
 
     protected $casts = [
         'is_active' => 'boolean',
@@ -111,6 +112,21 @@ class MenuInformasi extends Model
 
     public function getFullPathAttribute(): string
     {
-        return collect($this->breadcrumbs)->pluck('slug')->implode('/');
+        return collect($this->breadcrumb)->pluck('slug')->implode('/');
+    }
+
+    public function getJenisTampilanAttribute(): string
+    {
+        if ($this->is_group) {
+            return 'grup';
+        }
+
+        if ($this->tipe === 'halaman_statis') {
+            return $this->halamanStatis()->exists()
+                ? 'halaman_statis'
+                : 'halaman_statis_kosong';
+        }
+
+        return 'daftar_informasi';
     }
 }

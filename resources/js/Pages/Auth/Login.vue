@@ -27,8 +27,8 @@ const showToast = (message, type = "info") => {
             type === "success"
                 ? "#22C55E"
                 : type === "error"
-                ? "#EF4444"
-                : "#3B82F6",
+                  ? "#EF4444"
+                  : "#3B82F6",
     }).showToast();
 };
 

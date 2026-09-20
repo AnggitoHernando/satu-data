@@ -66,10 +66,9 @@ class HomeController extends Controller
     public function informasi_berkala()
     {
 
-        $informasiBerkala = MenuInformasi::where('slug', 'informasi-berkala')->first();
+        $informasiBerkala = MenuInformasi::where('slug', 'informasi-berkala')->firstOrFail();
         return Inertia::render('Home/Ppid/InformasiPpid', [
-            'listInformasi' => $informasiBerkala->childrenRecursive()->with('parent')->get(),
-            'coba' => $informasiBerkala->childrenRecursive()->with('parent')->get()->each(fn($item) => $item->append('full_path')),
+            'listInformasi' => $informasiBerkala->childrenRecursive()->get(),
             'judul_banner' => 'Informasi Berkala',
             'sub_judul_banner' => 'Setiap Badan Publik wajib menyediakan Informasi Publik setiap saat yang meliputi: daftar seluruh Informasi Publik yang berada di bawah penguasaannya, tidak termasuk informasi yang dikecualikan; hasil keputusan Badan Publik dan pertimbangannya; seluruh kebijakan yang ada berikut dokumen pendukungnya; rencana kerja proyek termasuk di dalamnya perkiraan pengeluaran tahunan Badan Publik; perjanjian Badan Publik dengan pihak ketiga; informasi dan kebijakan yang disampaikan Pejabat Publik dalam pertemuan yang terbuka untuk umum; prosedur kerja pegawai Badan Publik yang berkaitan dengan pelayanan masyarakat; dan/atau laporan mengenai pelayanan akses Informasi Publik sebagaimana diatur dalam Undang-Undang ini. UU No. 14 Tahun 2008, Pasal 11',
         ]);
@@ -77,7 +76,7 @@ class HomeController extends Controller
     public function informasiSertaMerta()
     {
 
-        $informasiBerkala = MenuInformasi::where('slug', 'informasi-serta-merta')->first();
+        $informasiBerkala = MenuInformasi::where('slug', 'informasi-serta-merta')->firstOrFail();
         return Inertia::render('Home/Ppid/InformasiPpid', [
             'listInformasi' => $informasiBerkala->childrenRecursive()->get(),
             'judul_banner' => 'Informasi Serta Merta',
@@ -88,7 +87,7 @@ class HomeController extends Controller
     public function informasiSetiapSaat()
     {
 
-        $informasiBerkala = MenuInformasi::where('slug', 'informasi-setiap-saat')->first();
+        $informasiBerkala = MenuInformasi::where('slug', 'informasi-setiap-saat')->firstOrFail();
         return Inertia::render('Home/Ppid/InformasiPpid', [
             'listInformasi' => $informasiBerkala->childrenRecursive()->get(),
             'judul_banner' => 'Informasi Setiap saat',
@@ -99,7 +98,7 @@ class HomeController extends Controller
     public function informasiDikecualikan()
     {
 
-        $informasiBerkala = MenuInformasi::where('slug', 'informasi-dikecualikan')->first();
+        $informasiBerkala = MenuInformasi::where('slug', 'informasi-dikecualikan')->firstOrFail();
         return Inertia::render('Home/Ppid/InformasiPpid', [
             'listInformasi' => $informasiBerkala->childrenRecursive()->get(),
             'judul_banner' => 'Informasi Dikecualikan',
@@ -107,46 +106,64 @@ class HomeController extends Controller
         ]);
     }
 
-    public function detailInformasi($currentMenu, $currentSlug)
+    public function tampilkanMenu($fullPath)
     {
-        $menu = MenuInformasi::where('slug', 'rencana-strategis')->with(['parent' => function ($query) {
-            $query->select('id', 'nama_menu')->with('childrenRecursive');
-        }])->first();
-        $listMenu = $menu?->parent?->childrenRecursive;
-        $breadcrumb = MenuInformasi::where('slug', 'rencana-strategis')->with('parentRecursive')->first();
-        $informasi = $menu->informasi()
-            ->where('status', 'dapat_diakses')
-            ->with('lampiran')
-            ->orderByDesc('tahun')
-            ->get();
+        $slugs = explode('/', $fullPath);
+        $awalSlug = array_shift($slugs);
+        $lastSlug = end($slugs);
 
-        $years = $informasi
-            ->groupBy('tahun')
-            ->map(function ($itemsPerTahun, $tahun) {
-                return [
-                    'year' => (int) $tahun,
-                    'documents' => $itemsPerTahun
-                        ->flatMap(function ($item) {
-                            // 1 informasi bisa punya beberapa lampiran, jadi di-flatten
-                            // supaya masing-masing file jadi 1 baris dokumen sendiri
-                            return $item->lampiran->map(fn($file) => [
-                                'name' => $file->nama_file,
-                                'tag'  => $item->periode ?? $item->kategori_label,
-                                'url'  => $file->file_path,
-                            ]);
-                        })
-                        ->values(),
-                ];
-            })
-            ->sortByDesc('year')
-            ->values();
+        $menu = MenuInformasi::where('slug', $lastSlug)->with(['parent' => function ($query) {
+            $query->select('id', 'nama_menu')->with('childrenRecursive');
+        }])->firstorFail();
+
+        $menuUtama = MenuInformasi::where('slug', $awalSlug)->firstorFail();
+        $listMenu = $menuUtama->childrenRecursive()->get();
+        $informasi = null;
+        $lampiran = [];
+        $halamanStatis = null;
+
+        if ($menu->jenis_tampilan === 'halaman_statis') {
+            $halamanStatis = $menu->halamanStatis()->first();
+        } else if ($menu->jenis_tampilan === 'halaman_statis_kosong') {
+            abort(404);
+        } else if ($menu->jenis_tampilan === 'daftar_informasi') {
+
+            $informasi = $menu->informasi()
+                ->where('status', 'dapat_diakses')
+                ->with('lampiran')
+                ->orderByDesc('tahun')
+                ->get();
+
+            $lampiran = $informasi
+                ->groupBy('tahun')
+                ->map(function ($itemsPerTahun, $tahun) {
+                    return [
+                        'year' => (int) $tahun,
+                        'documents' => $itemsPerTahun
+                            ->flatMap(function ($item) {
+                                // 1 informasi bisa punya beberapa lampiran, jadi di-flatten
+                                // supaya masing-masing file jadi 1 baris dokumen sendiri
+                                return $item->lampiran->map(fn($file) => [
+                                    'name' => $file->nama_file,
+                                    'tag'  => $item->periode ?? $item->kategori_label,
+                                    'url'  => $file->file_path,
+                                    'type' => $file->tipe_file,
+                                ]);
+                            })
+                            ->values(),
+                    ];
+                })
+                ->sortByDesc('year')
+                ->values();
+        }
+
 
         return Inertia::render('Home/Ppid/DetailInformasi', [
-            'years' => $years,
+            'lampiran' => $lampiran,
             'menu' => $menu,
             'listMenu' => $listMenu,
-            'selectedMenu' => 'rencana-strategis',
-            'cobaMenu' => $breadcrumb,
+            'selectedMenu' => $lastSlug,
+            'halamanStatis' => $halamanStatis,
         ]);
     }
 }

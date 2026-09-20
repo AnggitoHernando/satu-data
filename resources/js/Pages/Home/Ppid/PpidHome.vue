@@ -127,9 +127,10 @@ const newsList = [
                             <h1
                                 class="text-3xl sm:text-4xl lg:text-[2.5rem] font-bold leading-tight font-serif"
                             >
-                                Cari info Kemenag Gresik?
+                                Layanan Informasi Publik
                                 <span class="text-[#0B6E4F]"
-                                    >Gampang &amp; santai.</span
+                                    >Kantor Kementerian Agama Kabupaten
+                                    Gresik</span
                                 >
                             </h1>
                             <p
@@ -140,9 +141,9 @@ const newsList = [
                                 "
                                 class="mt-4 max-w-lg text-sm sm:text-base leading-relaxed"
                             >
-                                Akses dokumen, ajukan permohonan, atau lacak
-                                status permohonanmu — semuanya online,
-                                transparan, dan nggak ribet.
+                                Akses dokumen publik, ajukan permohonan
+                                informasi, serta lacak status permohonan Anda
+                                secara daring, transparan, dan akuntabel.
                             </p>
 
                             <form

@@ -17,8 +17,6 @@ const props = defineProps({
     },
 });
 
-console.log(props.node);
-
 const emit = defineEmits(["setLoading"]);
 
 const open = ref(true);
@@ -55,7 +53,7 @@ const isGroup =
                         : 'bg-emerald-50 text-emerald-700'
                 "
             >
-                <a target="_blank">Lihat</a>
+                <a :href="`/${node.full_path}`" target="_blank">Lihat</a>
             </span>
         </div>
 

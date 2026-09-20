@@ -5,6 +5,7 @@ defineProps({
     name: { type: String, required: true },
     tag: { type: String, default: null },
     url: { type: String, default: "#" },
+    type: { type: String, default: "file" },
 });
 </script>
 
@@ -36,7 +37,7 @@ defineProps({
                     {{ tag }}
                 </span>
                 <span v-else>Dokumen</span>
-                <span>PDF</span>
+                <!-- <span class="capitalize">{{ type }}</span> -->
             </div>
         </div>
 

@@ -7,7 +7,6 @@ import HalamanDepanTreeNode from "@/Components/HalamanDepanTreeNode.vue";
 const handleLoading = (status) => {
     pageLoading.value = status;
 };
-console.log(usePage().props);
 </script>
 
 <template>
