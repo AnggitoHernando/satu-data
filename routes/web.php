@@ -23,10 +23,10 @@ Route::get('/mandat/portal-data', [PortalDataController::class, 'index'])->name(
 Route::get('/mandat/portal-data/search', [PortalDataController::class, 'search'])->name('PortalData.search');
 Route::get('/mandat/portal-data/{slug}', [PortalDataController::class, 'detail'])->name('PortalData.detail');
 Route::get('/mandat/portal-data/statistik/{slug}', [PortalDataController::class, 'detailStatistik'])->name('PortalData.statistik.detail');
-Route::get('/download/{id}', [FileController::class, 'download'])->name('download.file');
-Route::get('/view-file/{id}', [FileController::class, 'viewFile'])->name('view.file');
-Route::get('/download-template-excel', [FileController::class, 'downloadTemplate'])->name('download.template');
-Route::get('/api-portal-data/{slug}', [PortalDataController::class, 'api_portal_data'])->name('api_portal_data');
+Route::get('/mandat/download/{id}', [FileController::class, 'download'])->name('download.file');
+Route::get('/mandat/view-file/{id}', [FileController::class, 'viewFile'])->name('view.file');
+Route::get('/mandat/download-template-excel', [FileController::class, 'downloadTemplate'])->name('download.template');
+Route::get('/mandat/api-portal-data/{slug}', [PortalDataController::class, 'api_portal_data'])->name('api_portal_data');
 Route::post('/kritik-saran', [KritikSaranController::class, 'store'])
     ->middleware('throttle:1,1')
     ->name('kritik.store');
@@ -35,13 +35,14 @@ Route::post('/kritik-saran', [KritikSaranController::class, 'store'])
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 //PPID HALAMAN UTAMA
 Route::get('/ppid', [HomeController::class, 'ppid'])->name('home.ppid');
-Route::get('/ppid/informasi-berkala', [HomeController::class, 'informasi_berkala'])->name('home.ppid.informasi_berkala');
-Route::get('/ppid/informasi-serta-merta', [HomeController::class, 'informasiSertaMerta'])->name('home.ppid.informasiSertaMerta');
-Route::get('/ppid/informasi-setiap-saat', [HomeController::class, 'informasiSetiapSaat'])->name('home.ppid.informasiSetiapSaat');
-Route::get('/ppid/informasi-dikecualikan', [HomeController::class, 'informasiDikecualikan'])->name('home.ppid.informasiDikecualikan');
-Route::get('/ppid/permohonan-informasi', [HomeController::class, 'permohonan_informasi'])->name('home.ppid.permohonan_informasi');
-Route::get('/ppid/lacak-permohonan-informasi', [HomeController::class, 'lacak_permohonan_informasi'])->name('home.ppid.lacak_permohonan_informasi');
-Route::get('/ppid/permohonan-keberatan', [HomeController::class, 'lacak_permohonan_keberatan'])->name('home.ppid.permohonan_keberatan');
+Route::get('/informasi-berkala', [HomeController::class, 'informasi_berkala'])->name('home.ppid.informasi_berkala');
+Route::get('/informasi-serta-merta', [HomeController::class, 'informasiSertaMerta'])->name('home.ppid.informasiSertaMerta');
+Route::get('/informasi-setiap-saat', [HomeController::class, 'informasiSetiapSaat'])->name('home.ppid.informasiSetiapSaat');
+Route::get('/informasi-dikecualikan', [HomeController::class, 'informasiDikecualikan'])->name('home.ppid.informasiDikecualikan');
+Route::get('/permohonan-informasi', [HomeController::class, 'permohonan_informasi'])->name('home.ppid.permohonan_informasi');
+Route::get('/lacak-permohonan-informasi', [HomeController::class, 'lacak_permohonan_informasi'])->name('home.ppid.lacak_permohonan_informasi');
+Route::get('/permohonan-keberatan', [HomeController::class, 'lacak_permohonan_keberatan'])->name('home.ppid.permohonan_keberatan');
+Route::get('/{menu}/{slug}', [HomeController::class, 'detailInformasi'])->name('home.ppid.detailInformasi');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

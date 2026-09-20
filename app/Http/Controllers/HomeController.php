@@ -68,7 +68,8 @@ class HomeController extends Controller
 
         $informasiBerkala = MenuInformasi::where('slug', 'informasi-berkala')->first();
         return Inertia::render('Home/Ppid/InformasiPpid', [
-            'listInformasi' => $informasiBerkala->childrenRecursive()->get(),
+            'listInformasi' => $informasiBerkala->childrenRecursive()->with('parent')->get(),
+            'coba' => $informasiBerkala->childrenRecursive()->with('parent')->get()->each(fn($item) => $item->append('full_path')),
             'judul_banner' => 'Informasi Berkala',
             'sub_judul_banner' => 'Setiap Badan Publik wajib menyediakan Informasi Publik setiap saat yang meliputi: daftar seluruh Informasi Publik yang berada di bawah penguasaannya, tidak termasuk informasi yang dikecualikan; hasil keputusan Badan Publik dan pertimbangannya; seluruh kebijakan yang ada berikut dokumen pendukungnya; rencana kerja proyek termasuk di dalamnya perkiraan pengeluaran tahunan Badan Publik; perjanjian Badan Publik dengan pihak ketiga; informasi dan kebijakan yang disampaikan Pejabat Publik dalam pertemuan yang terbuka untuk umum; prosedur kerja pegawai Badan Publik yang berkaitan dengan pelayanan masyarakat; dan/atau laporan mengenai pelayanan akses Informasi Publik sebagaimana diatur dalam Undang-Undang ini. UU No. 14 Tahun 2008, Pasal 11',
         ]);
@@ -83,6 +84,7 @@ class HomeController extends Controller
             'sub_judul_banner' => 'Setiap Badan Publik wajib menyediakan Informasi Publik setiap saat yang meliputi: daftar seluruh Informasi Publik yang berada di bawah penguasaannya, tidak termasuk informasi yang dikecualikan; hasil keputusan Badan Publik dan pertimbangannya; seluruh kebijakan yang ada berikut dokumen pendukungnya; rencana kerja proyek termasuk di dalamnya perkiraan pengeluaran tahunan Badan Publik; perjanjian Badan Publik dengan pihak ketiga; informasi dan kebijakan yang disampaikan Pejabat Publik dalam pertemuan yang terbuka untuk umum; prosedur kerja pegawai Badan Publik yang berkaitan dengan pelayanan masyarakat; dan/atau laporan mengenai pelayanan akses Informasi Publik sebagaimana diatur dalam Undang-Undang ini. UU No. 14 Tahun 2008, Pasal 11',
         ]);
     }
+
     public function informasiSetiapSaat()
     {
 
@@ -93,6 +95,7 @@ class HomeController extends Controller
             'sub_judul_banner' => 'Setiap Badan Publik wajib menyediakan Informasi Publik setiap saat yang meliputi: daftar seluruh Informasi Publik yang berada di bawah penguasaannya, tidak termasuk informasi yang dikecualikan; hasil keputusan Badan Publik dan pertimbangannya; seluruh kebijakan yang ada berikut dokumen pendukungnya; rencana kerja proyek termasuk di dalamnya perkiraan pengeluaran tahunan Badan Publik; perjanjian Badan Publik dengan pihak ketiga; informasi dan kebijakan yang disampaikan Pejabat Publik dalam pertemuan yang terbuka untuk umum; prosedur kerja pegawai Badan Publik yang berkaitan dengan pelayanan masyarakat; dan/atau laporan mengenai pelayanan akses Informasi Publik sebagaimana diatur dalam Undang-Undang ini. UU No. 14 Tahun 2008, Pasal 11',
         ]);
     }
+
     public function informasiDikecualikan()
     {
 
@@ -101,6 +104,49 @@ class HomeController extends Controller
             'listInformasi' => $informasiBerkala->childrenRecursive()->get(),
             'judul_banner' => 'Informasi Dikecualikan',
             'sub_judul_banner' => 'Setiap Badan Publik wajib menyediakan Informasi Publik setiap saat yang meliputi: daftar seluruh Informasi Publik yang berada di bawah penguasaannya, tidak termasuk informasi yang dikecualikan; hasil keputusan Badan Publik dan pertimbangannya; seluruh kebijakan yang ada berikut dokumen pendukungnya; rencana kerja proyek termasuk di dalamnya perkiraan pengeluaran tahunan Badan Publik; perjanjian Badan Publik dengan pihak ketiga; informasi dan kebijakan yang disampaikan Pejabat Publik dalam pertemuan yang terbuka untuk umum; prosedur kerja pegawai Badan Publik yang berkaitan dengan pelayanan masyarakat; dan/atau laporan mengenai pelayanan akses Informasi Publik sebagaimana diatur dalam Undang-Undang ini. UU No. 14 Tahun 2008, Pasal 11',
+        ]);
+    }
+
+    public function detailInformasi($currentMenu, $currentSlug)
+    {
+        $menu = MenuInformasi::where('slug', 'rencana-strategis')->with(['parent' => function ($query) {
+            $query->select('id', 'nama_menu')->with('childrenRecursive');
+        }])->first();
+        $listMenu = $menu?->parent?->childrenRecursive;
+        $breadcrumb = MenuInformasi::where('slug', 'rencana-strategis')->with('parentRecursive')->first();
+        $informasi = $menu->informasi()
+            ->where('status', 'dapat_diakses')
+            ->with('lampiran')
+            ->orderByDesc('tahun')
+            ->get();
+
+        $years = $informasi
+            ->groupBy('tahun')
+            ->map(function ($itemsPerTahun, $tahun) {
+                return [
+                    'year' => (int) $tahun,
+                    'documents' => $itemsPerTahun
+                        ->flatMap(function ($item) {
+                            // 1 informasi bisa punya beberapa lampiran, jadi di-flatten
+                            // supaya masing-masing file jadi 1 baris dokumen sendiri
+                            return $item->lampiran->map(fn($file) => [
+                                'name' => $file->nama_file,
+                                'tag'  => $item->periode ?? $item->kategori_label,
+                                'url'  => $file->file_path,
+                            ]);
+                        })
+                        ->values(),
+                ];
+            })
+            ->sortByDesc('year')
+            ->values();
+
+        return Inertia::render('Home/Ppid/DetailInformasi', [
+            'years' => $years,
+            'menu' => $menu,
+            'listMenu' => $listMenu,
+            'selectedMenu' => 'rencana-strategis',
+            'cobaMenu' => $breadcrumb,
         ]);
     }
 }

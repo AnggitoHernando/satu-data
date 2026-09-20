@@ -17,6 +17,8 @@ const props = defineProps({
     },
 });
 
+console.log(props.node);
+
 const emit = defineEmits(["setLoading"]);
 
 const open = ref(true);
@@ -53,7 +55,7 @@ const isGroup =
                         : 'bg-emerald-50 text-emerald-700'
                 "
             >
-                Lihat
+                <a target="_blank">Lihat</a>
             </span>
         </div>
 

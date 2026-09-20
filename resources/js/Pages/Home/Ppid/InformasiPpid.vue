@@ -1,18 +1,19 @@
 <script setup>
 import { Head, Link, usePage } from "@inertiajs/vue3";
-import { ref } from "vue";
 import PpidLayout from "@/Layouts/PpidLayout.vue";
 import BannerCard from "@/Components/BannerCard.vue";
 import { ShieldCheck } from "lucide-vue-next";
-import Card from "@/Components/Card.vue";
 import HalamanDepanTreeNode from "@/Components/HalamanDepanTreeNode.vue";
 const handleLoading = (status) => {
     pageLoading.value = status;
 };
+console.log(usePage().props);
 </script>
 
 <template>
-    <Head title="PPID Kemenag Gresik — Informasi PPID" />
+    <Head :title="`PPID Kemenag Gresik - ${usePage().props.judul_banner}`">
+        <meta name="description" content="Informasi Publik" />
+    </Head>
     <PpidLayout>
         <BannerCard>
             <template #banner-content>
@@ -29,7 +30,6 @@ const handleLoading = (status) => {
                     {{ usePage().props.judul_banner }}
                 </h1>
 
-                <!-- Deskripsi Banner -->
                 <p class="mt-3.5 text-xs text-white mx-auto leading-relaxed">
                     {{ usePage().props.sub_judul_banner }}
                 </p>

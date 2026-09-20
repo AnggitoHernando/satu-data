@@ -32,6 +32,11 @@ class MenuInformasi extends Model
         return $this->belongsTo(self::class, 'parent_id');
     }
 
+    public function parentRecursive(): BelongsTo
+    {
+        return $this->parent()->with('parentRecursive');
+    }
+
     public function children(): HasMany
     {
         return $this->hasMany(self::class, 'parent_id')->orderBy('urutan');
@@ -85,5 +90,27 @@ class MenuInformasi extends Model
 
                 $q->orderBy($sort, $direction);
             }, fn($q) => $q->latest());
+    }
+
+    public function getBreadcrumbAttribute(): array
+    {
+        $trail = [];
+        $current = $this;
+
+        while ($current) {
+            array_unshift($trail, [
+                'id'        => $current->id,
+                'nama_menu' => $current->nama_menu,
+                'slug'      => $current->slug,
+            ]);
+            $current = $current->parent;
+        }
+
+        return $trail;
+    }
+
+    public function getFullPathAttribute(): string
+    {
+        return collect($this->breadcrumbs)->pluck('slug')->implode('/');
     }
 }
