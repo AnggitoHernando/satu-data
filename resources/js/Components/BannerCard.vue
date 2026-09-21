@@ -21,7 +21,7 @@ const props = defineProps({
         class="bg-slate-50 font-sans selection:bg-[#0B6E4F] selection:text-white pb-20"
     >
         <section
-            class="relative bg-gradient-to-br from-[#0B6E4F] to-[#085239] pt-16 pb-28 sm:pt-20 sm:pb-36 px-4 sm:px-6 overflow-hidden"
+            class="relative bg-green-600 pt-16 pb-28 sm:pt-20 sm:pb-36 px-4 sm:px-6 overflow-hidden"
         >
             <div
                 class="absolute w-40 h-40 rounded-full bg-white/10 -top-12 -right-12 pointer-events-none"

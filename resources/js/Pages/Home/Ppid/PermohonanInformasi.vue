@@ -70,7 +70,7 @@ const caraMendapatkanInformasi = [
                 </span>
 
                 <h1
-                    class="text-3xl sm:text-4xl md:text-5xl font-bold font-serif tracking-tight leading-tight"
+                    class="text-3xl text-yellow-400 sm:text-4xl md:text-5xl font-bold font-serif tracking-tight leading-tight"
                 >
                     Formulir Permohonan Informasi Publik
                 </h1>

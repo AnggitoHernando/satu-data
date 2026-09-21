@@ -52,7 +52,7 @@ const filteredYears = computed(() => {
                 </span>
 
                 <h1
-                    class="text-3xl sm:text-4xl md:text-5xl font-bold font-serif tracking-tight leading-tight"
+                    class="text-3xl text-yellow-400 sm:text-4xl md:text-5xl font-bold font-serif tracking-tight leading-tight"
                 >
                     {{ usePage().props.menu.nama_menu }}
                 </h1>
@@ -75,7 +75,7 @@ const filteredYears = computed(() => {
                                 :href="`/${menu.full_path}`"
                                 :class="
                                     usePage().props.selectedMenu === menu.slug
-                                        ? 'flex items-center  gap-2 bg-emerald-700 text-white shadow-md shadow-emerald-900/20'
+                                        ? 'flex items-center  gap-2 bg-green-600 text-white shadow-md shadow-emerald-900/20'
                                         : 'text-stone-500 hover:bg-stone-100 hover:text-stone-900 transition'
                                 "
                                 aria-current="page"

@@ -24,7 +24,7 @@ const handleLoading = (status) => {
                 </span>
 
                 <h1
-                    class="text-3xl sm:text-4xl md:text-5xl font-bold font-serif tracking-tight leading-tight"
+                    class="text-3xl text-yellow-400 sm:text-4xl md:text-5xl font-bold font-serif tracking-tight leading-tight"
                 >
                     {{ usePage().props.judul_banner }}
                 </h1>

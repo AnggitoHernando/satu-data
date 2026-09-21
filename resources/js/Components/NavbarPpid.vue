@@ -21,6 +21,11 @@ const informasiPublik = [
     { name: "Informasi Setiap Saat", link: "home.ppid.informasiSetiapSaat" },
     { name: "Informasi Dikecualikan", link: "home.ppid.informasiDikecualikan" },
 ];
+
+const layanan = [
+    { name: "Manajemen Data Terpadu", link: "PortalData" },
+    { name: "Layanan Informasi", link: "PortalData.search" },
+];
 </script>
 
 <template>
@@ -66,21 +71,12 @@ const informasiPublik = [
                         :class="
                             isContrastMode
                                 ? 'hover:bg-zinc-800'
-                                : 'hover:bg-[#E4F5EC] hover:text-[#085239]'
+                                : 'hover:bg-green-100 hover:bg-green-600'
                         "
                         class="px-3.5 py-1.5 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#0B6E4F] focus:ring-offset-2"
                         >Beranda</a
                     >
-                    <a
-                        :href="route('PortalData.search')"
-                        :class="
-                            isContrastMode
-                                ? 'hover:bg-zinc-800'
-                                : 'hover:bg-[#E4F5EC] hover:text-[#085239]'
-                        "
-                        class="px-3.5 py-1.5 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#0B6E4F] focus:ring-offset-2"
-                        >Mandat</a
-                    >
+                    <dropdownHover :items="layanan" label="Layanan" />
                     <dropdownHover
                         :items="informasiPublik"
                         label="Informasi Publik"
@@ -90,16 +86,16 @@ const informasiPublik = [
                         :class="
                             isContrastMode
                                 ? 'hover:bg-zinc-800'
-                                : 'hover:bg-[#E4F5EC] hover:text-[#085239]'
+                                : 'hover:bg-green-100 hover:bg-green-600'
                         "
                         class="px-3.5 py-1.5 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#0B6E4F] focus:ring-offset-2"
-                        >Berita</a
+                        >Profil PPID</a
                     >
                 </nav>
 
                 <button
                     @click="isOpen = true"
-                    class="inline-flex items-center gap-1 font-bold text-xs px-4 py-2.5 rounded-full bg-green-800 hover:bg-[#085239] text-white shadow-md shadow-[#0B6E4F]/25 transition-transform hover:-translate-y-0.5 whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-[#0B6E4F] focus:ring-offset-2"
+                    class="inline-flex items-center gap-1 font-bold text-xs px-4 py-2.5 rounded-full bg-green-600 hover:bg-green-700 text-white shadow-md shadow-green-600/25 transition-transform hover:-translate-y-0.5 whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2"
                     aria-label="Layanan E-form - Ajukan permohonan informasi publik secara mandiri"
                 >
                     Layanan E-form <span aria-hidden="true">✦</span>

@@ -45,7 +45,7 @@ defineProps({
             :href="`/storage/${url}`"
             target="_blank"
             :aria-label="`Lihat dokumen ${name}${tag ? ', ' + tag : ''}`"
-            class="flex-shrink-0 rounded-lg border border-stone-200 bg-stone-100 px-4 py-2 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-700 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600"
+            class="flex-shrink-0 rounded-lg border border-stone-200 bg-stone-100 px-4 py-2 text-sm font-semibold text-green-600 transition-colors hover:bg-green-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2"
         >
             Lihat
         </a>

@@ -47,28 +47,32 @@ const categories = [
         description:
             "Diumumkan rutin: kinerja, kegiatan, dan laporan keuangan Kemenag Gresik.",
         icon: BarChart3,
-        color: "bg-[#B8E986] text-[#085239]",
+        color: "bg-[#B8E986] text-green-600",
+        href: "home.ppid.informasi_berkala",
     },
     {
         title: "Informasi Serta-Merta",
         description:
             "Disampaikan tanpa penundaan kalau menyangkut hajat hidup orang banyak.",
         icon: Zap,
-        color: "bg-[#BFE3F2] text-[#085239]",
+        color: "bg-[#BFE3F2] text-green-600",
+        href: "home.ppid.informasiSertaMerta",
     },
     {
         title: "Informasi Setiap Saat",
         description:
             "Selalu tersedia: regulasi, struktur organisasi, dan prosedur layanan.",
         icon: Folder,
-        color: "bg-[#FFD3A6] text-[#085239]",
+        color: "bg-[#FFD3A6] text-green-600",
+        href: "home.ppid.informasiSetiapSaat",
     },
     {
         title: "Informasi Dikecualikan",
         description:
             "Info yang dibatasi aksesnya sesuai ketentuan Bab V UU No. 14/2008.",
         icon: Lock,
-        color: "bg-[#F6C9D8] text-[#085239]",
+        color: "bg-[#F6C9D8] text-green-600",
+        href: "home.ppid.informasiDikecualikan",
     },
 ];
 
@@ -101,16 +105,16 @@ const newsList = [
                     >
                         <div>
                             <span
-                                class="inline-flex items-center gap-1.5 bg-[#E4F5EC] text-[#085239] font-bold text-xs px-4 py-1.5 rounded-full mb-4"
+                                class="inline-flex items-center gap-1.5 bg-[#E4F5EC] text-green-600 font-bold text-xs px-4 py-1.5 rounded-full mb-4"
                             >
-                                <Sparkles class="w-3.5 h-3.5 text-[#0B6E4F]" />
+                                <Sparkles class="w-3.5 h-3.5 text-green-600" />
                                 Layanan Informasi Publik Terintegrasi
                             </span>
                             <h1
                                 class="text-3xl sm:text-4xl lg:text-[2.5rem] font-bold leading-tight font-serif"
                             >
                                 Layanan Informasi Publik
-                                <span class="text-[#0B6E4F]"
+                                <span class="text-green-600"
                                     >Kantor Kementerian Agama Kabupaten
                                     Gresik</span
                                 >
@@ -130,7 +134,7 @@ const newsList = [
 
                             <form
                                 @submit.prevent="handleSearch"
-                                class="mt-6 flex items-center justify-between gap-2 max-w-md bg-white border border-[#E6EFE9] rounded-full p-1.5 pl-4 shadow-lg shadow-[#0B6E4F]/8"
+                                class="mt-6 flex items-center justify-between gap-2 max-w-md bg-white border border-[#E6EFE9] rounded-full p-1.5 pl-4 shadow-lg shadow-green-600/8"
                             >
                                 <div
                                     class="flex items-center gap-2 flex-1 min-w-0"
@@ -147,7 +151,7 @@ const newsList = [
                                 </div>
                                 <button
                                     type="submit"
-                                    class="shrink-0 bg-[#0B6E4F] hover:bg-[#085239] text-white font-bold text-xs sm:text-sm px-5 py-2.5 rounded-full transition-transform hover:-translate-y-0.5"
+                                    class="shrink-0 bg-green-600 hover:bg-green-600 text-white font-bold text-xs sm:text-sm px-5 py-2.5 rounded-full transition-transform hover:-translate-y-0.5"
                                 >
                                     Cari
                                 </button>
@@ -156,14 +160,14 @@ const newsList = [
                             <div class="flex flex-wrap gap-2.5 mt-5">
                                 <a
                                     href="#layanan"
-                                    class="inline-flex items-center gap-1.5 font-bold text-xs px-4 py-2.5 rounded-full bg-white text-[#085239] border border-[#CDEEDD] hover:bg-[#E4F5EC] transition-transform hover:-translate-y-0.5 shadow-sm"
+                                    class="inline-flex items-center gap-1.5 font-bold text-xs px-4 py-2.5 rounded-full bg-white text-green-600 border border-[#CDEEDD] hover:bg-[#E4F5EC] transition-transform hover:-translate-y-0.5 shadow-sm"
                                 >
                                     <FileText class="w-4 h-4" /> Lihat Dokumen
                                     Publik
                                 </a>
                                 <a
                                     href="#kategori"
-                                    class="inline-flex items-center gap-1.5 font-bold text-xs px-4 py-2.5 rounded-full bg-[#E4F5EC] text-[#085239] hover:bg-[#CDEEDD] transition-transform hover:-translate-y-0.5"
+                                    class="inline-flex items-center gap-1.5 font-bold text-xs px-4 py-2.5 rounded-full bg-[#E4F5EC] text-green-600 hover:bg-[#CDEEDD] transition-transform hover:-translate-y-0.5"
                                 >
                                     <FolderKanban class="w-4 h-4" /> Jelajahi
                                     Kategori
@@ -175,7 +179,7 @@ const newsList = [
                                     class="flex items-center gap-2 bg-white border border-[#E6EFE9] rounded-full px-3.5 py-1.5 shadow-sm"
                                 >
                                     <span
-                                        class="font-bold font-serif text-[#085239] text-xs sm:text-sm"
+                                        class="font-bold font-serif text-green-600 text-xs sm:text-sm"
                                         >Gratis</span
                                     >
                                     <span class="text-[0.7rem] text-[#6b7a72]"
@@ -186,7 +190,7 @@ const newsList = [
                                     class="flex items-center gap-2 bg-white border border-[#E6EFE9] rounded-full px-3.5 py-1.5 shadow-sm"
                                 >
                                     <span
-                                        class="font-bold font-serif text-[#085239] text-xs sm:text-sm"
+                                        class="font-bold font-serif text-green-600 text-xs sm:text-sm"
                                         >24/7</span
                                     >
                                     <span class="text-[0.7rem] text-[#6b7a72]"
@@ -197,7 +201,7 @@ const newsList = [
                                     class="flex items-center gap-2 bg-white border border-[#E6EFE9] rounded-full px-3.5 py-1.5 shadow-sm"
                                 >
                                     <span
-                                        class="font-bold font-serif text-[#085239] text-xs sm:text-sm"
+                                        class="font-bold font-serif text-green-600 text-xs sm:text-sm"
                                         >&lt;3 Hari</span
                                     >
                                     <span class="text-[0.7rem] text-[#6b7a72]"
@@ -208,7 +212,7 @@ const newsList = [
                                     class="flex items-center gap-2 bg-white border border-[#E6EFE9] rounded-full px-3.5 py-1.5 shadow-sm"
                                 >
                                     <span
-                                        class="font-bold font-serif text-[#085239] text-xs sm:text-sm"
+                                        class="font-bold font-serif text-green-600 text-xs sm:text-sm"
                                         >UU KIP</span
                                     >
                                     <span class="text-[0.7rem] text-[#6b7a72]"
@@ -220,7 +224,7 @@ const newsList = [
 
                         <div class="relative">
                             <div
-                                class="bg-gradient-to-br from-[#0B6E4F] to-[#085239] rounded-[28px] p-7 sm:p-8 text-white relative overflow-hidden shadow-2xl shadow-[#0B6E4F]/25"
+                                class="bg-green-600 rounded-[28px] p-7 sm:p-8 text-white relative overflow-hidden shadow-2xl shadow-green-600/20"
                             >
                                 <span
                                     class="inline-flex items-center gap-1.5 bg-white/20 text-[0.72rem] font-bold px-3 py-1 rounded-full backdrop-blur-sm"
@@ -313,13 +317,12 @@ const newsList = [
                         </p>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                            <!-- Card 1 -->
                             <div
-                                class="group bg-white border border-[#E6EFE9] rounded-[28px] p-6 transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#0B6E4F]/10 flex flex-col justify-between"
+                                class="group bg-white border border-[#E6EFE9] rounded-[28px] p-6 transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-green-600/10 flex flex-col justify-between"
                             >
                                 <div>
                                     <div
-                                        class="w-[52px] h-[52px] rounded-xl bg-[#B8E986] flex items-center justify-center text-[#085239] mb-4 shrink-0"
+                                        class="w-[52px] h-[52px] rounded-xl bg-[#B8E986] flex items-center justify-center text-green-600 mb-4 shrink-0"
                                     >
                                         <FileText class="w-6 h-6" />
                                     </div>
@@ -345,20 +348,19 @@ const newsList = [
                                     :href="
                                         route('home.ppid.permohonan_informasi')
                                     "
-                                    class="font-bold text-xs text-[#085239] inline-flex items-center gap-1.5 group-hover:translate-x-1 transition-transform"
+                                    class="font-bold text-xs text-green-600 inline-flex items-center gap-1.5 group-hover:translate-x-1 transition-transform"
                                 >
                                     Buka Formulir
                                     <ArrowRight class="w-3.5 h-3.5" />
                                 </a>
                             </div>
 
-                            <!-- Card 2 -->
                             <div
                                 class="group bg-white border border-[#E6EFE9] rounded-[28px] p-6 transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#0B6E4F]/10 flex flex-col justify-between"
                             >
                                 <div>
                                     <div
-                                        class="w-[52px] h-[52px] rounded-xl bg-[#FFD3A6] flex items-center justify-center text-[#085239] mb-4 shrink-0"
+                                        class="w-[52px] h-[52px] rounded-xl bg-[#FFD3A6] flex items-center justify-center text-green-600 mb-4 shrink-0"
                                     >
                                         <Scale class="w-6 h-6" />
                                     </div>
@@ -383,7 +385,7 @@ const newsList = [
                                     :href="
                                         route('home.ppid.permohonan_keberatan')
                                     "
-                                    class="font-bold text-xs text-[#085239] inline-flex items-center gap-1.5 group-hover:translate-x-1 transition-transform"
+                                    class="font-bold text-xs text-green-600 inline-flex items-center gap-1.5 group-hover:translate-x-1 transition-transform"
                                 >
                                     Buka Formulir
                                     <ArrowRight class="w-3.5 h-3.5" />
@@ -395,7 +397,7 @@ const newsList = [
                             class="mt-5 flex flex-wrap items-center gap-3 bg-[#E4F5EC] rounded-[20px] p-4 sm:p-5"
                         >
                             <p
-                                class="text-xs font-semibold text-[#085239] flex-1 min-w-[240px]"
+                                class="text-xs font-semibold text-green-600 flex-1 min-w-[240px]"
                             >
                                 Sudah punya nomor permohonan/keberatan? Lacak
                                 progresnya di sini.
@@ -412,7 +414,7 @@ const newsList = [
                                 />
                                 <button
                                     type="submit"
-                                    class="shrink-0 bg-[#0B6E4F] hover:bg-[#085239] text-white font-bold text-xs px-5 py-2 rounded-full transition-transform hover:-translate-y-0.5"
+                                    class="shrink-0 bg-green-600 hover:bg-green-600 text-white font-bold text-xs px-5 py-2 rounded-full transition-transform hover:-translate-y-0.5"
                                 >
                                     Lacak
                                 </button>
@@ -425,7 +427,7 @@ const newsList = [
             <section id="kategori" class="py-12 max-w-[1180px] mx-auto px-5">
                 <div class="mb-8 max-w-xl">
                     <p
-                        class="text-[#0B6E4F] font-bold text-xs uppercase tracking-wider mb-1"
+                        class="text-green-600 font-bold text-xs uppercase tracking-wider mb-1"
                     >
                         KATEGORI INFORMASI
                     </p>
@@ -475,8 +477,8 @@ const newsList = [
                             </p>
                         </div>
                         <a
-                            href="#"
-                            class="font-bold text-xs text-[#085239] inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform"
+                            :href="route(item.href)"
+                            class="font-bold text-xs text-green-600 inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform"
                         >
                             Lihat Info <ArrowRight class="w-3.5 h-3.5" />
                         </a>
@@ -488,7 +490,7 @@ const newsList = [
                 <div class="mb-8 flex items-end justify-between gap-4">
                     <div>
                         <p
-                            class="text-[#0B6E4F] font-bold text-xs uppercase tracking-wider mb-1"
+                            class="text-green-600 font-bold text-xs uppercase tracking-wider mb-1"
                         >
                             KABAR TERKINI
                         </p>
@@ -498,7 +500,7 @@ const newsList = [
                     </div>
                     <a
                         href="#"
-                        class="font-bold text-xs text-[#085239] whitespace-nowrap inline-flex items-center gap-1 hover:underline"
+                        class="font-bold text-xs text-green-600 whitespace-nowrap inline-flex items-center gap-1 hover:underline"
                     >
                         Lihat Semua <ArrowRight class="w-3.5 h-3.5" />
                     </a>
@@ -518,7 +520,7 @@ const newsList = [
                         ></div>
                         <div class="p-4">
                             <span
-                                class="inline-block text-[0.68rem] font-bold text-[#085239] bg-[#E4F5EC] px-2.5 py-1 rounded-full mb-2"
+                                class="inline-block text-[0.68rem] font-bold text-green-600 bg-[#E4F5EC] px-2.5 py-1 rounded-full mb-2"
                             >
                                 {{ news.tag }}
                             </span>
