@@ -13,6 +13,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\MenuInformasiController;
 use App\Http\Controllers\HalamanStatisController;
 use App\Models\JenisData;
+use App\Http\Controllers\Api\JoomlaArticleController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -30,6 +31,8 @@ Route::get('/mandat/api-portal-data/{slug}', [PortalDataController::class, 'api_
 Route::post('/kritik-saran', [KritikSaranController::class, 'store'])
     ->middleware('throttle:1,1')
     ->name('kritik.store');
+
+Route::get('/api/berita-terkini', [JoomlaArticleController::class, 'index'])->name('api.berita-terkini');
 
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');

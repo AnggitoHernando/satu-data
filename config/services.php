@@ -31,4 +31,9 @@ return [
         ],
     ],
 
+    'joomla' => [
+        'url' => env('JOOMLA_API_URL'),
+        'token' => env('JOOMLA_API_TOKEN'),
+    ],
+
 ];

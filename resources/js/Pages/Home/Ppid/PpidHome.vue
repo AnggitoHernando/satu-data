@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from "vue";
-import { Head, Link } from "@inertiajs/vue3";
+import { Head, Link, usePage } from "@inertiajs/vue3";
 
 import {
     Search,
@@ -40,7 +40,7 @@ const toggleContrast = () => {
     isContrastMode.value = !isContrastMode.value;
 };
 
-// Data Kategori Informasi
+// Data Berita Terkini
 const categories = [
     {
         title: "Informasi Berkala",
@@ -73,16 +73,6 @@ const categories = [
         icon: Lock,
         color: "bg-[#F6C9D8] text-green-600",
         href: "home.ppid.informasiDikecualikan",
-    },
-];
-
-// Data Berita Terkini
-const newsList = [
-    {
-        tag: "Coba Berita 1",
-        title: "Coba Berita 1",
-        date: "16 September 2026",
-        gradient: "from-[#B8E986] to-[#E4F5EC]",
     },
 ];
 </script>
@@ -485,7 +475,7 @@ const newsList = [
                     </div>
                 </div>
             </section>
-            <!-- ============ BERITA ============ -->
+
             <section id="berita" class="py-12 max-w-[1180px] mx-auto px-5">
                 <div class="mb-8 flex items-end justify-between gap-4">
                     <div>
@@ -499,7 +489,8 @@ const newsList = [
                         </h2>
                     </div>
                     <a
-                        href="#"
+                        href="https://kemenaggresik.id/"
+                        target="_blank"
                         class="font-bold text-xs text-green-600 whitespace-nowrap inline-flex items-center gap-1 hover:underline"
                     >
                         Lihat Semua <ArrowRight class="w-3.5 h-3.5" />
@@ -507,25 +498,33 @@ const newsList = [
                 </div>
 
                 <div class="flex gap-4 overflow-x-auto pb-4 snap-x">
-                    <div
-                        v-for="(news, idx) in newsList"
+                    <a
+                        v-for="(news, idx) in usePage().props.beritaTerkini"
+                        :href="news.url"
+                        target="_blank"
                         :key="idx"
-                        class="snap-start shrink-0 w-[270px] bg-white border border-[#E6EFE9] rounded-[20px] overflow-hidden transition-transform duration-200 hover:-translate-y-1"
+                        class="snap-start pointer shrink-0 w-[270px] bg-white border border-[#E6EFE9] rounded-[20px] overflow-hidden transition-transform duration-200 hover:-translate-y-1"
                     >
                         <div
                             :class="[
                                 'h-[130px] bg-gradient-to-br',
-                                news.gradient,
+                                news.image ? '' : 'bg-gray-100',
                             ]"
-                        ></div>
+                        >
+                            <img
+                                v-if="news.image"
+                                :src="news.image"
+                                class="w-full h-full object-cover"
+                            />
+                        </div>
                         <div class="p-4">
                             <span
                                 class="inline-block text-[0.68rem] font-bold text-green-600 bg-[#E4F5EC] px-2.5 py-1 rounded-full mb-2"
                             >
-                                {{ news.tag }}
+                                KEMENAG GRESIK
                             </span>
                             <h3
-                                class="text-sm font-bold leading-snug mb-2 font-serif line-clamp-2"
+                                class="text-xs font-bold leading-snug mb-2 font-serif line-clamp-4"
                             >
                                 {{ news.title }}
                             </h3>
@@ -537,10 +536,10 @@ const newsList = [
                                 "
                                 class="text-[0.72rem]"
                             >
-                                {{ news.date }}
+                                {{ news.created }}
                             </p>
                         </div>
-                    </div>
+                    </a>
                 </div>
             </section>
         </main>

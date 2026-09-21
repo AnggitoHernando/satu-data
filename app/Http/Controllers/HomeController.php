@@ -9,9 +9,11 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Models\MenuInformasi;
+use App\ApiJoomla;
 
 class HomeController extends Controller
 {
+    use ApiJoomla;
     public function index()
     {
         $seksi = Seksi::all();
@@ -43,9 +45,12 @@ class HomeController extends Controller
         ]);
     }
 
-    public function ppid()
+    public function ppid(Request $request)
     {
-        return Inertia::render('Home/Ppid/PpidHome');
+        $beritaTerkini = $this->getLatestArticles($request, 4);
+        return Inertia::render('Home/Ppid/PpidHome', [
+            'beritaTerkini' => $beritaTerkini,
+        ]);
     }
 
     public function permohonan_informasi()
