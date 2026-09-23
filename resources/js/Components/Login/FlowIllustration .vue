@@ -33,7 +33,7 @@ defineProps({
 <style scoped>
 .flow-line {
     fill: none;
-    stroke: rgba(251, 250, 246, 0.16);
+    stroke: white;
     stroke-width: 1.2;
     stroke-dasharray: 1000;
     stroke-dashoffset: 1000;

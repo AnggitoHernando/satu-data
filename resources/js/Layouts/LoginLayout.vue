@@ -1,19 +1,21 @@
-<script setup></script>
+<script setup>
+import AuthSplitpanel from "@/Components/Login/AuthSplitpanel.vue";
+</script>
 
 <template>
-    <section
-        class="bg-gradient-to-r from-[#007d0d] via-green-500 to-emerald-400"
+    <div
+        class="grid min-h-screen grid-cols-1 md:grid-cols-[1.05fr_1fr] bg-paper text-ink"
     >
-        <div
-            class="flex flex-col items-center justify-center px-6 py-8 mx-auto h-screen lg:py-0"
+        <AuthSplitpanel
+            heading="Kerja jadi mengalir, bukan menumpuk."
+            description="Alur menyusun tugas, jadwal, dan percakapan timmu jadi satu alur kerja yang jelas — tanpa perlu berpindah aplikasi."
+            quote="Sejak pakai Alur, rapat mingguan kami turun dari lima jam jadi satu jam. Semua sudah tersusun sebelum kami bicara."
+            quote-author="Naya Ardhana — Head of Ops, Studio Renjana"
+        />
+        <section
+            class="flex items-center justify-center bg-paper px-6 py-10 md:px-8 md:py-12"
         >
-            <div
-                class="w-full bg-white/10 backdrop-blur-md border border-white/30 rounded-2xl shadow-lg md:mt-0 sm:max-w-md xl:p-0"
-            >
-                <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
-                    <slot />
-                </div>
-            </div>
-        </div>
-    </section>
+            <slot />
+        </section>
+    </div>
 </template>

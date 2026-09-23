@@ -12,7 +12,7 @@ defineProps({
 
 <template>
     <section
-        class="relative flex flex-col justify-between overflow-hidden bg-panel px-7 py-10 text-[#F1EFE7] md:px-14 md:py-12 min-h-[44vh] md:min-h-0"
+        class="relative flex flex-col justify-between overflow-hidden bg-green-600 px-7 py-10 text-[#F1EFE7] md:px-14 md:py-12 min-h-[44vh] md:min-h-0"
     >
         <FlowIllustration />
 
@@ -25,11 +25,13 @@ defineProps({
 
         <div class="relative z-10 mt-[6vh] max-w-lg">
             <h1
-                class="mb-4 font-display text-[clamp(2.1rem,3.4vw,2.9rem)] font-medium leading-[1.12] tracking-tight"
+                class="mb-4 font-display text-[clamp(2.1rem,3.4vw,2.9rem)] text-yellow-400 font-medium leading-[1.12] tracking-tight"
             >
                 {{ heading }}
             </h1>
-            <p class="max-w-md text-base leading-relaxed text-[#F1EFE7]/70">
+            <p
+                class="max-w-md text-base leading-relaxed text-[#F1EFE7]/70 text-white"
+            >
                 {{ description }}
             </p>
         </div>
