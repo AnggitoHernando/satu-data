@@ -1,0 +1,1 @@
+import{C as e,F as t,at as n,b as r,p as i,q as a}from"./app-CPiepwek.js";var o={class:`text-sm text-red-600`},s={__name:`InputError`,props:{message:{type:String}},setup(s){return(c,l)=>a((t(),e(`div`,null,[r(`p`,o,n(s.message),1)],512)),[[i,s.message]])}};export{s as t};
