@@ -7,6 +7,8 @@ import NavLink from "@/Components/NavLink.vue";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
 import SideBar from "@/Components/SideBar.vue";
 import { Link, usePage } from "@inertiajs/vue3";
+import GlobalLoading from "@/Components/GlobalLoading.vue";
+import { isGlobalLoading } from "@/global-loading";
 
 const showingNavigationDropdown = ref(false);
 const page = usePage();
@@ -16,6 +18,7 @@ const allowedUser = ["super-admin", "admin"];
 
 <template>
     <div>
+        <GlobalLoading v-if="isGlobalLoading" />
         <div class="min-h-screen bg-gray-100">
             <!-- navbar atas -->
             <nav

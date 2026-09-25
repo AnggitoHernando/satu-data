@@ -137,6 +137,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/ppid-informasi/halaman-statis/simpan', [HalamanStatisController::class, 'store'])->name('admin.ppid.halaman-statis.simpan');
     Route::delete('/ppid-informasi/halaman-statis/delete/{halamanStatis}', [HalamanStatisController::class, 'destroy'])->name('admin.ppid.halaman-statis.destroy');
     Route::match(['put', 'patch'], '/ppid-informasi/halaman-statis/update/{halamanStatis}', [HalamanStatisController::class, 'update'])->name('admin.ppid.halaman-statis.update');
+
+
+    //PPID PERMOHONAN INFORMASI
+    Route::get('/permohonan', [PermohonanController::class, 'index'])->name('admin.permohonan.index');
+    Route::get('permohonan/detail/{permohonan}', [PermohonanController::class, 'show'])
+        ->name('admin.permohonan.show');
+    Route::put('permohonan/status/{permohonan}', [PermohonanController::class, 'updateStatus'])
+        ->name('admin.permohonan.update-status');
 });
 
 require __DIR__ . '/auth.php';

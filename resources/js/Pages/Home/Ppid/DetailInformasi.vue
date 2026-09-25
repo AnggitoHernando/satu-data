@@ -75,16 +75,18 @@ const filteredYears = computed(() => {
                                 :href="`/${menu.full_path}`"
                                 :class="
                                     usePage().props.selectedMenu === menu.slug
-                                        ? 'flex items-center  gap-2 bg-green-600 text-white shadow-md shadow-emerald-900/20'
+                                        ? 'flex gap-2 bg-green-600 text-white shadow-md shadow-emerald-900/20'
                                         : 'text-stone-500 hover:bg-stone-100 hover:text-stone-900 transition'
                                 "
                                 aria-current="page"
-                                class="flex items-center justify-between gap-2 whitespace-nowrap rounded-xl px-4 py-3 text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600"
+                                class="flex items-start justify-between gap-2 rounded-xl px-4 py-3 text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 whitespace-normal break-words"
                             >
-                                {{ menu.nama_menu }}
+                                <span class="flex-1 leading-snug">
+                                    {{ menu.nama_menu }}
+                                </span>
                                 <ChevronRight
                                     aria-hidden="true"
-                                    class="h-4 w-4"
+                                    class="h-4 w-4 shrink-0 mt-0.5"
                                 />
                             </a>
                             <div v-else class="relative w-full">

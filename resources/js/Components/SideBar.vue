@@ -52,7 +52,7 @@ const menuPPID = [
     },
     {
         label: "Permohonan Informasi",
-        route: "users.show",
+        route: "admin.permohonan.index",
         icon: MailQuestion,
     },
 ];

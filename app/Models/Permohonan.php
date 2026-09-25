@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Builder;
 
 class Permohonan extends Model
 {
@@ -119,5 +120,27 @@ class Permohonan extends Model
         return $this->cara_mendapatkan
             ? (self::CARA_MENDAPATKAN_LABELS[$this->cara_mendapatkan] ?? $this->cara_mendapatkan)
             : null;
+    }
+
+    public function scopeFilter(Builder $query, array $filters): Builder
+    {
+        return $query
+            ->when($filters['search'] ?? null, function ($q, $search) {
+                $q->where(function ($queryUtama) use ($search) {
+                    $queryUtama
+                        ->whereAny(['nomor_registrasi'], 'like', "%{$search}%")
+                        ->orWhereAny(['nama_lengkap'], 'like', "%{$search}%")
+                        ->orWhereAny(['email'], 'like', "%{$search}%");
+                });
+            })
+            ->when($filters['jenis'] ?? null, fn($q, $jenis) => $q->where('jenis', $jenis))
+            ->when($filters['status'] ?? null, fn($q, $status) => $q->where('status', $status))
+            ->when($filters['sortBy'] ?? null, function ($q, $sortBy) use ($filters) {
+                $direction = ($filters['sortDir'] ?? 'desc') === 'asc' ? 'asc' : 'desc';
+                $allowedSorts = ['nomor_registrasi', 'nama_lengkap', 'email', 'created_at', 'id'];
+                $sort = in_array($sortBy, $allowedSorts) ? $sortBy : 'id';
+
+                $q->orderBy($sort, $direction);
+            }, fn($q) => $q->latest());
     }
 }

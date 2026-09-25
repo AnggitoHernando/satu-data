@@ -57,7 +57,13 @@ const props = defineProps({
         type: Boolean,
         default: true,
     },
+    rowHref: {
+        type: Function,
+        default: null,
+    },
 });
+
+const emit = defineEmits(["row-click"]);
 
 const search = ref(
     new URLSearchParams(window.location.search).get("search") || "",
@@ -100,6 +106,22 @@ const resetFilters = () => {
     sortBy.value = "";
     sortDir.value = "desc";
 };
+
+// BARU: klik baris → navigasi ke rowHref(row), KECUALI klik-nya berasal
+// dari elemen interaktif di dalam slot cell (tombol Edit/Hapus, link, dsb)
+// — supaya tombol aksi yang sudah ada di dalam kolom tetap jalan normal,
+// tidak "ketiban" ikut trigger navigasi baris.
+function onRowClick(row, event) {
+    if (!props.rowHref) return;
+
+    const interactive = event.target.closest(
+        "a, button, input, select, textarea, label",
+    );
+    if (interactive) return;
+
+    emit("row-click", row);
+    router.visit(props.rowHref(row));
+}
 </script>
 <template>
     <div>
@@ -231,6 +253,8 @@ const resetFilters = () => {
                             v-for="row in rows"
                             :key="row.id"
                             class="capitalize border-t hover:bg-gray-50"
+                            :class="{ 'cursor-pointer': rowHref }"
+                            @click="onRowClick(row, $event)"
                         >
                             <td
                                 v-for="col in columns"
