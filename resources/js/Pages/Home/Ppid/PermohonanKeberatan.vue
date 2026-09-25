@@ -17,11 +17,10 @@ import BannerCard from "@/Components/BannerCard.vue";
 const form = useForm({
     nama_lengkap: "",
     email: "",
-    no_telp: "",
+    no_telepon: "",
     pekerjaan: "",
     alamat_lengkap: "",
-    nomor_registrasi: "",
-    tujuan_penggunaan: "",
+    nomor_registrasi_asal: "",
     alasan_keberatan: "",
 });
 
@@ -36,25 +35,17 @@ const onFileChange = (e) => {
 };
 
 const submit = () => {
-    form.post(route("ppid.permohonan.store"), {
-        forceFormData: true, // penting untuk file upload
+    form.post(route("home.ppid.permohonan_keberatan.store"), {
+        onLoading: () => {},
+        onSuccess: () => {
+            // form.reset();
+        },
+        onError: (errors) => {
+            console.error("Form submission errors:", errors);
+        },
+        onFinish: () => {},
     });
 };
-
-const caraMendapatkanInformasi = [
-    {
-        label: "Email / Download",
-        value: "email",
-    },
-    {
-        label: "Ambil Langsung",
-        value: "ambil_langsung",
-    },
-    {
-        label: "Pos",
-        value: "pos",
-    },
-];
 </script>
 <template>
     <Head title="PPID Kemenag Gresik — Permohonan Informasi" />
@@ -88,32 +79,18 @@ const caraMendapatkanInformasi = [
                                 <div>
                                     <InputLabel value="Nomor Registrasi" />
                                     <TextInput
-                                        id="nomor_registrasi"
+                                        id="nomor_registrasi_asal"
                                         type="text"
                                         placeholder="Masukkan Nomor Registrasi"
                                         class="mt-1 block w-full"
-                                        v-model="form.nomor_registrasi"
+                                        v-model="form.nomor_registrasi_asal"
                                         required
-                                        autocomplete="nomor_registrasi"
+                                        autocomplete="nomor_registrasi_asal"
                                     />
                                     <InputError
-                                        :message="form.errors.nomor_registrasi"
-                                        class="mt-2"
-                                    />
-                                </div>
-                                <div>
-                                    <InputLabel
-                                        value="Tujuan Penggunaan Informasi"
-                                    />
-                                    <TextArea
-                                        id="tujuan_penggunaan"
-                                        name="tujuan_penggunaan"
-                                        placeholder="Jelaskan tujuan dan peruntukan penggunaan informasi ini..."
-                                        v-model="form.tujuan_penggunaan"
-                                        class="mt-1 block w-full"
-                                    />
-                                    <InputError
-                                        :message="form.errors.tujuan_penggunaan"
+                                        :message="
+                                            form.errors.nomor_registrasi_asal
+                                        "
                                         class="mt-2"
                                     />
                                 </div>
@@ -179,20 +156,20 @@ const caraMendapatkanInformasi = [
                                 <div>
                                     <InputLabel value="No Telepon" />
                                     <TextInput
-                                        id="no_telp"
+                                        id="no_telepon"
                                         type="tel"
                                         placeholder="081234567890"
                                         class="mt-1 block w-full"
-                                        v-model="form.no_telp"
+                                        v-model="form.no_telepon"
                                         @keypress="
                                             $event.key.match(/^[0-9]$/) ||
                                             $event.preventDefault()
                                         "
                                         maxlength="12"
-                                        autocomplete="no_telp"
+                                        autocomplete="no_telepon"
                                     />
                                     <InputError
-                                        :message="form.errors.no_telp"
+                                        :message="form.errors.no_telepon"
                                         class="mt-2"
                                     />
                                 </div>

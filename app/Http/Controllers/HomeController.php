@@ -63,7 +63,7 @@ class HomeController extends Controller
         return Inertia::render('Home/Ppid/LacakPermohonanInformasi');
     }
 
-    public function lacak_permohonan_keberatan()
+    public function permohonanKeberatan()
     {
         return Inertia::render('Home/Ppid/PermohonanKeberatan');
     }

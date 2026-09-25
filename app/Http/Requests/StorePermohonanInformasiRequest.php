@@ -30,7 +30,7 @@ class StorePermohonanInformasiRequest extends FormRequest
             'bukti_identitas'   => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
             'rincian_informasi' => 'required|string',
             'tujuan_penggunaan' => 'required|string',
-            'cara_mendapatkan'  => 'nullable|in:email_download,ambil_langsung,pos',
+            'cara_mendapatkan'  => 'required|in:email_download,ambil_langsung,pos',
         ];
     }
 

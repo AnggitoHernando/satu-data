@@ -46,7 +46,8 @@ Route::get('/informasi-dikecualikan', [HomeController::class, 'informasiDikecual
 Route::get('/permohonan-informasi', [HomeController::class, 'permohonan_informasi'])->name('home.ppid.permohonan_informasi');
 Route::post('/permohonan-informasi/simpan', [PermohonanController::class, 'storeInformasi'])->name('home.ppid.permohonan_informasi.store');
 Route::get('/lacak-permohonan-informasi', [HomeController::class, 'lacak_permohonan_informasi'])->name('home.ppid.lacak_permohonan_informasi');
-Route::get('/permohonan-keberatan', [HomeController::class, 'lacak_permohonan_keberatan'])->name('home.ppid.permohonan_keberatan');
+Route::get('/permohonan-keberatan', [HomeController::class, 'permohonanKeberatan'])->name('home.ppid.permohonan_keberatan');
+Route::post('/permohonan-keberatan/simpan', [PermohonanController::class, 'storeKeberatan'])->name('home.ppid.permohonan_keberatan.store');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
