@@ -40,6 +40,7 @@ class StorePermohonanInformasiRequest extends FormRequest
             'no_telepon.required'        => 'Nomor telepon wajib diisi.',
             'email.required'             => 'Email wajib diisi.',
             'email.email'                => 'Email tidak valid.',
+            'alamat.required'            => 'Alamat wajib diisi.',
             'rincian_informasi.required' => 'Mohon jelaskan informasi yang Anda butuhkan.',
             'cara_mendapatkan.required'  => 'Pilih salah satu cara mendapatkan informasi.',
             'bukti_identitas.mimes'      => 'Bukti identitas harus berupa JPG, PNG, atau PDF.',

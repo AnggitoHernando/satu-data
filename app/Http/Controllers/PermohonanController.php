@@ -59,7 +59,7 @@ class PermohonanController extends Controller
         ]);
 
         return redirect()
-            ->route('home.ppid.permohonan_keberatan', $permohonan->nomor_registrasi)
+            ->route('home.ppid.permohonan_keberatan')
             ->with('success', 'Permohonan keberatan berhasil dikirim.');
     }
 }

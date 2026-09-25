@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Models\MenuInformasi;
 use App\ApiJoomla;
+use App\Models\Permohonan;
 
 class HomeController extends Controller
 {
@@ -58,9 +59,36 @@ class HomeController extends Controller
         return Inertia::render('Home/Ppid/PermohonanInformasi');
     }
 
-    public function lacak_permohonan_informasi()
+    public function lacakPermohonan(Request $request)
     {
-        return Inertia::render('Home/Ppid/LacakPermohonanInformasi');
+        $search = trim((string) $request->query('search', ''));
+
+        $permohonan = null;
+        if ($search !== '') {
+            $permohonan = Permohonan::with(['permohonanAsal', 'keberatan'])
+                ->where('nomor_registrasi', $search)
+                ->first();
+        }
+
+        return Inertia::render('Home/Ppid/LacakPermohonanInformasi', [
+            'query'      => $search,
+            'searched'   => $search !== '',
+            'found'      => $permohonan !== null,
+            'permohonan' => $permohonan ? [
+                'nomor_registrasi'       => $permohonan->nomor_registrasi,
+                'jenis'                  => $permohonan->jenis,
+                'jenis_label'            => $permohonan->jenis === 'informasi' ? 'Permohonan Informasi' : 'Permohonan Keberatan',
+                'status'                 => $permohonan->status,
+                'status_label'           => $permohonan->status_label,
+                'nama_lengkap'           => $permohonan->nama_lengkap,
+                'tujuan_penggunaan'      => $permohonan->tujuan_penggunaan,
+                'tanggapan'              => $permohonan->tanggapan,
+                'tanggal_tanggapan'      => $permohonan->tanggal_tanggapan?->format('d M Y'),
+                'dibuat_pada'            => $permohonan->created_at->format('d M Y'),
+                'permohonan_asal_nomor'  => $permohonan->permohonanAsal?->nomor_registrasi,
+                'jumlah_keberatan'       => $permohonan->keberatan->count(),
+            ] : null,
+        ]);
     }
 
     public function permohonanKeberatan()

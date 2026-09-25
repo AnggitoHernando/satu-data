@@ -361,7 +361,7 @@ const layanan = [
 
             <Link
                 as="div"
-                :href="route('home.ppid.lacak_permohonan_informasi')"
+                :href="route('home.ppid.lacakPermohonan')"
                 class="flex items-center justify-center text-center mb-4 mt-4"
             >
                 <button

@@ -1,6 +1,6 @@
 <script setup>
-import { Head, Link } from "@inertiajs/vue3";
-import { ref } from "vue";
+import { Head, Link, usePage } from "@inertiajs/vue3";
+import { ref, watch } from "vue";
 import PpidLayout from "@/Layouts/PpidLayout.vue";
 import { useForm } from "@inertiajs/vue3";
 import { SendIcon, SearchIcon, ShieldCheck } from "lucide-vue-next";
@@ -36,9 +36,8 @@ const onFileChange = (e) => {
 
 const submit = () => {
     form.post(route("home.ppid.permohonan_keberatan.store"), {
-        onLoading: () => {},
         onSuccess: () => {
-            // form.reset();
+            form.reset();
         },
         onError: (errors) => {
             console.error("Form submission errors:", errors);
@@ -46,6 +45,28 @@ const submit = () => {
         onFinish: () => {},
     });
 };
+
+watch(
+    () => usePage().props.flash,
+    (flash) => {
+        if (flash?.success) {
+            Swal.fire({
+                icon: "success",
+                title: "Sukses",
+                text: flash.success,
+            });
+        } else if (flash?.error) {
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: flash.error,
+            });
+        }
+        usePage().props.flash.success = null;
+        usePage().props.flash.error = null;
+    },
+    { immediate: true },
+);
 </script>
 <template>
     <Head title="PPID Kemenag Gresik — Permohonan Informasi" />
@@ -208,9 +229,9 @@ const submit = () => {
                         </template>
                     </Card>
 
-                    <!-- Submit -->
                     <div class="flex items-center justify-between">
                         <Link
+                            :href="route('home.ppid.lacakPermohonan')"
                             class="text-xs text-green-700 hover:underline flex items-center gap-1"
                         >
                             <SearchIcon class="w-3.5 h-3.5" />

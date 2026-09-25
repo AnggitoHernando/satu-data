@@ -38,7 +38,6 @@ const onFileChange = (e) => {
 
 const submit = () => {
     form.post(route("home.ppid.permohonan_informasi.store"), {
-        onLoading: () => {},
         onSuccess: () => {
             form.reset();
         },
@@ -277,9 +276,7 @@ watch(
 
                     <div class="flex items-center justify-between">
                         <Link
-                            :href="
-                                route('home.ppid.lacak_permohonan_informasi')
-                            "
+                            :href="route('home.ppid.lacakPermohonan')"
                             class="text-xs text-green-700 hover:underline flex items-center gap-1"
                         >
                             <SearchIcon class="w-3.5 h-3.5" />
