@@ -12,6 +12,7 @@ use App\Http\Controllers\PpidInformasiController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\MenuInformasiController;
 use App\Http\Controllers\HalamanStatisController;
+use App\Http\Controllers\PermohonanController;
 use App\Models\JenisData;
 use App\Http\Controllers\Api\JoomlaArticleController;
 use Illuminate\Foundation\Application;
@@ -43,6 +44,7 @@ Route::get('/informasi-serta-merta', [HomeController::class, 'informasiSertaMert
 Route::get('/informasi-setiap-saat', [HomeController::class, 'informasiSetiapSaat'])->name('home.ppid.informasiSetiapSaat');
 Route::get('/informasi-dikecualikan', [HomeController::class, 'informasiDikecualikan'])->name('home.ppid.informasiDikecualikan');
 Route::get('/permohonan-informasi', [HomeController::class, 'permohonan_informasi'])->name('home.ppid.permohonan_informasi');
+Route::post('/permohonan-informasi/simpan', [PermohonanController::class, 'storeInformasi'])->name('home.ppid.permohonan_informasi.store');
 Route::get('/lacak-permohonan-informasi', [HomeController::class, 'lacak_permohonan_informasi'])->name('home.ppid.lacak_permohonan_informasi');
 Route::get('/permohonan-keberatan', [HomeController::class, 'lacak_permohonan_keberatan'])->name('home.ppid.permohonan_keberatan');
 

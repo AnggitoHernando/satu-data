@@ -1,1 +1,0 @@
-import{C as e,F as t,nt as n}from"./app-tdtXBnO2.js";var r=[`src`],i={__name:`ApplicationLogo`,setup(i){return(i,a)=>(t(),e(`img`,{class:`w-14 mx-auto`,src:n(`/build/assets/Logo1-D7HDi6ga.png`)||`/images/Logo1.png`},null,8,r))}};export{i as t};

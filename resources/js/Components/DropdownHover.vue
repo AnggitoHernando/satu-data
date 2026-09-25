@@ -1,5 +1,6 @@
 <script setup>
 import { ChevronDown } from "lucide-vue-next";
+import { Link } from "@inertiajs/vue3";
 
 defineProps({
     label: {
@@ -46,7 +47,7 @@ defineProps({
             "
         >
             <slot name="menu">
-                <a
+                <Link
                     v-for="(item, index) in items"
                     :key="index"
                     :href="route(item.link)"
@@ -63,7 +64,7 @@ defineProps({
                         class="w-4 h-4 shrink-0"
                     />
                     <span>{{ item.name }}</span>
-                </a>
+                </Link>
             </slot>
         </div>
     </div>

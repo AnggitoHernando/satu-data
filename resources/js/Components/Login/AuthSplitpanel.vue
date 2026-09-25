@@ -1,5 +1,6 @@
 <script setup>
 import FlowIllustration from "./FlowIllustration .vue";
+import ApplicationLogo from "../ApplicationLogo.vue";
 
 defineProps({
     brand: { type: String, default: "Alur" },
@@ -17,9 +18,7 @@ defineProps({
         <FlowIllustration />
 
         <div class="relative z-10 flex items-center gap-2 font-display text-xl">
-            <span
-                class="h-[26px] w-[26px] flex-shrink-0 rounded-full bg-gradient-to-br from-brass-soft to-brass"
-            ></span>
+            <ApplicationLogo class="w-16 flex-shrink-0" />
             {{ brand }}
         </div>
 

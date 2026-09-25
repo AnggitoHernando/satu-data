@@ -1,6 +1,6 @@
 <script setup>
-import { Head, Link } from "@inertiajs/vue3";
-import { ref } from "vue";
+import { Head, Link, usePage } from "@inertiajs/vue3";
+import { ref, watch } from "vue";
 import PpidLayout from "@/Layouts/PpidLayout.vue";
 import { useForm } from "@inertiajs/vue3";
 import { SendIcon, SearchIcon, ShieldCheck } from "lucide-vue-next";
@@ -17,13 +17,13 @@ import BannerCard from "@/Components/BannerCard.vue";
 const form = useForm({
     nama_lengkap: "",
     email: "",
-    no_telp: "",
+    no_telepon: "",
     pekerjaan: "",
-    alamat_lengkap: "",
+    alamat: "",
     bukti_identitas: null,
     rincian_informasi: "",
     tujuan_penggunaan: "",
-    cara_mendapatkan_informasi: "",
+    cara_mendapatkan: "",
 });
 
 const fileName = ref("");
@@ -37,15 +37,22 @@ const onFileChange = (e) => {
 };
 
 const submit = () => {
-    form.post(route("ppid.permohonan.store"), {
-        forceFormData: true, // penting untuk file upload
+    form.post(route("home.ppid.permohonan_informasi.store"), {
+        onLoading: () => {},
+        onSuccess: () => {
+            form.reset();
+        },
+        onError: (errors) => {
+            console.error("Form submission errors:", errors);
+        },
+        onFinish: () => {},
     });
 };
 
 const caraMendapatkanInformasi = [
     {
         label: "Email / Download",
-        value: "email",
+        value: "email_download",
     },
     {
         label: "Ambil Langsung",
@@ -56,6 +63,28 @@ const caraMendapatkanInformasi = [
         value: "pos",
     },
 ];
+
+watch(
+    () => usePage().props.flash,
+    (flash) => {
+        if (flash?.success) {
+            Swal.fire({
+                icon: "success",
+                title: "Sukses",
+                text: flash.success,
+            });
+        } else if (flash?.error) {
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: flash.error,
+            });
+        }
+        usePage().props.flash.success = null;
+        usePage().props.flash.error = null;
+    },
+    { immediate: true },
+);
 </script>
 <template>
     <Head title="PPID Kemenag Gresik - Permohonan Informasi" />
@@ -142,20 +171,20 @@ const caraMendapatkanInformasi = [
                                 <div>
                                     <InputLabel value="No Telepon" />
                                     <TextInput
-                                        id="no_telp"
+                                        id="no_telepon"
                                         type="tel"
                                         placeholder="081234567890"
                                         class="mt-1 block w-full"
-                                        v-model="form.no_telp"
+                                        v-model="form.no_telepon"
                                         @keypress="
                                             $event.key.match(/^[0-9]$/) ||
                                             $event.preventDefault()
                                         "
                                         maxlength="12"
-                                        autocomplete="no_telp"
+                                        autocomplete="no_telepon"
                                     />
                                     <InputError
-                                        :message="form.errors.no_telp"
+                                        :message="form.errors.no_telepon"
                                         class="mt-2"
                                     />
                                 </div>
@@ -163,14 +192,14 @@ const caraMendapatkanInformasi = [
                             <div claas="mt-2">
                                 <InputLabel value="Alamat Lengkap" />
                                 <TextArea
-                                    id="alamat_lengkap"
-                                    name="alamat_lengkap"
+                                    id="alamat"
+                                    name="alamat"
                                     placeholder="Alamat domisili tempat tinggal saat ini..."
-                                    v-model="form.alamat_lengkap"
+                                    v-model="form.alamat"
                                     class="mt-1 block w-full"
                                 />
                                 <InputError
-                                    :message="form.errors.alamat_lengkap"
+                                    :message="form.errors.alamat"
                                     class="mt-2"
                                 />
                             </div>
@@ -233,17 +262,12 @@ const caraMendapatkanInformasi = [
                                     />
                                     <RadioPilGroup
                                         class="mt-2"
-                                        v-model="
-                                            form.cara_mendapatkan_informasi
-                                        "
+                                        v-model="form.cara_mendapatkan"
                                         :options="caraMendapatkanInformasi"
                                         :cols="3"
                                     />
                                     <InputError
-                                        :message="
-                                            form.errors
-                                                .cara_mendapatkan_informasi
-                                        "
+                                        :message="form.errors.cara_mendapatkan"
                                         class="mt-2"
                                     />
                                 </div>
@@ -251,9 +275,11 @@ const caraMendapatkanInformasi = [
                         </template>
                     </Card>
 
-                    <!-- Submit -->
                     <div class="flex items-center justify-between">
                         <Link
+                            :href="
+                                route('home.ppid.lacak_permohonan_informasi')
+                            "
                             class="text-xs text-green-700 hover:underline flex items-center gap-1"
                         >
                             <SearchIcon class="w-3.5 h-3.5" />

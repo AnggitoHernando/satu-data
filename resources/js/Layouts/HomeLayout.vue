@@ -4,7 +4,6 @@ import FooterHome from "@/Components/FooterHome.vue";
 import KritikSaran from "@/Components/KritikSaran.vue";
 import GlobalLoading from "@/Components/GlobalLoading.vue";
 import { isGlobalLoading } from "@/global-loading";
-
 </script>
 <template>
     <GlobalLoading v-if="isGlobalLoading" />

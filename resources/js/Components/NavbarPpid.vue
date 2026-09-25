@@ -4,7 +4,7 @@ import { ref } from "vue";
 import dropdownHover from "@/Components/DropdownHover.vue";
 import PpidLogo from "@/Components/PpidLogo.vue";
 import ModalHeadnessUI from "@/Components/ModalHeadnessUI.vue";
-import { FileText } from "lucide-vue-next";
+import { FileText, Menu, X, ChevronDown } from "lucide-vue-next";
 
 defineProps({
     isContrastMode: {
@@ -14,6 +14,16 @@ defineProps({
 });
 
 const isOpen = ref(false);
+
+const isMobileMenuOpen = ref(false);
+const isMobileLayananOpen = ref(false);
+const isMobileInformasiOpen = ref(false);
+
+const closeMobileMenu = () => {
+    isMobileMenuOpen.value = false;
+    isMobileLayananOpen.value = false;
+    isMobileInformasiOpen.value = false;
+};
 
 const informasiPublik = [
     { name: "Informasi Berkala", link: "home.ppid.informasi_berkala" },
@@ -66,7 +76,7 @@ const layanan = [
                     class="hidden md:flex items-center gap-1 text-sm font-semibold"
                     aria-label="Navigasi Utama"
                 >
-                    <a
+                    <Link
                         :href="route('Beranda')"
                         :class="
                             isContrastMode
@@ -74,14 +84,14 @@ const layanan = [
                                 : 'hover:bg-green-100 hover:bg-green-600'
                         "
                         class="px-3.5 py-1.5 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#0B6E4F] focus:ring-offset-2"
-                        >Beranda</a
+                        >Beranda</Link
                     >
                     <dropdownHover :items="layanan" label="Layanan" />
                     <dropdownHover
                         :items="informasiPublik"
                         label="Informasi Publik"
                     />
-                    <a
+                    <Link
                         href="#berita"
                         :class="
                             isContrastMode
@@ -89,19 +99,170 @@ const layanan = [
                                 : 'hover:bg-green-100 hover:bg-green-600'
                         "
                         class="px-3.5 py-1.5 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#0B6E4F] focus:ring-offset-2"
-                        >Profil PPID</a
+                        >Profil PPID</Link
                     >
                 </nav>
 
+                <div class="hidden md:flex items-center">
+                    <button
+                        @click="isOpen = true"
+                        class="inline-flex items-center gap-1 font-bold text-xs px-4 py-2.5 rounded-full bg-green-600 hover:bg-green-700 text-white shadow-md shadow-green-600/25 transition-transform hover:-translate-y-0.5 whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2"
+                        aria-label="Layanan E-form - Ajukan permohonan informasi publik secara mandiri"
+                    >
+                        Layanan E-form <span aria-hidden="true">✦</span>
+                    </button>
+                </div>
+
                 <button
-                    @click="isOpen = true"
-                    class="inline-flex items-center gap-1 font-bold text-xs px-4 py-2.5 rounded-full bg-green-600 hover:bg-green-700 text-white shadow-md shadow-green-600/25 transition-transform hover:-translate-y-0.5 whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2"
-                    aria-label="Layanan E-form - Ajukan permohonan informasi publik secara mandiri"
+                    @click="isMobileMenuOpen = !isMobileMenuOpen"
+                    :class="
+                        isContrastMode ? 'text-yellow-300' : 'text-[#0B6E4F]'
+                    "
+                    class="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#0B6E4F] focus:ring-offset-2"
+                    :aria-expanded="isMobileMenuOpen"
+                    aria-controls="mobile-nav-panel"
+                    aria-label="Buka menu navigasi"
                 >
-                    Layanan E-form <span aria-hidden="true">✦</span>
+                    <Menu
+                        v-if="!isMobileMenuOpen"
+                        class="w-6 h-6"
+                        aria-hidden="true"
+                    />
+                    <X v-else class="w-6 h-6" aria-hidden="true" />
                 </button>
             </div>
         </header>
+
+        <transition
+            enter-active-class="transition ease-out duration-200"
+            enter-from-class="opacity-0 -translate-y-2"
+            enter-to-class="opacity-100 translate-y-0"
+            leave-active-class="transition ease-in duration-150"
+            leave-from-class="opacity-100 translate-y-0"
+            leave-to-class="opacity-0 -translate-y-2"
+        >
+            <nav
+                v-if="isMobileMenuOpen"
+                id="mobile-nav-panel"
+                :class="
+                    isContrastMode
+                        ? 'bg-black border-yellow-300'
+                        : 'bg-white border-[#E6EFE9]'
+                "
+                class="md:hidden max-w-[1180px] mx-auto mt-2 border rounded-2xl shadow-lg shadow-[#0B6E4F]/10 overflow-hidden"
+                aria-label="Navigasi Utama Mobile"
+            >
+                <div class="flex flex-col p-2 text-sm font-semibold">
+                    <Link
+                        :href="route('Beranda')"
+                        @click="closeMobileMenu"
+                        :class="
+                            isContrastMode
+                                ? 'hover:bg-zinc-800'
+                                : 'hover:bg-green-100'
+                        "
+                        class="px-4 py-3 rounded-xl transition-colors"
+                        >Beranda</Link
+                    >
+
+                    <button
+                        type="button"
+                        @click="isMobileLayananOpen = !isMobileLayananOpen"
+                        :class="
+                            isContrastMode
+                                ? 'hover:bg-zinc-800'
+                                : 'hover:bg-green-100'
+                        "
+                        class="flex items-center justify-between px-4 py-3 rounded-xl transition-colors"
+                        :aria-expanded="isMobileLayananOpen"
+                    >
+                        <span>Layanan</span>
+                        <ChevronDown
+                            :class="isMobileLayananOpen ? 'rotate-180' : ''"
+                            class="w-4 h-4 transition-transform"
+                            aria-hidden="true"
+                        />
+                    </button>
+                    <div v-if="isMobileLayananOpen" class="flex flex-col pl-4">
+                        <Link
+                            v-for="item in layanan"
+                            :key="item.link"
+                            :href="route(item.link)"
+                            @click="closeMobileMenu"
+                            :class="
+                                isContrastMode
+                                    ? 'hover:bg-zinc-800'
+                                    : 'hover:bg-green-100'
+                            "
+                            class="px-4 py-2.5 rounded-xl text-[0.85rem] font-medium transition-colors"
+                        >
+                            {{ item.name }}
+                        </Link>
+                    </div>
+
+                    <button
+                        type="button"
+                        @click="isMobileInformasiOpen = !isMobileInformasiOpen"
+                        :class="
+                            isContrastMode
+                                ? 'hover:bg-zinc-800'
+                                : 'hover:bg-green-100'
+                        "
+                        class="flex items-center justify-between px-4 py-3 rounded-xl transition-colors"
+                        :aria-expanded="isMobileInformasiOpen"
+                    >
+                        <span>Informasi Publik</span>
+                        <ChevronDown
+                            :class="isMobileInformasiOpen ? 'rotate-180' : ''"
+                            class="w-4 h-4 transition-transform"
+                            aria-hidden="true"
+                        />
+                    </button>
+                    <div
+                        v-if="isMobileInformasiOpen"
+                        class="flex flex-col pl-4"
+                    >
+                        <Link
+                            v-for="item in informasiPublik"
+                            :key="item.link"
+                            :href="route(item.link)"
+                            @click="closeMobileMenu"
+                            :class="
+                                isContrastMode
+                                    ? 'hover:bg-zinc-800'
+                                    : 'hover:bg-green-100'
+                            "
+                            class="px-4 py-2.5 rounded-xl text-[0.85rem] font-medium transition-colors"
+                        >
+                            {{ item.name }}
+                        </Link>
+                    </div>
+
+                    <a
+                        href="#berita"
+                        @click="closeMobileMenu"
+                        :class="
+                            isContrastMode
+                                ? 'hover:bg-zinc-800'
+                                : 'hover:bg-green-100'
+                        "
+                        class="px-4 py-3 rounded-xl transition-colors"
+                        >Profil PPID</a
+                    >
+
+                    <button
+                        @click="
+                            isOpen = true;
+                            closeMobileMenu();
+                        "
+                        class="mt-2 inline-flex items-center justify-center gap-1 font-bold text-xs px-4 py-3 rounded-xl bg-green-600 hover:bg-green-700 text-white shadow-md shadow-green-600/25 transition-colors"
+                        aria-label="Layanan E-form - Ajukan permohonan informasi publik secara mandiri"
+                    >
+                        Layanan E-form <span aria-hidden="true">✦</span>
+                    </button>
+                </div>
+            </nav>
+        </transition>
     </div>
     <ModalHeadnessUI :open-modal="isOpen" @close="isOpen = false">
         <div class="relative z-10">
