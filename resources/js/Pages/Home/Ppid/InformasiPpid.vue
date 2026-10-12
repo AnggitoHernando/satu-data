@@ -35,7 +35,10 @@ const handleLoading = (status) => {
             </template>
 
             <template #card-header>
-                <div class="flex items-center gap-3">
+                <div
+                    class="flex items-center gap-3"
+                    v-if="usePage().props.listInformasi.length > 0"
+                >
                     <div>
                         <h2 class="text-lg font-bold text-slate-800 font-serif">
                             Daftar {{ usePage().props.judul_banner }}
@@ -53,6 +56,18 @@ const handleLoading = (status) => {
                         :totalCount="usePage().props.listInformasi.length"
                         :node="node"
                         @setLoading="handleLoading"
+                    />
+                </div>
+                <div v-else-if="usePage().props.halamanStatis !== null">
+                    <img
+                        v-if="usePage().props.halamanStatis.gambar_utama"
+                        :src="`/storage/${usePage().props.halamanStatis.gambar_utama}`"
+                        :alt="usePage().props.halamanStatis.judul"
+                        class="mb-8 h-full w-full rounded-lg"
+                    />
+                    <div
+                        class="rich-text-content prose max-w-none"
+                        v-html="usePage().props.halamanStatis.isi_konten"
                     />
                 </div>
                 <div v-else>

@@ -166,7 +166,7 @@ const filteredYears = computed(() => {
                                 "
                                 :src="`/storage/${usePage().props.halamanStatis.gambar_utama}`"
                                 :alt="usePage().props.halamanStatis.judul"
-                                class="mb-6 h-64 w-full rounded-lg object-cover sm:h-80"
+                                class="mb-8 h-full w-full rounded-lg"
                             />
 
                             <div
