@@ -35,6 +35,12 @@ const informasiPublik = [
 const layanan = [
     { name: "Manajemen Data Terpadu", link: "PortalData" },
     { name: "Layanan Informasi", link: "home.ppid.layananInformasi" },
+    { name: "Standar Layanan", link: "home.ppid.standarLayanan" },
+];
+
+const profile = [
+    { name: "Profil PPID", link: "PortalData" },
+    { name: "Profil Kantor", link: "PortalData" },
 ];
 </script>
 
@@ -91,16 +97,7 @@ const layanan = [
                         :items="informasiPublik"
                         label="Informasi Publik"
                     />
-                    <Link
-                        href="#berita"
-                        :class="
-                            isContrastMode
-                                ? 'hover:bg-zinc-800'
-                                : 'hover:bg-green-100 hover:bg-green-600'
-                        "
-                        class="px-3.5 py-1.5 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[#0B6E4F] focus:ring-offset-2"
-                        >Profil PPID</Link
-                    >
+                    <dropdownHover :items="profile" label="Profil" />
                 </nav>
 
                 <div class="hidden md:flex items-center">
