@@ -139,6 +139,17 @@ class HomeController extends Controller
         ]);
     }
 
+    public function layananInformasi()
+    {
+
+        $informasiBerkala = MenuInformasi::where('slug', 'layanan-informasi')->firstOrFail();
+        return Inertia::render('Home/Ppid/InformasiPpid', [
+            'listInformasi' => $informasiBerkala->childrenRecursive()->get(),
+            'judul_banner' => 'Layanan Informasi',
+            'sub_judul_banner' => 'Setiap Badan Publik wajib menyediakan Informasi Publik setiap saat yang meliputi: daftar seluruh Informasi Publik yang berada di bawah penguasaannya, tidak termasuk informasi yang dikecualikan; hasil keputusan Badan Publik dan pertimbangannya; seluruh kebijakan yang ada berikut dokumen pendukungnya; rencana kerja proyek termasuk di dalamnya perkiraan pengeluaran tahunan Badan Publik; perjanjian Badan Publik dengan pihak ketiga; informasi dan kebijakan yang disampaikan Pejabat Publik dalam pertemuan yang terbuka untuk umum; prosedur kerja pegawai Badan Publik yang berkaitan dengan pelayanan masyarakat; dan/atau laporan mengenai pelayanan akses Informasi Publik sebagaimana diatur dalam Undang-Undang ini. UU No. 14 Tahun 2008, Pasal 11',
+        ]);
+    }
+
     public function tampilkanMenu($fullPath)
     {
         $slugs = explode('/', $fullPath);

@@ -34,7 +34,7 @@ const informasiPublik = [
 
 const layanan = [
     { name: "Manajemen Data Terpadu", link: "PortalData" },
-    { name: "Layanan Informasi", link: "PortalData.search" },
+    { name: "Layanan Informasi", link: "home.ppid.layananInformasi" },
 ];
 </script>
 

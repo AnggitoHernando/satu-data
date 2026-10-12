@@ -43,6 +43,7 @@ Route::get('/informasi-berkala', [HomeController::class, 'informasi_berkala'])->
 Route::get('/informasi-serta-merta', [HomeController::class, 'informasiSertaMerta'])->name('home.ppid.informasiSertaMerta');
 Route::get('/informasi-setiap-saat', [HomeController::class, 'informasiSetiapSaat'])->name('home.ppid.informasiSetiapSaat');
 Route::get('/informasi-dikecualikan', [HomeController::class, 'informasiDikecualikan'])->name('home.ppid.informasiDikecualikan');
+Route::get('/layanan-informasi', [HomeController::class, 'layananInformasi'])->name('home.ppid.layananInformasi');
 Route::get('/permohonan-informasi', [HomeController::class, 'permohonan_informasi'])->name('home.ppid.permohonan_informasi');
 Route::post('/permohonan-informasi/simpan', [PermohonanController::class, 'storeInformasi'])->name('home.ppid.permohonan_informasi.store');
 Route::get('/lacak-permohonan', [HomeController::class, 'lacakPermohonan'])->name('home.ppid.lacakPermohonan');
