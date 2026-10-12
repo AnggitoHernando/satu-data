@@ -170,7 +170,7 @@ const filteredYears = computed(() => {
                             />
 
                             <div
-                                class="rich-text-content"
+                                class="rich-text-content prose max-w-none"
                                 v-html="
                                     usePage().props.halamanStatis.isi_konten
                                 "
