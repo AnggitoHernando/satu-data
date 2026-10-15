@@ -35,7 +35,7 @@ const informasiPublik = [
 const layanan = [
     { name: "Manajemen Data Terpadu", link: "PortalData" },
     { name: "Layanan Informasi", link: "home.ppid.layananInformasi" },
-    { name: "Standar Layanan", link: "home.ppid.standarLayanan" },
+    { name: "Daftar Regulasi", link: "home.ppid.daftarHukum" },
 ];
 
 const profile = [

@@ -73,7 +73,6 @@ const toggleAutoplay = () => {
     }
 };
 
-// Keyboard Navigation Listener (Panah Kiri, Panah Kanan, Escape)
 const handleKeyDown = (e) => {
     if (!isLightboxOpen.value) return;
     if (e.key === "ArrowLeft") prevSlide();
