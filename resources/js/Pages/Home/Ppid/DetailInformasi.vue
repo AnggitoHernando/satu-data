@@ -178,6 +178,10 @@ const filteredYears = computed(() => {
                             ></div>
 
                             <PhotoGalerySlider
+                                v-if="
+                                    usePage().props.halamanStatis.galeri
+                                        .length > 0
+                                "
                                 class="mt-4"
                                 :photos="
                                     usePage().props.halamanStatis.galeri ?? []
