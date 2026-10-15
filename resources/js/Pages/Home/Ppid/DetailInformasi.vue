@@ -6,6 +6,7 @@ import BannerCard from "@/Components/BannerCard.vue";
 import { ShieldCheck, ChevronRight, ChevronDown } from "lucide-vue-next";
 import YearAccordion from "@/Components/YearAccordion.vue";
 import DropdownHover from "@/Components/DropdownHover.vue";
+import PhotoGalerySlider from "@/Components/PhotoGalerySlider.vue";
 
 const open = ref(true);
 
@@ -175,6 +176,13 @@ const filteredYears = computed(() => {
                                     usePage().props.halamanStatis.isi_konten
                                 "
                             ></div>
+
+                            <PhotoGalerySlider
+                                class="mt-4"
+                                :photos="
+                                    usePage().props.halamanStatis.galeri ?? []
+                                "
+                            />
                         </div>
                     </main>
                 </div>

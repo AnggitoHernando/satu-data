@@ -1,8 +1,12 @@
 <script setup>
-import { onBeforeUnmount, watch } from "vue";
+import { onBeforeUnmount, watch, ref } from "vue";
 import { useEditor, EditorContent } from "@tiptap/vue-3";
 import StarterKit from "@tiptap/starter-kit";
 import TextAlign from "@tiptap/extension-text-align";
+import { TableKit } from "@tiptap/extension-table";
+import { Table as TableIcon } from "lucide-vue-next";
+import Link from "@tiptap/extension-link";
+import { Link as LinkIcon, Unlink, X } from "lucide-vue-next";
 
 const props = defineProps({
     modelValue: { type: String, default: "" },
@@ -10,11 +14,122 @@ const props = defineProps({
 });
 const emit = defineEmits(["update:modelValue"]);
 
+const showLinkModal = ref(false);
+const linkUrl = ref("");
+const linkText = ref("");
+const linkError = ref("");
+
+let savedSelection = null;
+
+function setLink() {
+    if (!editor.value) return;
+
+    const instance = editor.value;
+    const { from, to, empty } = instance.state.selection;
+
+    savedSelection = { from, to };
+
+    linkUrl.value = instance.getAttributes("link").href || "";
+    linkText.value = empty ? "" : instance.state.doc.textBetween(from, to, " ");
+
+    linkError.value = "";
+    showLinkModal.value = true;
+}
+
+function closeLinkModal() {
+    showLinkModal.value = false;
+    linkError.value = "";
+    editor.value?.commands.focus();
+}
+
+function saveLink() {
+    if (!editor.value) return;
+
+    const url = linkUrl.value.trim();
+    const text = linkText.value.trim();
+
+    if (!url || !text) {
+        linkError.value = "URL dan teks link wajib diisi.";
+        return;
+    }
+
+    let parsedUrl;
+
+    try {
+        parsedUrl = new URL(url);
+
+        if (!["http:", "https:", "mailto:"].includes(parsedUrl.protocol)) {
+            throw new Error("URL tidak valid");
+        }
+    } catch {
+        linkError.value =
+            "URL tidak valid. Gunakan http://, https://, atau mailto:.";
+        return;
+    }
+
+    const instance = editor.value;
+    const selection = savedSelection;
+
+    if (selection) {
+        instance.commands.setTextSelection(selection);
+    }
+
+    instance
+        .chain()
+        .focus()
+        .insertContent({
+            type: "text",
+            text,
+            marks: [
+                {
+                    type: "link",
+                    attrs: {
+                        href: parsedUrl.href,
+                        target: "_blank",
+                        rel: "noopener noreferrer",
+                    },
+                },
+            ],
+        })
+        .run();
+
+    showLinkModal.value = false;
+    savedSelection = null;
+    linkError.value = "";
+}
+
+function removeLink() {
+    if (!editor.value) return;
+
+    const instance = editor.value;
+
+    if (savedSelection) {
+        instance.commands.setTextSelection(savedSelection);
+    }
+
+    instance.chain().focus().extendMarkRange("link").unsetLink().run();
+
+    showLinkModal.value = false;
+    savedSelection = null;
+}
+
 const editor = useEditor({
     content: props.modelValue || `<p></p>`,
     extensions: [
-        StarterKit,
+        StarterKit.configure({
+            link: false,
+        }),
         TextAlign.configure({ types: ["heading", "paragraph"] }),
+        TableKit.configure({ table: { resizable: false } }),
+        Link.configure({
+            openOnClick: false,
+            autolink: true,
+            linkOnPaste: true,
+            HTMLAttributes: {
+                target: "_blank",
+                rel: "noopener noreferrer",
+            },
+        }),
     ],
     editorProps: {
         attributes: {
@@ -36,7 +151,9 @@ watch(
     (val) => {
         const isSame = editor.value && val === editor.value.getHTML();
         if (!isSame && editor.value) {
-            editor.value.commands.setContent(val || "<p></p>", false);
+            editor.value.commands.setContent(val || "<p></p>", {
+                emitUpdate: false,
+            });
         }
     },
 );
@@ -142,10 +259,161 @@ function toolbarBtnClass(active) {
             >
                 ⇔
             </button>
+            <button
+                type="button"
+                :class="toolbarBtnClass(editor.isActive('table'))"
+                title="Sisipkan tabel"
+                aria-label="Sisipkan tabel"
+                @click="
+                    editor
+                        .chain()
+                        .focus()
+                        .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
+                        .run()
+                "
+            >
+                <TableIcon class="h-4 w-4" aria-hidden="true" />
+            </button>
+            <button
+                type="button"
+                :class="toolbarBtnClass(editor.isActive('link'))"
+                title="Tambah atau ubah link"
+                aria-label="Tambah atau ubah link"
+                @mousedown.prevent
+                @click="setLink"
+            >
+                <LinkIcon class="h-4 w-4" />
+            </button>
+
+            <button
+                type="button"
+                :class="toolbarBtnClass(false)"
+                title="Hapus link"
+                aria-label="Hapus link"
+                :disabled="!editor.isActive('link')"
+                @mousedown.prevent
+                @click="
+                    editor
+                        .chain()
+                        .focus()
+                        .extendMarkRange('link')
+                        .unsetLink()
+                        .run()
+                "
+            >
+                <Unlink class="h-4 w-4" />
+            </button>
         </div>
 
         <EditorContent :editor="editor" />
     </div>
+
+    <Teleport to="body">
+        <div
+            v-if="showLinkModal"
+            class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4"
+            @mousedown.self="closeLinkModal"
+            @keydown.esc="closeLinkModal"
+        >
+            <div
+                class="w-full max-w-md rounded-xl bg-white p-5 shadow-xl"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="link-modal-title"
+            >
+                <div class="mb-5 flex items-center justify-between">
+                    <h2
+                        id="link-modal-title"
+                        class="text-base font-semibold text-slate-800"
+                    >
+                        Tambah Hyperlink
+                    </h2>
+
+                    <button
+                        type="button"
+                        class="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100"
+                        aria-label="Tutup modal"
+                        @click="closeLinkModal"
+                    >
+                        <X class="h-5 w-5" />
+                    </button>
+                </div>
+
+                <form class="space-y-4" @submit.prevent="saveLink">
+                    <div>
+                        <label
+                            for="link-url"
+                            class="mb-1.5 block text-sm font-medium text-slate-700"
+                        >
+                            URL tujuan
+                        </label>
+
+                        <input
+                            id="link-url"
+                            v-model="linkUrl"
+                            type="text"
+                            placeholder="https://contoh.com"
+                            class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/20"
+                            autofocus
+                        />
+                    </div>
+
+                    <div>
+                        <label
+                            for="link-text"
+                            class="mb-1.5 block text-sm font-medium text-slate-700"
+                        >
+                            Teks yang ditampilkan
+                        </label>
+
+                        <input
+                            id="link-text"
+                            v-model="linkText"
+                            type="text"
+                            placeholder="Contoh: Website Resmi BWI"
+                            class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/20"
+                        />
+                    </div>
+
+                    <p
+                        v-if="linkError"
+                        class="text-sm text-red-600"
+                        role="alert"
+                    >
+                        {{ linkError }}
+                    </p>
+
+                    <div
+                        class="flex justify-end gap-2 border-t border-slate-100 pt-4"
+                    >
+                        <button
+                            type="button"
+                            class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                            @click="closeLinkModal"
+                        >
+                            Batal
+                        </button>
+
+                        <button
+                            v-if="linkUrl"
+                            type="button"
+                            class="rounded-lg border border-red-200 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
+                            @click="removeLink"
+                        >
+                            Hapus Link
+                        </button>
+
+                        <button
+                            type="submit"
+                            class="rounded-lg bg-emerald-800 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-900"
+                        >
+                            Simpan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </Teleport>
 </template>
 <style>
 /* Tipografi untuk konten hasil rich text editor — dipakai di 2 tempat:
@@ -197,5 +465,31 @@ function toolbarBtnClass(active) {
     padding-left: 0.9em;
     color: #7d8b7f;
     margin: 0 0 0.75em;
+}
+.rich-text-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 0 0.9em;
+    table-layout: fixed;
+}
+.rich-text-content th,
+.rich-text-content td {
+    border: 1px solid #dfe6df;
+    padding: 0.5em 0.7em;
+    vertical-align: top;
+    text-align: left;
+}
+.rich-text-content th {
+    background: #f1f5f1;
+    font-weight: 700;
+}
+.rich-text-content .selectedCell {
+    background: #d9efe3;
+}
+.rich-text-content a {
+    color: #125a38;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
 }
 </style>

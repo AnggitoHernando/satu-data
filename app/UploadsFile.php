@@ -49,4 +49,16 @@ trait UploadsFile
             'ukuran_file'        => $ukuranFile,
         ];
     }
+
+    public function hapusFile(array|string|null $paths, string $disk = 'public'): void
+    {
+        $paths = array_filter(
+            (array) $paths,
+            fn($p) => is_string($p) && $p !== '' && !str_contains($p, '..')
+        );
+
+        if ($paths) {
+            Storage::disk($disk)->delete($paths);
+        }
+    }
 }

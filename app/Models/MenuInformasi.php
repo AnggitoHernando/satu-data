@@ -55,7 +55,7 @@ class MenuInformasi extends Model
 
     public function halamanStatis(): HasOne
     {
-        return $this->hasOne(HalamanStatis::class, 'menu_id');
+        return $this->hasOne(HalamanStatis::class, 'menu_id')->with('galeri');
     }
 
     public function getIsGroupAttribute(): bool

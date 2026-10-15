@@ -21,6 +21,8 @@
     "dependencies": {
         "@headlessui/vue": "^1.7.14",
         "@tanstack/vue-table": "^8.21.3",
+        "@tiptap/extension-link": "^3.31.3",
+        "@tiptap/extension-table": "^3.31.3",
         "@tiptap/extension-text-align": "^3.31.3",
         "@tiptap/extension-underline": "^3.31.3",
         "@tiptap/starter-kit": "^3.31.3",

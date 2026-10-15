@@ -9,6 +9,8 @@ use App\Models\MenuInformasi;
 use App\Http\Requests\StoreHalamanStatisRequest;
 use App\UploadsFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 
 class HalamanStatisController extends Controller
 {
@@ -63,7 +65,11 @@ class HalamanStatisController extends Controller
             );
             $validatedData['gambar_utama'] = $uploadedData['file_path'];
         }
-        HalamanStatis::create($validatedData);
+        DB::transaction(function () use ($validatedData, $request) {
+            $halaman = HalamanStatis::create($validatedData);
+            $halaman->simpanGaleri($request->galeri());
+        });
+
         return redirect()
             ->route('admin.ppid.halaman-statis')
             ->with('success', 'Halaman Statis berhasil ditambahkan.');
@@ -71,7 +77,7 @@ class HalamanStatisController extends Controller
 
     public function edit(MenuInformasi $menu)
     {
-        $menu->load('halamanStatis');
+        $menu->load('halamanStatis.galeri');
         return Inertia::render('Admin/Ppid/FormTambahHalamanStatis', [
             'menu' => $menu,
         ]);
@@ -79,19 +85,31 @@ class HalamanStatisController extends Controller
 
     public function update(StoreHalamanStatisRequest $request, HalamanStatis $halamanStatis)
     {
-        $validatedData = $request->validated();
+        $data = Arr::except($request->dataHalaman(), ['id', 'gambar_utama']);
+        $gambarLama = null;
+
         if ($request->hasFile('gambar_utama')) {
-            $this->deleteOldFile($halamanStatis->gambar_utama);
-            $folderTujuan = 'uploads/HalamanStatis/GambarUtama';
-            $uploadedData = $this->uploadFile(
+            $upload = $this->uploadFile(
                 $request->file('gambar_utama'),
-                $folderTujuan
+                'uploads/HalamanStatis/GambarUtama'
             );
-            $validatedData['gambar_utama'] = $uploadedData['file_path'];
-        } else {
-            unset($validatedData['gambar_utama']);
+            $data['gambar_utama'] = $upload['file_path'];
+            $gambarLama = $halamanStatis->gambar_utama;
         }
-        $halamanStatis->update($validatedData);
+        try {
+            DB::transaction(function () use ($halamanStatis, $data, $request) {
+                $halamanStatis->update($data);
+                $halamanStatis->simpanGaleri($request->galeri());
+            });
+        } catch (\Throwable $e) {
+            if (isset($data['gambar_utama'])) {
+                $halamanStatis->hapusFile($data['gambar_utama']);
+            }
+            throw $e;
+        }
+
+        $halamanStatis->hapusFile($gambarLama);
+
         return redirect()
             ->route('admin.ppid.halaman-statis')
             ->with('success', 'Halaman Statis berhasil diupdate.');
