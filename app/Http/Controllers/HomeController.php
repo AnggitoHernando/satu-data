@@ -157,7 +157,7 @@ class HomeController extends Controller
         return Inertia::render('Home/Ppid/InformasiPpid', [
             'listInformasi' => $informasiBerkala->childrenRecursive()->get(),
             'halamanStatis' => $informasiBerkala->halamanStatis()->first(),
-            'judul_banner' => 'Daftar Hukum',
+            'judul_banner' => 'Regulasi',
             'sub_judul_banner' => 'Setiap Badan Publik wajib menyediakan Informasi Publik setiap saat yang meliputi: daftar seluruh Informasi Publik yang berada di bawah penguasaannya, tidak termasuk informasi yang dikecualikan; hasil keputusan Badan Publik dan pertimbangannya; seluruh kebijakan yang ada berikut dokumen pendukungnya; rencana kerja proyek termasuk di dalamnya perkiraan pengeluaran tahunan Badan Publik; perjanjian Badan Publik dengan pihak ketiga; informasi dan kebijakan yang disampaikan Pejabat Publik dalam pertemuan yang terbuka untuk umum; prosedur kerja pegawai Badan Publik yang berkaitan dengan pelayanan masyarakat; dan/atau laporan mengenai pelayanan akses Informasi Publik sebagaimana diatur dalam Undang-Undang ini. UU No. 14 Tahun 2008, Pasal 11',
         ]);
     }
