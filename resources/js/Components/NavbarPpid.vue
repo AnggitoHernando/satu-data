@@ -18,29 +18,31 @@ const isOpen = ref(false);
 const isMobileMenuOpen = ref(false);
 const isMobileLayananOpen = ref(false);
 const isMobileInformasiOpen = ref(false);
+const isMobileProfileOpen = ref(false);
 
 const closeMobileMenu = () => {
     isMobileMenuOpen.value = false;
     isMobileLayananOpen.value = false;
     isMobileInformasiOpen.value = false;
+    isMobileProfileOpen.value = false;
 };
 
 const informasiPublik = [
-    { name: "Informasi Berkala", link: "home.ppid.informasi_berkala" },
-    { name: "Informasi Serta-Merta", link: "home.ppid.informasiSertaMerta" },
-    { name: "Informasi Setiap Saat", link: "home.ppid.informasiSetiapSaat" },
-    { name: "Informasi Dikecualikan", link: "home.ppid.informasiDikecualikan" },
+    { name: "Informasi Berkala", link: "/informasi-berkala" },
+    { name: "Informasi Serta-Merta", link: "/informasi-serta-merta" },
+    { name: "Informasi Setiap Saat", link: "/informasi-setiap-saat" },
+    { name: "Informasi Dikecualikan", link: "/informasi-dikecualikan" },
 ];
 
 const layanan = [
     { name: "Manajemen Data Terpadu", link: "PortalData" },
-    { name: "Layanan Informasi", link: "home.ppid.layananInformasi" },
-    { name: "Daftar Regulasi", link: "home.ppid.daftarHukum" },
+    { name: "Layanan Informasi", link: "/layanan-informasi" },
+    { name: "Daftar Regulasi", link: "/daftar-regulasi" },
 ];
 
 const profile = [
-    { name: "Profil PPID", link: "PortalData" },
-    { name: "Profil Kantor", link: "PortalData" },
+    { name: "Profil PPID", link: "/profil-ppid" },
+    { name: "Profil Kantor", link: "/profil-kantor" },
 ];
 </script>
 
@@ -235,17 +237,40 @@ const profile = [
                         </Link>
                     </div>
 
-                    <a
-                        href="#berita"
-                        @click="closeMobileMenu"
+                    <button
+                        type="button"
+                        @click="isMobileProfileOpen = !isMobileProfileOpen"
                         :class="
                             isContrastMode
                                 ? 'hover:bg-zinc-800'
                                 : 'hover:bg-green-100'
                         "
-                        class="px-4 py-3 rounded-xl transition-colors"
-                        >Profil PPID</a
+                        class="flex items-center justify-between px-4 py-3 rounded-xl transition-colors"
+                        :aria-expanded="isMobileProfileOpen"
                     >
+                        <span>Profile</span>
+                        <ChevronDown
+                            :class="isMobileProfileOpen ? 'rotate-180' : ''"
+                            class="w-4 h-4 transition-transform"
+                            aria-hidden="true"
+                        />
+                    </button>
+                    <div v-if="isMobileProfileOpen" class="flex flex-col pl-4">
+                        <Link
+                            v-for="item in profile"
+                            :key="item.link"
+                            :href="route(item.link)"
+                            @click="closeMobileMenu"
+                            :class="
+                                isContrastMode
+                                    ? 'hover:bg-zinc-800'
+                                    : 'hover:bg-green-100'
+                            "
+                            class="px-4 py-2.5 rounded-xl text-[0.85rem] font-medium transition-colors"
+                        >
+                            {{ item.name }}
+                        </Link>
+                    </div>
 
                     <button
                         @click="

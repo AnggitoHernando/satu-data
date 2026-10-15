@@ -58,16 +58,23 @@ const handleLoading = (status) => {
                         @setLoading="handleLoading"
                     />
                 </div>
-                <div v-else-if="usePage().props.halamanStatis !== null">
+                <div
+                    v-else-if="
+                        usePage().props.halamanStatis !== null &&
+                        usePage().props.halamanStatis.length > 0
+                    "
+                >
                     <img
-                        v-if="usePage().props.halamanStatis.gambar_utama"
-                        :src="`/storage/${usePage().props.halamanStatis.gambar_utama}`"
-                        :alt="usePage().props.halamanStatis.judul"
+                        v-if="
+                            usePage().props.halamanStatis?.gambar_utama !== null
+                        "
+                        :src="`/storage/${usePage().props.halamanStatis?.gambar_utama}`"
+                        :alt="usePage().props.halamanStatis?.judul"
                         class="mb-8 h-full w-full rounded-lg"
                     />
                     <div
                         class="rich-text-content prose max-w-none"
-                        v-html="usePage().props.halamanStatis.isi_konten"
+                        v-html="usePage().props.halamanStatis?.isi_konten"
                     />
                 </div>
                 <div v-else>

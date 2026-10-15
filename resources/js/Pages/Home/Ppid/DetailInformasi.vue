@@ -49,7 +49,7 @@ const filteredYears = computed(() => {
                     class="inline-flex items-center gap-1.5 bg-gradient-to-b from-[#EBF7F1] via-[#F4FAF6] to-slate-50 text-xs font-bold px-4 py-1.5 rounded-full mb-4 border border-[#0B6E4F]/20"
                 >
                     <ShieldCheck class="w-4 h-4" />
-                    {{ usePage().props.menu.parent.nama_menu }}
+                    {{ usePage().props.menu?.parent?.nama_menu }}
                 </span>
 
                 <h1
@@ -62,6 +62,7 @@ const filteredYears = computed(() => {
             <template #card-body>
                 <div
                     class="mx-auto grid max-w-6xl grid-cols-1 gap-7 px-6 py-8 sm:px-10 md:grid-cols-[240px_1fr]"
+                    v-if="usePage().props.listMenu.length > 0"
                 >
                     <nav
                         aria-label="Navigasi laporan"
@@ -125,7 +126,7 @@ const filteredYears = computed(() => {
                                                 : 'text-stone-500 hover:bg-stone-100 hover:text-stone-900 transition'
                                         "
                                         aria-current="page"
-                                        class="ml-6 flex items-center justify-between gap-2 whitespace-nowrap rounded-xl px-4 py-3 text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600"
+                                        class="ml-6 flex items-center justify-between gap-2 rounded-xl px-4 py-3 text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 break-words"
                                     >
                                         {{ child.nama_menu }}
                                     </a>
@@ -189,6 +190,13 @@ const filteredYears = computed(() => {
                             />
                         </div>
                     </main>
+                </div>
+
+                <div
+                    v-else
+                    class="flex flex-col items-center justify-center gap-4 py-10 text-center text-sm text-stone-500"
+                >
+                    <p>Tidak ada menu yang tersedia untuk kategori ini.</p>
                 </div>
             </template>
         </BannerCard>

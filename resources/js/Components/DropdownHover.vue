@@ -17,6 +17,27 @@ defineProps({
         default: false,
     },
 });
+
+const resolveLink = (link) => {
+    if (!link) return "#";
+
+    if (
+        typeof link === "string" &&
+        (link.startsWith("http") || link.startsWith("/"))
+    ) {
+        return link;
+    }
+
+    if (typeof link === "string") {
+        return route(link);
+    }
+
+    if (typeof link === "object" && link.name) {
+        return route(link.name, link.params || {});
+    }
+
+    return "#";
+};
 </script>
 
 <template>
@@ -50,7 +71,7 @@ defineProps({
                 <Link
                     v-for="(item, index) in items"
                     :key="index"
-                    :href="route(item.link)"
+                    :href="resolveLink(item.link)"
                     :class="
                         isContrastMode
                             ? 'hover:bg-zinc-800 text-white'

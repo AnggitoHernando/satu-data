@@ -68,20 +68,21 @@ const isContrastMode = ref(false);
                             <span
                                 class="text-xs leading-relaxed text-white/75 mb-2"
                             >
-                                Jl. Dr. Wahidin Sudirohusodo No. 1 Gresik, Jawa
-                                Timur 61111
+                                Jl. Jaksa Agung Suprapto No.39, Sumursango,
+                                Bedilan, Kecamatan Gresik, Kabupaten Gresik,
+                                Jawa Timur 61111
                             </span>
                         </div>
                         <div class="flex gap-2">
                             <PhoneCall class="w-5 h-5 text-white" />
                             <span class="text-xs leading-relaxed text-white/75">
-                                (031) 398-xxxx
+                                085111344066
                             </span>
                         </div>
                         <div class="flex gap-2">
                             <Mail class="w-5 h-5 text-white" />
                             <span class="text-xs leading-relaxed text-white/75">
-                                ppid.gresik@kemenag.go.id
+                                ppidkemenaggresik@gmail.com
                             </span>
                         </div>
                     </div>
@@ -129,7 +130,10 @@ const isContrastMode = ref(false);
             <div
                 class="border-t border-white/15 mt-8 pt-5 text-xs text-white/55 flex flex-wrap justify-center gap-2"
             >
-                <span>© 2026 PPID Kementerian Agama Kabupaten Gresik.</span>
+                <span
+                    >© {{ new Date().getFullYear() }} PPID Kementerian Agama
+                    Kabupaten Gresik.</span
+                >
             </div>
         </footer>
     </div>

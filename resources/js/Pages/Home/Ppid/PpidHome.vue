@@ -48,7 +48,7 @@ const categories = [
             "Diumumkan rutin: kinerja, kegiatan, dan laporan keuangan Kemenag Gresik.",
         icon: BarChart3,
         color: "bg-[#B8E986] text-green-600",
-        href: "home.ppid.informasi_berkala",
+        href: "/informasi-berkala",
     },
     {
         title: "Informasi Serta-Merta",
@@ -56,7 +56,7 @@ const categories = [
             "Disampaikan tanpa penundaan kalau menyangkut hajat hidup orang banyak.",
         icon: Zap,
         color: "bg-[#BFE3F2] text-green-600",
-        href: "home.ppid.informasiSertaMerta",
+        href: "/informasi-serta-merta",
     },
     {
         title: "Informasi Setiap Saat",
@@ -64,7 +64,7 @@ const categories = [
             "Selalu tersedia: regulasi, struktur organisasi, dan prosedur layanan.",
         icon: Folder,
         color: "bg-[#FFD3A6] text-green-600",
-        href: "home.ppid.informasiSetiapSaat",
+        href: "/informasi-setiap-saat",
     },
     {
         title: "Informasi Dikecualikan",
@@ -72,9 +72,30 @@ const categories = [
             "Info yang dibatasi aksesnya sesuai ketentuan Bab V UU No. 14/2008.",
         icon: Lock,
         color: "bg-[#F6C9D8] text-green-600",
-        href: "home.ppid.informasiDikecualikan",
+        href: "/informasi-dikecualikan",
     },
 ];
+
+const resolveLink = (link) => {
+    if (!link) return "#";
+
+    if (
+        typeof link === "string" &&
+        (link.startsWith("http") || link.startsWith("/"))
+    ) {
+        return link;
+    }
+
+    if (typeof link === "string") {
+        return route(link);
+    }
+
+    if (typeof link === "object" && link.name) {
+        return route(link.name, link.params || {});
+    }
+
+    return "#";
+};
 </script>
 
 <template>
@@ -467,7 +488,7 @@ const categories = [
                             </p>
                         </div>
                         <a
-                            :href="route(item.href)"
+                            :href="resolveLink(item.href)"
                             class="font-bold text-xs text-green-600 inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform"
                         >
                             Lihat Info <ArrowRight class="w-3.5 h-3.5" />
