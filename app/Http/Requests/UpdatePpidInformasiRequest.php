@@ -28,7 +28,7 @@ class UpdatePpidInformasiRequest extends FormRequest
             'id' => 'nullable',
             'menu_id' => 'required|exists:menu_informasi,id',
             'nama_informasi' => 'required|string|max:255',
-            'seksi_id' => 'required|exists:seksi,id',
+            'seksi_id' => 'nullable|exists:seksi,id',
             'unit_kerja' => 'required|string|max:255',
             'ringkasan' => 'nullable|string',
             'file_path' => ['nullable', 'required_without_all:jenis_data_id,id', 'file', 'mimes:pdf,doc,docx,xls,xlsx,ppt,pptx', 'max:5120'],
@@ -43,8 +43,6 @@ class UpdatePpidInformasiRequest extends FormRequest
     {
         return [
             'nama_informasi.required' => 'Nama informasi wajib diisi.',
-            'seksi_id.required' => 'Pilih seksi terlebih dahulu.',
-            'seksi_id.exists' => 'Seksi tidak ditemukan.',
             'unit_kerja.required' => 'Unit kerja wajib diisi.',
             'jenis_data_id.exists' => 'Jenis data tidak ditemukan.',
             'kategori.required' => 'Kategori wajib diisi.',
