@@ -20,8 +20,10 @@ defineProps({
             <FileText class="h-4.5 w-4.5" />
         </span>
 
-        <div class="min-w-0 flex-1">
-            <p class="truncate text-sm font-semibold text-stone-900">
+        <div class="min-w-0 flex-1 break-words">
+            <p
+                class="text-sm font-semibold text-stone-900 whitespace-normal break-words"
+            >
                 {{ name }}
             </p>
             <div class="mt-0.5 flex items-center gap-2 text-xs text-stone-500">
