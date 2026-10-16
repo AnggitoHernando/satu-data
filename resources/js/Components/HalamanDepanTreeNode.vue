@@ -45,7 +45,6 @@ const isGroup =
             </div>
 
             <span
-                v-if="!isGroup"
                 class="flex-none whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-semibold"
                 :class="
                     isGroup

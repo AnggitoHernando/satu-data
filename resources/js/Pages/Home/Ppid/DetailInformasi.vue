@@ -7,6 +7,7 @@ import { ShieldCheck, ChevronRight, ChevronDown } from "lucide-vue-next";
 import YearAccordion from "@/Components/YearAccordion.vue";
 import DropdownHover from "@/Components/DropdownHover.vue";
 import PhotoGalerySlider from "@/Components/PhotoGalerySlider.vue";
+import MenuNav from "@/Components/MenuNav.vue";
 
 const open = ref(true);
 
@@ -64,76 +65,10 @@ const filteredYears = computed(() => {
                     class="mx-auto grid max-w-6xl grid-cols-1 gap-7 px-6 py-8 sm:px-10 md:grid-cols-[240px_1fr]"
                     v-if="usePage().props.listMenu.length > 0"
                 >
-                    <nav
-                        aria-label="Navigasi laporan"
-                        class="flex gap-2 overflow-x-auto md:sticky md:top-5 md:h-fit md:flex-col md:overflow-visible"
-                    >
-                        <div
-                            v-for="menu in usePage().props.listMenu"
-                            :key="menu.id"
-                        >
-                            <a
-                                v-if="menu.children_recursive.length === 0"
-                                :href="`/${menu.full_path}`"
-                                :class="
-                                    usePage().props.selectedMenu === menu.slug
-                                        ? 'flex gap-2 bg-green-600 text-white shadow-md shadow-emerald-900/20'
-                                        : 'text-stone-500 hover:bg-stone-100 hover:text-stone-900 transition'
-                                "
-                                aria-current="page"
-                                class="flex items-start justify-between gap-2 rounded-xl px-4 py-3 text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 whitespace-normal break-words"
-                            >
-                                <span class="flex-1 leading-snug">
-                                    {{ menu.nama_menu }}
-                                </span>
-                                <ChevronRight
-                                    aria-hidden="true"
-                                    class="h-4 w-4 shrink-0 mt-0.5"
-                                />
-                            </a>
-                            <div v-else class="relative w-full">
-                                <button
-                                    :class="
-                                        usePage().props.selectedMenu ===
-                                        menu.slug
-                                            ? 'flex items-center  gap-2 bg-emerald-700 text-white shadow-md shadow-emerald-900/20'
-                                            : 'text-stone-500 hover:bg-stone-100 hover:text-stone-900 transition'
-                                    "
-                                    class="w-full flex items-center justify-between gap-2 whitespace-nowrap rounded-xl px-4 py-3 text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600"
-                                    @click="open = !open"
-                                >
-                                    {{ menu.nama_menu }}
-                                    <ChevronDown
-                                        v-if="open"
-                                        aria-hidden="true"
-                                        class="h-4 w-4"
-                                    />
-                                    <ChevronRight
-                                        v-else
-                                        aria-hidden="true"
-                                        class="h-4 w-4"
-                                    />
-                                </button>
-                                <div v-if="open">
-                                    <a
-                                        v-for="child in menu.children_recursive"
-                                        :key="child.id"
-                                        :href="`/${child.full_path}`"
-                                        :class="
-                                            usePage().props.selectedMenu ===
-                                            child.slug
-                                                ? 'flex items-center  gap-2 bg-emerald-700 text-white shadow-md shadow-emerald-900/20'
-                                                : 'text-stone-500 hover:bg-stone-100 hover:text-stone-900 transition'
-                                        "
-                                        aria-current="page"
-                                        class="ml-6 flex items-center justify-between gap-2 rounded-xl px-4 py-3 text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 break-words"
-                                    >
-                                        {{ child.nama_menu }}
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </nav>
+                    <MenuNav
+                        :items="usePage().props.listMenu"
+                        :selected="usePage().props.selectedMenu"
+                    />
                     <main
                         id="konten-utama"
                         tabindex="-1"
