@@ -120,7 +120,16 @@ const editor = useEditor({
             link: false,
         }),
         TextAlign.configure({ types: ["heading", "paragraph"] }),
-        TableKit.configure({ table: { resizable: false } }),
+        // resizable: true -> kolom bisa digeser lebar-nya dengan drag
+        // pada garis batas antar kolom.
+        TableKit.configure({
+            table: {
+                resizable: true,
+                cellMinWidth: 60,
+                lastColumnResizable: true,
+                allowTableNodeSelection: true,
+            },
+        }),
         Link.configure({
             openOnClick: false,
             autolink: true,
@@ -141,6 +150,75 @@ const editor = useEditor({
         emit("update:modelValue", editor.getHTML());
     },
 });
+
+// Daftar aksi untuk toolbar tabel. Toolbar ini hanya muncul ketika kursor
+// berada di dalam tabel. `can` dipakai supaya tombol otomatis nonaktif
+// kalau aksinya tidak mungkin dilakukan (mis. gabung sel tanpa seleksi).
+const tableActions = [
+    {
+        label: "+ Kolom kiri",
+        title: "Tambah kolom di sebelah kiri",
+        run: (e) => e.chain().focus().addColumnBefore().run(),
+        can: (e) => e.can().addColumnBefore(),
+    },
+    {
+        label: "+ Kolom kanan",
+        title: "Tambah kolom di sebelah kanan",
+        run: (e) => e.chain().focus().addColumnAfter().run(),
+        can: (e) => e.can().addColumnAfter(),
+    },
+    {
+        label: "− Kolom",
+        title: "Hapus kolom ini",
+        run: (e) => e.chain().focus().deleteColumn().run(),
+        can: (e) => e.can().deleteColumn(),
+        danger: true,
+    },
+    {
+        label: "+ Baris atas",
+        title: "Tambah baris di atas",
+        run: (e) => e.chain().focus().addRowBefore().run(),
+        can: (e) => e.can().addRowBefore(),
+    },
+    {
+        label: "+ Baris bawah",
+        title: "Tambah baris di bawah",
+        run: (e) => e.chain().focus().addRowAfter().run(),
+        can: (e) => e.can().addRowAfter(),
+    },
+    {
+        label: "− Baris",
+        title: "Hapus baris ini",
+        run: (e) => e.chain().focus().deleteRow().run(),
+        can: (e) => e.can().deleteRow(),
+        danger: true,
+    },
+    {
+        label: "Gabung sel",
+        title: "Gabungkan sel yang dipilih (seret untuk memilih beberapa sel)",
+        run: (e) => e.chain().focus().mergeCells().run(),
+        can: (e) => e.can().mergeCells(),
+    },
+    {
+        label: "Pisah sel",
+        title: "Pisahkan sel yang sebelumnya digabung",
+        run: (e) => e.chain().focus().splitCell().run(),
+        can: (e) => e.can().splitCell(),
+    },
+    {
+        label: "Baris judul",
+        title: "Jadikan / lepas baris pertama sebagai judul",
+        run: (e) => e.chain().focus().toggleHeaderRow().run(),
+        can: (e) => e.can().toggleHeaderRow(),
+    },
+    {
+        label: "Hapus tabel",
+        title: "Hapus seluruh tabel",
+        run: (e) => e.chain().focus().deleteTable().run(),
+        can: (e) => e.can().deleteTable(),
+        danger: true,
+    },
+];
 
 // Kalau modelValue diubah dari LUAR komponen (misal form di-reset, atau
 // data awal baru selesai di-fetch di mode edit), sinkronkan ke editor —
@@ -164,6 +242,17 @@ function toolbarBtnClass(active) {
     return [
         "flex h-7 w-7 items-center justify-center rounded text-sm font-bold text-slate-600",
         active ? "bg-white shadow-sm text-emerald-700" : "hover:bg-white/70",
+    ];
+}
+
+function tableBtnClass(danger, disabled) {
+    return [
+        "rounded px-2 py-1 text-xs font-medium",
+        disabled
+            ? "cursor-not-allowed text-slate-300"
+            : danger
+              ? "text-red-600 hover:bg-red-50"
+              : "text-slate-600 hover:bg-white",
     ];
 }
 </script>
@@ -305,6 +394,29 @@ function toolbarBtnClass(active) {
             </button>
         </div>
 
+        <div
+            v-if="editor && editor.isActive('table')"
+            class="flex flex-wrap items-center gap-0.5 border-b border-slate-200 bg-emerald-50/60 p-1.5"
+            role="toolbar"
+            aria-label="Pengaturan tabel"
+        >
+            <span class="mr-1 px-1 text-xs font-semibold text-emerald-800">
+                Tabel
+            </span>
+            <button
+                v-for="action in tableActions"
+                :key="action.label"
+                type="button"
+                :title="action.title"
+                :disabled="!action.can(editor)"
+                :class="tableBtnClass(action.danger, !action.can(editor))"
+                @mousedown.prevent
+                @click="action.run(editor)"
+            >
+                {{ action.label }}
+            </button>
+        </div>
+
         <EditorContent :editor="editor" />
     </div>
 
@@ -416,12 +528,6 @@ function toolbarBtnClass(active) {
     </Teleport>
 </template>
 <style>
-/* Tipografi untuk konten hasil rich text editor — dipakai di 2 tempat:
-   1) area menulis di dalam RichTextEditor.vue (EditorContent)
-   2) panel pratinjau yang me-render HTML yang sama lewat v-html
-   Ditaruh terpisah (bukan "scoped") supaya class yang sama bisa dipakai
-   di kedua tempat itu tanpa duplikasi style. */
-
 .rich-text-content {
     font-size: 0.875rem;
     line-height: 1.75;
@@ -459,6 +565,8 @@ function toolbarBtnClass(active) {
 .rich-text-content a {
     color: #125a38;
     text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
 }
 .rich-text-content blockquote {
     border-left: 3px solid #dfe6df;
@@ -466,11 +574,30 @@ function toolbarBtnClass(active) {
     color: #7d8b7f;
     margin: 0 0 0.75em;
 }
+
+/* ---------- Tabel ---------- */
+
+/* Pembungkus yang dibuat Tiptap saat tabel resizable; supaya tabel yang
+   lebarnya melebihi editor bisa di-scroll horizontal, bukan jebol layout. */
+.rich-text-content .tableWrapper {
+    overflow-x: auto;
+    /* overflow-y harus eksplisit: kalau overflow-x bukan "visible", browser
+       otomatis menjadikan overflow-y "auto" juga, sehingga handle yang
+       sedikit keluar dari tabel memunculkan scrollbar vertikal. */
+    overflow-y: hidden;
+    /* ruang untuk handle resize di kolom paling kanan, supaya tidak
+       terpotong oleh overflow wrapper */
+    padding-right: 6px;
+    margin: 0 0 0.9em;
+}
 .rich-text-content table {
     width: 100%;
     border-collapse: collapse;
     margin: 0 0 0.9em;
     table-layout: fixed;
+}
+.rich-text-content .tableWrapper table {
+    margin: 0;
 }
 .rich-text-content th,
 .rich-text-content td {
@@ -478,6 +605,12 @@ function toolbarBtnClass(active) {
     padding: 0.5em 0.7em;
     vertical-align: top;
     text-align: left;
+    position: relative; /* wajib: handle resize diposisikan relatif ke sel */
+    min-width: 60px;
+}
+.rich-text-content th p,
+.rich-text-content td p {
+    margin: 0;
 }
 .rich-text-content th {
     background: #f1f5f1;
@@ -486,10 +619,26 @@ function toolbarBtnClass(active) {
 .rich-text-content .selectedCell {
     background: #d9efe3;
 }
-.rich-text-content a {
-    color: #125a38;
-    text-decoration: underline;
-    text-underline-offset: 2px;
-    cursor: pointer;
+
+/* Garis hijau yang muncul saat kursor mouse di batas kolom / sedang di-drag */
+.rich-text-content .column-resize-handle {
+    position: absolute;
+    right: -2px;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background-color: #125a38;
+    pointer-events: none;
+    z-index: 5;
+}
+/* Kolom terakhir: handle ditaruh di dalam sel, bukan menjorok keluar */
+.rich-text-content th:last-child .column-resize-handle,
+.rich-text-content td:last-child .column-resize-handle {
+    right: 0;
+}
+/* Kursor berubah jadi panah kiri-kanan saat di atas batas kolom */
+.rich-text-content.resize-cursor,
+.rich-text-content.resize-cursor * {
+    cursor: col-resize;
 }
 </style>
