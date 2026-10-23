@@ -12,6 +12,7 @@ import { Link } from "@inertiajs/vue3";
 import { ref } from "vue";
 import PpidLogo from "@/Components/PpidLogo.vue";
 const isContrastMode = ref(false);
+import SpanLaporLogo from "@/Components/SpanLaporLogo.vue";
 </script>
 
 <template>
@@ -96,32 +97,44 @@ const isContrastMode = ref(false);
                     </p>
                     <div class="flex gap-2">
                         <a
-                            href="#"
+                            href="https://www.instagram.com/kemenaggresik_/"
+                            target="_blank"
                             class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
                             aria-label="Instagram"
                         >
                             <Instagram class="w-4 h-4" />
                         </a>
                         <a
-                            href="#"
+                            href="http://www.youtube.com/@kemenaggresik"
+                            target="_blank"
                             class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
                             aria-label="YouTube"
                         >
                             <Youtube class="w-4 h-4" />
                         </a>
                         <a
-                            href="#"
+                            href="https://www.facebook.com/kemenaggresikofficiall"
+                            target="_blank"
                             class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
                             aria-label="Facebook"
                         >
                             <Facebook class="w-4 h-4" />
                         </a>
                         <a
-                            href="#"
+                            href="https://x.com/kemenaggresik_"
+                            target="_blank"
                             class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
                             aria-label="Twitter"
                         >
                             <Twitter class="w-4 h-4" />
+                        </a>
+                        <a
+                            href="https://www.lapor.go.id/"
+                            target="_blank"
+                            class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
+                            aria-label="Lapor"
+                        >
+                            <SpanLaporLogo />
                         </a>
                     </div>
                 </div>
