@@ -48,9 +48,7 @@ const form = useForm({
         props.menu?.parent ?? selectedParentId.value ?? props.parentOptions.id,
     urutan:
         String(
-            props.menu.urutan?.length > 0
-                ? props.menu?.urutan
-                : props.defaultUrutan,
+            props.menu.urutan > 0 ? props.menu?.urutan : props.defaultUrutan,
         ) ?? "1",
 });
 
