@@ -63,7 +63,10 @@ const filteredYears = computed(() => {
             <template #card-body>
                 <div
                     class="mx-auto grid max-w-6xl grid-cols-1 gap-7 px-6 py-8 sm:px-10 md:grid-cols-[240px_1fr]"
-                    v-if="usePage().props.listMenu.length > 0"
+                    v-if="
+                        usePage().props.listMenu.length > 0 ||
+                        usePage().props.halamanStatis !== null
+                    "
                 >
                     <MenuNav
                         :items="usePage().props.listMenu"

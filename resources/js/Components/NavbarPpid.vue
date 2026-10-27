@@ -29,7 +29,7 @@ const closeMobileMenu = () => {
 
 const informasiPublik = [
     { name: "Informasi Berkala", link: "/informasi-berkala" },
-    { name: "Informasi Serta-Merta", link: "/informasi-serta-merta" },
+    { name: "Informasi Serta Merta", link: "/informasi-serta-merta" },
     { name: "Informasi Setiap Saat", link: "/informasi-setiap-saat" },
     { name: "Informasi Dikecualikan", link: "/informasi-dikecualikan" },
 ];
