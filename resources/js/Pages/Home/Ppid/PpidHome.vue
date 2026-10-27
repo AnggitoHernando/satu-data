@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from "vue";
 import { Head, Link, usePage } from "@inertiajs/vue3";
+import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 
 import {
     Search,
@@ -121,15 +122,23 @@ const resolveLink = (link) => {
                                 <Sparkles class="w-3.5 h-3.5 text-green-600" />
                                 Layanan Informasi Publik Terintegrasi
                             </span>
+                            <div class="flex items-center gap-4 mb-4">
+                                <ApplicationLogo class="w-20" />
+                                <h1
+                                    class="text-3xl sm:text-4xl font-bold leading-tight font-serif"
+                                >
+                                    Layanan Informasi Publik
+                                </h1>
+                            </div>
                             <h1
                                 class="text-3xl sm:text-4xl lg:text-[2.5rem] font-bold leading-tight font-serif"
                             >
-                                Layanan Informasi Publik
                                 <span class="text-green-600"
                                     >Kantor Kementerian Agama Kabupaten
                                     Gresik</span
                                 >
                             </h1>
+
                             <p
                                 :class="
                                     isContrastMode
