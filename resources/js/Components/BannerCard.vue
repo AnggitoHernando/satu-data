@@ -58,5 +58,7 @@ const props = defineProps({
                 <slot name="card-body" />
             </div>
         </section>
+
+        <slot name="content" />
     </div>
 </template>

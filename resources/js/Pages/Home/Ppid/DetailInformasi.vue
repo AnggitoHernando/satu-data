@@ -10,12 +10,19 @@ import PhotoGalerySlider from "@/Components/PhotoGalerySlider.vue";
 import MenuNav from "@/Components/MenuNav.vue";
 
 const open = ref(true);
+const page = usePage();
 
 const props = defineProps({
     lampiran: { type: Array, required: true },
 });
 const query = ref("");
 const activeYear = ref("all");
+
+const listMenu = computed(() => page.props.listMenu || []);
+const hasMenu = computed(() => listMenu.value.length > 0);
+const selectedMenu = computed(() => page.props.selectedMenu);
+const halamanStatis = computed(() => page.props.halamanStatis);
+const menu = computed(() => page.props.menu);
 
 const availableYears = computed(() => props.lampiran.map((y) => y.year));
 
@@ -50,7 +57,10 @@ const filteredYears = computed(() => {
                     class="inline-flex items-center gap-1.5 bg-gradient-to-b from-[#EBF7F1] via-[#F4FAF6] to-slate-50 text-xs font-bold px-4 py-1.5 rounded-full mb-4 border border-[#0B6E4F]/20"
                 >
                     <ShieldCheck class="w-4 h-4" />
-                    {{ usePage().props.menu?.parent?.nama_menu }}
+                    {{
+                        usePage().props.menu?.parent?.nama_menu ||
+                        usePage().props.menu.nama_menu
+                    }}
                 </span>
 
                 <h1
@@ -62,10 +72,16 @@ const filteredYears = computed(() => {
 
             <template #card-body>
                 <div
-                    class="mx-auto grid max-w-6xl grid-cols-1 gap-7 px-6 py-8 sm:px-10 md:grid-cols-[240px_1fr]"
+                    class="mx-auto grid max-w-6xl gap-7 px-6 py-8 sm:px-10"
+                    :class="[
+                        hasMenu
+                            ? 'grid-cols-1 md:grid-cols-[240px_1fr]'
+                            : 'grid-cols-1',
+                    ]"
                     v-if="
-                        usePage().props.listMenu.length > 0 ||
-                        usePage().props.halamanStatis !== null
+                        hasMenu ||
+                        halamanStatis !== null ||
+                        filteredYears.length > 0
                     "
                 >
                     <MenuNav
@@ -82,6 +98,7 @@ const filteredYears = computed(() => {
                             :key="group.year"
                             :year="group.year"
                             :documents="group.documents"
+                            :menu="usePage().props.menu"
                         />
 
                         <p

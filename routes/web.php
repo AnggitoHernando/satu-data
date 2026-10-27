@@ -44,6 +44,11 @@ Route::post('/permohonan-informasi/simpan', [PermohonanController::class, 'store
 Route::get('/lacak-permohonan', [HomeController::class, 'lacakPermohonan'])->name('home.ppid.lacakPermohonan');
 Route::get('/permohonan-keberatan', [HomeController::class, 'permohonanKeberatan'])->name('home.ppid.permohonan_keberatan');
 Route::post('/permohonan-keberatan/simpan', [PermohonanController::class, 'storeKeberatan'])->name('home.ppid.permohonan_keberatan.store');
+Route::get(
+    '/informasi/{fullPath}/dokumen/{dokumenId}',
+    [HomeController::class, 'detailDokumen']
+)->name('home.ppid.detail_dokumen');
+Route::get('/pencarian', [HomeController::class, 'searchPpidInformasi'])->name('ppid.search');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

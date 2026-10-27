@@ -30,7 +30,11 @@ const searchQuery = ref("");
 const trackNumber = ref("");
 
 const handleSearch = () => {
-    if (!searchQuery.value) return;
+    if (!searchQuery.value.trim()) return;
+
+    const queryParam = encodeURIComponent(searchQuery.value.trim());
+    const searchUrl = route("ppid.search", { q: queryParam });
+    window.location.href = searchUrl;
 };
 
 const handleTrack = () => {

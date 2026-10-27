@@ -7,6 +7,7 @@ const props = defineProps({
     year: { type: [String, Number], required: true },
     documents: { type: Array, required: true },
     defaultOpen: { type: Boolean, default: true },
+    menu: { type: Object, required: true }, // untuk route detail dokumen
 });
 
 const open = ref(props.defaultOpen);
@@ -61,6 +62,8 @@ const panelId = `${uid}-panel`;
                 :tag="doc.tag"
                 :url="doc.url"
                 :type="doc.type"
+                :doc-id="doc.id"
+                :menu="menu"
             />
         </div>
     </section>

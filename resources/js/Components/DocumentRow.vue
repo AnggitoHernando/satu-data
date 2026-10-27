@@ -1,11 +1,14 @@
 <script setup>
 import { FileText } from "lucide-vue-next";
+import { Link } from "@inertiajs/vue3";
 
-defineProps({
+const props = defineProps({
     name: { type: String, required: true },
     tag: { type: String, default: null },
     url: { type: String, default: "#" },
     type: { type: String, default: "file" },
+    docId: { type: [String, Number], default: null },
+    menu: { type: Object, required: true }, // untuk route detail dokumen
 });
 </script>
 
@@ -43,13 +46,24 @@ defineProps({
             </div>
         </div>
 
-        <a
+        <!-- <a
             :href="`/storage/${url}`"
             target="_blank"
             :aria-label="`Lihat dokumen ${name}${tag ? ', ' + tag : ''}`"
             class="flex-shrink-0 rounded-lg border border-stone-200 bg-stone-100 px-4 py-2 text-sm font-semibold text-green-600 transition-colors hover:bg-green-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2"
         >
             Lihat
-        </a>
+        </a> -->
+        <Link
+            :href="
+                route('home.ppid.detail_dokumen', {
+                    fullPath: menu.slug,
+                    dokumenId: docId,
+                })
+            "
+            class="inline-flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-800"
+        >
+            Lihat Detail
+        </Link>
     </div>
 </template>

@@ -11,6 +11,8 @@ use Inertia\Inertia;
 use App\Models\MenuInformasi;
 use App\ApiJoomla;
 use App\Models\Permohonan;
+use App\Models\PpidInformasi;
+use Illuminate\Support\Facades\Storage;
 
 class HomeController extends Controller
 {
@@ -152,6 +154,7 @@ class HomeController extends Controller
                                 // 1 informasi bisa punya beberapa lampiran, jadi di-flatten
                                 // supaya masing-masing file jadi 1 baris dokumen sendiri
                                 return $item->lampiran->map(fn($file) => [
+                                    'id'   => $item->id,
                                     'name' => $file->nama_file,
                                     'tag'  => $item->periode ?? $item->kategori_label,
                                     'url'  => $file->file_path,
@@ -171,6 +174,118 @@ class HomeController extends Controller
             'listMenu' => $listMenu,
             'selectedMenu' => $lastSlug,
             'halamanStatis' => $halamanStatis,
+        ]);
+    }
+
+    public function detailDokumen($fullPath, $dokumenId)
+    {
+
+        $menu = MenuInformasi::where('slug', $fullPath)->firstOrFail();
+        $dokumen = $menu->informasi()
+            ->with('lampiran')
+            ->whereKey($dokumenId)
+            ->firstOrFail();
+        $dokumenLainnya = PpidInformasi::query()
+            ->with(['menu' => function ($query) {
+                $query->select('id', 'nama_menu', 'slug');
+            }])
+            ->where('menu_id', '!=', $menu->id)
+            ->inRandomOrder()
+            ->limit(5)
+            ->get([
+                'id',
+                'menu_id',
+                'nama_informasi',
+                'tahun',
+                'kategori',
+            ]);
+
+        return Inertia::render('Home/Ppid/DetailDokumen', [
+            'menu' => $menu,
+
+            'dokumen' => [
+                'id' => $dokumen->id,
+                'judul' => $dokumen->nama_informasi,
+                'tahun' => $dokumen->tahun,
+                'ringkasan' => $dokumen->ringkasan,
+
+                'lampiran' => $dokumen->lampiran->map(
+                    fn($file) => [
+                        'id' => $file->id,
+                        'name' => $file->nama_file,
+                        'url' => $file->file_path,
+                        'type' => $file->tipe_file,
+                    ]
+                )->values(),
+            ],
+            'dokumenLainnya' => $dokumenLainnya,
+        ]);
+    }
+
+    private const SORTS = ['relevan', 'terbaru', 'terlama'];
+
+    public function searchPpidInformasi(Request $request)
+    {
+        $q = trim((string) $request->query('q', ''));
+        $sort = in_array($request->query('sort'), self::SORTS, true)
+            ? $request->query('sort')
+            : 'relevan';
+
+        $query = PpidInformasi::query()
+            ->with('lampiran')
+            ->with('menu')
+            // ->where('status', 'publish') // sesuaikan dengan nilai status "tampil" di aplikasi Anda
+            ->when($request->filled('kategori'), fn($qb) => $qb->where('kategori', $request->query('kategori')))
+            ->when($request->filled('tahun'), fn($qb) => $qb->where('tahun', $request->query('tahun')));
+
+        // Setiap kata harus cocok di salah satu kolom (atau nama file lampiran).
+        foreach (preg_split('/\s+/', $q, -1, PREG_SPLIT_NO_EMPTY) as $term) {
+            $like = '%' . addcslashes($term, '%_\\') . '%';
+
+            $query->where(function ($w) use ($like) {
+                $w->where('nama_informasi', 'like', $like)
+                    ->orWhere('ringkasan', 'like', $like)
+                    ->orWhere('unit_kerja', 'like', $like)
+                    ->orWhere('keterangan', 'like', $like)
+                    ->orWhereHas('lampiran', fn($l) => $l->where('nama_file', 'like', $like));
+            });
+        }
+
+        match ($sort) {
+            'terbaru' => $query->orderByDesc('tahun')->orderByDesc('id'),
+            'terlama' => $query->orderBy('tahun')->orderBy('id'),
+            default => $q !== ''
+                // Judul yang memuat kata kunci lengkap tampil lebih dulu.
+                ? $query->orderByRaw('CASE WHEN nama_informasi LIKE ? THEN 0 ELSE 1 END', ['%' . addcslashes($q, '%_\\') . '%'])
+                ->orderByDesc('tahun')
+                : $query->orderByDesc('tahun')->orderByDesc('id'),
+        };
+
+        $informasi = $query->paginate(10)->withQueryString()->through(fn(PpidInformasi $i) => [
+            'id' => $i->id,
+            'menu' => $i->menu ? [
+                'id' => $i->menu->id,
+                'nama_menu' => $i->menu->nama_menu,
+                'slug' => $i->menu->slug,
+            ] : null,
+            'nama_informasi' => $i->nama_informasi,
+            'ringkasan' => $i->ringkasan,
+            'kategori' => $i->kategori,
+            'tahun' => $i->tahun,
+            'bentuk_dokumen' => $i->bentuk_dokumen,
+            'unit_kerja' => $i->unit_kerja,
+            'lampiran' => $i->lampiran->map(fn($f) => [
+                'id' => $f->id,
+                'nama_file' => $f->nama_file,
+                'tipe_file' => $f->tipe_file,
+                'ukuran_file' => $f->ukuran_file, // diasumsikan dalam byte
+                'url' => Storage::url($f->file_path), // ganti ke route download jika file privat
+            ])->values(),
+        ]);
+
+        return Inertia::render('Home/Ppid/SearchInformasi', [
+            'informasi' => $informasi,
+            'filters' => ['q' => $q, 'sort' => $sort],
         ]);
     }
 }
