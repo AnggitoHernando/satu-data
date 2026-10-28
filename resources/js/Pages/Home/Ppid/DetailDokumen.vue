@@ -204,7 +204,7 @@ const formatDate = (value) => {
                                     </span>
 
                                     <a
-                                        :src="`/storage/${selectedFile.url}`"
+                                        :href="`/storage/${selectedFile.url}`"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         class="inline-flex shrink-0 items-center gap-1.5 text-xs text-white hover:text-emerald-300"
