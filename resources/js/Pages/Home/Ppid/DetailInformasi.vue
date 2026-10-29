@@ -8,6 +8,7 @@ import YearAccordion from "@/Components/YearAccordion.vue";
 import DropdownHover from "@/Components/DropdownHover.vue";
 import PhotoGalerySlider from "@/Components/PhotoGalerySlider.vue";
 import MenuNav from "@/Components/MenuNav.vue";
+import { ArrowRight } from "lucide-vue-next";
 
 const open = ref(true);
 const page = usePage();
@@ -110,6 +111,76 @@ const filteredYears = computed(() => {
                         >
                             Tidak ada dokumen yang cocok dengan pencarian.
                         </p>
+
+                        <section
+                            v-if="usePage().props?.beritaTerkini?.length > 0"
+                            id="berita"
+                            class="py-12 max-w-[1180px] mx-auto px-5"
+                        >
+                            <div
+                                class="mb-8 flex items-end justify-between gap-4"
+                            >
+                                <div>
+                                    <p
+                                        class="text-green-600 font-bold text-xs uppercase tracking-wider mb-1"
+                                    >
+                                        KABAR TERKINI
+                                    </p>
+                                    <h2 class="text-2xl font-bold font-serif">
+                                        Berita &amp; Kegiatan Kemenag Gresik
+                                    </h2>
+                                </div>
+                                <a
+                                    href="https://kemenaggresik.id/"
+                                    target="_blank"
+                                    class="font-bold text-xs text-green-600 whitespace-nowrap inline-flex items-center gap-1 hover:underline"
+                                >
+                                    Lihat Semua
+                                    <ArrowRight class="w-3.5 h-3.5" />
+                                </a>
+                            </div>
+
+                            <div class="flex gap-4 overflow-x-auto pb-4 snap-x">
+                                <a
+                                    v-for="(news, idx) in usePage().props
+                                        .beritaTerkini"
+                                    :href="news.url"
+                                    target="_blank"
+                                    :key="idx"
+                                    class="snap-start pointer shrink-0 w-[270px] bg-white border border-[#E6EFE9] rounded-[20px] overflow-hidden transition-transform duration-200 hover:-translate-y-1"
+                                >
+                                    <div
+                                        :class="[
+                                            'h-[130px] bg-gradient-to-br',
+                                            news.image ? '' : 'bg-gray-100',
+                                        ]"
+                                    >
+                                        <img
+                                            v-if="news.image"
+                                            :src="news.image"
+                                            class="w-full h-full object-cover"
+                                        />
+                                    </div>
+                                    <div class="p-4">
+                                        <span
+                                            class="inline-block text-[0.68rem] font-bold text-green-600 bg-[#E4F5EC] px-2.5 py-1 rounded-full mb-2"
+                                        >
+                                            KEMENAG GRESIK
+                                        </span>
+                                        <h3
+                                            class="text-xs font-bold leading-snug mb-2 font-serif line-clamp-4"
+                                        >
+                                            {{ news.title }}
+                                        </h3>
+                                        <p
+                                            class="text-[#6b7a72] text-[0.72rem]"
+                                        >
+                                            {{ news.created }}
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                        </section>
 
                         <div
                             v-if="

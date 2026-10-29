@@ -168,12 +168,17 @@ class HomeController extends Controller
                 ->values();
         }
 
+        if ($lastSlug === 'informasi-serta-merta') {
+            $beritaTerkini = $this->getLatestArticles(request(), 4);
+        }
+
         return Inertia::render('Home/Ppid/DetailInformasi', [
             'lampiran' => $lampiran,
             'menu' => $menu,
             'listMenu' => $listMenu,
             'selectedMenu' => $lastSlug,
             'halamanStatis' => $halamanStatis,
+            'beritaTerkini' => $beritaTerkini ?? null,
         ]);
     }
 
